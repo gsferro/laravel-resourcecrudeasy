@@ -1,0 +1,25 @@
+{
+    "name": "gsferro/resourcecrudeasy",
+    "description": "Metodo resource genericos para crud utilizando SPA",
+    "authors": [
+        {
+            "name": "Guilherme Ferro",
+            "email": "gsferroti@gmail.com"
+        }
+    ],
+    "require": {
+        "gsferro/responseview" : "1.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Gsferro\\ResourceCrudEasy\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Gsferro\\ResourceCrudEasy\\Providers\\ResourceCrudEasyServiceProvider"
+            ]
+        }
+    }
+}
