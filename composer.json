@@ -1,6 +1,9 @@
 {
-    "name": "gsferro/resourcecrudeasy",
-    "description": "Metodo resource genericos para crud utilizando SPA",
+    "name": "gsferro/resource-crud-easy",
+    "type": "library",
+    "license": "MIT",
+    "keywords" : ["Laravel", "CRUD", "Template", "generate", "Easy", "SPA"],
+    "description": "Generic resource method for crud using SPA",
     "authors": [
         {
             "name": "Guilherme Ferro",
