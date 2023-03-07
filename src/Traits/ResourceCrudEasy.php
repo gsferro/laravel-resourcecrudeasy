@@ -39,6 +39,8 @@ trait ResourceCrudEasy
     public $sessionName;
     public $viewIndex;
     public $viewForm;
+    public $redirectStoreYourserf  = false;
+    public $redirectUpdateYourserf = false;
     /*
     |---------------------------------------------------
     | Pegar as view pela convenção do nome da Entidade
