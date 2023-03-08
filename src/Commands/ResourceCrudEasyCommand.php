@@ -18,9 +18,9 @@ class ResourceCrudEasyCommand extends GeneratorCommand
     private bool   $createSeeder   = false;
     private bool   $createMigrate  = true;
     //    private bool   $createService   = false;
-    //    private bool   $createDash   = false;
-    //    private bool   $createModal  = false;
-    //    private bool   $createImport = false;
+//    private bool   $createDash   = false;
+//    private bool   $createModal  = false;
+//    private bool   $createImport = false;
 
     /**
      * The console command name.
@@ -100,43 +100,6 @@ class ResourceCrudEasyCommand extends GeneratorCommand
         */
 
         try {
-            /*$this->call("make:model", [
-                "name" => "{$this->entite}",
-                "-m"   => "-m"
-            ]); # ser executada via blueprint
-
-            $this->call("make:datatable", [
-                "name"  => "{$this->entite}/Table",
-                "model" => "{$this->entite}"
-            ]);
-
-            $this->call("livewire:make", [
-                "name"   => "{$this->entite}/Index",
-                "--test" => "--test",
-                "--stub" => "{$this->pathStubs}/index"
-            ]); # com o stub modificado
-
-            $this->call("livewire:make", [
-                "name"   => "{$this->entite}/Create",
-                "--test" => "--test",
-                "--stub" => "{$this->pathStubs}/create"
-            ]); # com o stub modificado # todo unificar
-
-            $this->call("livewire:make", [
-                "name"   => "{$this->entite}/Edit",
-                "--test" => "--test",
-                "--stub" => "{$this->pathStubs}/edit"
-            ]); # todo unificar
-
-            $this->call("pest:test", [
-                "name"   => "{$this->entite}ModelTest",
-                "--unit" => "--unit"
-            ]); # test model # Todo criar stub
-
-            $this->call("dusk:make", [
-                "name" => "{$this->entite}DuskTest"
-            ]); # Todo criar stub*/
-
             /*
             |---------------------------------------------------
             | Criar Models
@@ -159,8 +122,8 @@ class ResourceCrudEasyCommand extends GeneratorCommand
             | Criar Tests
             |---------------------------------------------------
             */
-            $this->createPestModelUnit();
-            $this->createPestControllerFeature();
+            $this->createPestUnitModel();
+            $this->createPestUnitController();
 
             /*
             |---------------------------------------------------
@@ -168,62 +131,6 @@ class ResourceCrudEasyCommand extends GeneratorCommand
             |---------------------------------------------------
             */
             $this->publishRoute();
-
-
-            /*
-            |---------------------------------------------------
-            | criar dashboard
-            |---------------------------------------------------
-            */
-            /*if ($this->createDash == true) {
-                $this->line("");
-                $this->comment("Preparando a criação do Dashboard");
-
-                $this->call("livewire:make", [
-                    "name"   => "Dashboard/{$this->entite}",
-                    "--test" => "--test",
-                    "--stub" => "{$this->pathStubs}/dashboard"
-                ]);
-            }*/
-
-            /*
-            |---------------------------------------------------
-            | criar modal
-            |---------------------------------------------------
-            */
-            /*if ($this->createModal == true) {
-                $this->line("");
-                $this->comment("Preparando a criação da Modal");
-
-                $this->call("livewire:make", [
-                    "name"   => "{$this->entite}/Modal",
-                    "--test" => "--test",
-                    "--stub" => "{$this->pathStubs}/modal"
-                ]);
-            }*/
-
-            /*
-            |---------------------------------------------------
-            | criar import
-            |---------------------------------------------------
-            */
-            /*if ($this->createImport == true) {
-                $this->line("");
-                $this->comment("Preparando a criação do Import");
-
-                $this->call("make:import", [
-                    "name"    => "{$this->entite}/{$this->entite}Import",
-                    "--model" => "{$this->entite}",
-                ]);
-
-                $this->call("livewire:make", [
-                    "name"   => "{$this->entite}/Importacao/Modal",
-                    "--test" => "--test",
-                    "--stub" => "{$this->pathStubs}/import"
-                ]);
-
-                $this->applyModelInImport();
-            }*/
 
         } catch (\Exception $e) {
             dump('Ops...', $e->getMessage());
@@ -235,9 +142,9 @@ class ResourceCrudEasyCommand extends GeneratorCommand
         $this->createFactory = (bool)($this->option('factory') ? : $this->confirm('Create Factory?', true));
         $this->createSeeder  = (bool)($this->option('seeder')  ? : $this->confirm('Create Seeder?', !$this->createFactory));
         $this->createMigrate = (bool)($this->option('migrate') ? : $this->confirm('Create Migrate?', true));
-        //        $this->createDash   = (bool) ($this->option('dashboard') ?: $this->confirm('Create Dashboard?', true));
-        //        $this->createImport = (bool) ($this->option('import')    ?: $this->confirm('Create Import Excel?', true));
-        //        $this->createModal  = (bool) ($this->option('modal')     ?: $this->confirm('Create Modal?', false));
+//        $this->createDash   = (bool) ($this->option('dashboard') ?: $this->confirm('Create Dashboard?', true));
+//        $this->createImport = (bool) ($this->option('import')    ?: $this->confirm('Create Import Excel?', true));
+//        $this->createModal  = (bool) ($this->option('modal')     ?: $this->confirm('Create Modal?', false));
     }
 
     /**
@@ -404,23 +311,23 @@ class ResourceCrudEasyCommand extends GeneratorCommand
     | Feature from Controller and Services
     |
     */
-    private function createPestModelUnit(): void
+    private function createPestUnitModel(): void
     {
-        $path     = 'tests\Unit\Models\\' . $this->entite . 'UnitTest.php';
-        $contents = $this->buildClassEntite($this->entite, 'pest_model_unit');
+        $path     = 'tests\Unit\Models\\' . $this->entite . 'Test.php';
+        $contents = $this->buildClassEntite($this->entite, 'pest_unit_model');
 
         $this->makeDirectory($path);
-        $this->put($path, $contents, 'PestTest Unit created:');
+        $this->put($path, $contents, 'PestTest Unit Models created:');
     }
 
 
-    private function createPestControllerFeature(): void
+    private function createPestUnitController(): void
     {
-        $path     = 'tests\Feature\Controllers\\' . $this->entite . 'Test.php';
-        $contents = $this->buildClassEntite($this->entite, 'pest_controller_feature');
+        $path     = 'tests\Unit\Controllers\\' . $this->entite . 'ControllerTest.php';
+        $contents = $this->buildClassEntite($this->entite, 'pest_unit_controller');
 
         $this->makeDirectory($path);
-        $this->put($path, $contents, 'PestTest Feature created:');
+        $this->put($path, $contents, 'PestTest Unit Controllers created:');
     }
 
     /*
