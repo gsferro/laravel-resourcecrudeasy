@@ -1,0 +1,89 @@
+<?php
+
+namespace App\Models;
+
+use Gsferro\ResourceCrudEasy\Models\AppBaseModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use GeneaLabs\LaravelModelCaching\Traits\Cachable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class {{ class }} extends AppBaseModel
+{
+    /*
+    |---------------------------------------------------
+    | Uses
+    |---------------------------------------------------
+    */
+    // use SoftDeletes;
+    // use Cachable;
+    // use HasFactory;
+
+    /*
+    |---------------------------------------------------
+    | Configs Table
+    |---------------------------------------------------
+    */
+
+    /**
+     * @var string
+     */
+    public $table = '{{ class_table }}';
+
+    // protected $dates = ['deleted_at'];
+
+    /**
+     * Fillable utilizado para setar os campos que serão observados no audits
+     *
+     * @var array
+     */
+    public $fillable = [
+
+    ];
+
+    /**
+     * @var array
+     */
+    protected $casts = [
+
+    ];
+
+    /*
+    |---------------------------------------------------
+    | Rules from Validate
+    |---------------------------------------------------
+    */
+
+    /**
+     * Validation rules
+     *
+     * @var array
+     */
+    public static $rules = [
+
+    ];
+
+    /*
+    |---------------------------------------------------
+    | Relationships
+    |---------------------------------------------------
+    */
+
+    /*
+    |---------------------------------------------------
+    | Scopes Locais | Globais
+    |---------------------------------------------------
+    */
+
+    /*
+    |---------------------------------------------------
+    | Factory
+    |---------------------------------------------------
+    */
+    /*
+    protected static function newFactory(): Factory
+    {
+        return {{ class }}Factory::new();
+    }
+    */
+}

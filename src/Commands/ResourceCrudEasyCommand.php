@@ -2,16 +2,14 @@
 
 namespace Gsferro\ResourceCrudEasy\Commands;
 
-//use Illuminate\Console\Command;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Console\Input\InputArgument;
-use function Livewire\str;
+use Illuminate\Support\Str;
 
 class ResourceCrudEasyCommand extends GeneratorCommand
 {
     private string $entite;
-//    private string $pathStubs    = "/stubs/livewire";
 //    private bool   $createDash   = false;
 //    private bool   $createModal  = false;
 //    private bool   $createImport = false;
@@ -58,8 +56,9 @@ class ResourceCrudEasyCommand extends GeneratorCommand
     {
         $this->entite = ucfirst($this->argument('entite'));
 
-        $this->line("");
-        $this->comment("Preparando a criação da entidade [ {$this->entite} ]");
+        $this->br();
+        $this->comment("Preper create Entite [ {$this->entite} ]");
+        $this->br();
 
         /*
         |---------------------------------------------------
@@ -128,19 +127,25 @@ class ResourceCrudEasyCommand extends GeneratorCommand
 
             /*
             |---------------------------------------------------
+            | Criar Models
+            |---------------------------------------------------
+            */
+            $this->createModel();
+            
+            /*
+            |---------------------------------------------------
             | Criar controller
             |---------------------------------------------------
             */
-            $controller = $this->buildClass($this->entite);
-
-
+            $this->createController();
+            
             /*
             |---------------------------------------------------
             | alterar os arquivos apos a criação colocando a Model
             |---------------------------------------------------
             */
-            $this->applyModelInView();
-            $this->applyModelInClass();
+//            $this->applyModelInClass();
+//            $this->applyModelInView();
 
             /*
             |---------------------------------------------------
@@ -207,72 +212,108 @@ class ResourceCrudEasyCommand extends GeneratorCommand
      *
      * @return string
      */
-    protected function getStub()
+    protected function getStubEntite(string $type)
     {
-        $relativePath = '/stubs/controller.stub';
+        $relativePath = "/../stubs/{$type}.stub";
 
         return file_exists($customPath = $this->laravel->basePath(trim($relativePath, '/')))
             ? $customPath
             : __DIR__.$relativePath;
     }
 
-    private function applyModelInView()
+    private function applyReplace($stub)
     {
-        $pathViews = resource_path('views');
-
-        $acoes = ["index", "create", "edit"];
-        foreach ($acoes as $file) {
-            $file = "{$pathViews}\livewire\\".str($this->entite)->kebab()."\\$file.blade.php";
-
-            $this->applyInClass($file);
-        }
-    }
-
-    private function applyModelInClass()
-    {
-        $pathLivewire = app_path("Http/Livewire/{$this->entite}");
-
-        $acoes = ["Index", "Create", "Edit"];
-        foreach ($acoes as $file) {
-            $file = "{$pathLivewire}\\$file.php";
-
-            $this->applyInClass($file);
-        }
-    }
-
-    private function applyInClass($file)
-    {
-        return File::exists($file) ? File::put($file, $this->applyReplace($file)) : false;
-    }
-
-    private function applyReplace($file)
-    {
-        $params = [
-            '/\[Model\]/'        => "{$this->entite}",
-            '/\{Model\}/'        => "{$this->entite}",
-            '/\[pathLivewire\]/' => str($this->entite)->kebab(),
-            '/\{Import\}/'       => "{$this->entite}Import",
-            '/\[Import\]/'       => "{$this->entite}Import",
+        $str = Str::of($this->entite);
+        
+        $params     = [
+            '/\{{ class }}/'        => $str,
+            '/\{{ class_folder }}/' => $str->snake(),
+            '/\{{ class_title }}/'  => $str->snake()->title()->replace('_', ' '),
+            '/\{{ model }}/'        => $str,
+            
+            /*
+            |---------------------------------------------------
+            | Especifico Models
+            |---------------------------------------------------
+            */
+            '/\{{ class_table }}/' => $str->snake()->plural(),
         ];
 
         return preg_replace(
             array_keys($params),
             array_values($params),
-            file_get_contents("{$file}")
+            $stub
         );
     }
-
-    private function verifyParams()
+    /*
+    |---------------------------------------------------
+    | Criar Models
+    |---------------------------------------------------
+    */
+    private function createModel()
     {
-        $this->createDash   = (bool) ($this->option('dashboard') ?: $this->confirm('Create Dashboard?', true));
-        $this->createImport = (bool) ($this->option('import')    ?: $this->confirm('Create Import Excel?', true));
-        $this->createModal  = (bool) ($this->option('modal')     ?: $this->confirm('Create Modal?', false));
+        $contents = $this->buildClassEntite($this->entite, 'model');
+        $path     = 'app\Models\\' . $this->entite . '.php';
+        
+        $this->put($path, $contents);
+
+        $this->comment('Model created:');
+        $this->comment("$path");
+        $this->br();
+    }
+    
+    /*
+    |---------------------------------------------------
+    | Criar Controller
+    |---------------------------------------------------
+    */
+    private function createController()
+    {
+        $contents = $this->buildClassEntite($this->entite, 'controller');
+        $path     = 'app\Http\Controllers\\' . $this->entite . 'Controller.php';
+        
+        $this->put($path, $contents);
+        
+        $this->comment('Controller created:');
+        $this->comment("$path");
+        $this->br();
+    }
+    
+    /*
+    |---------------------------------------------------
+    | Criar Service
+    |---------------------------------------------------
+    */
+
+    /*
+    |---------------------------------------------------
+    | Reuso
+    |---------------------------------------------------
+    */
+    protected function buildClassEntite($name, string $type)
+    {
+        $stub = $this->files->get($this->getStubEntite($type));
+
+        return $this->replaceClass($stub, $name);
     }
 
-    private function applyModelInImport()
+    protected function replaceClass($stub, $name)
     {
-        $pathLivewire = app_path("Http/Livewire/{$this->entite}/Importacao/Modal.php");
+        return $this->applyReplace($stub);
+    }
 
-        $this->applyInClass("{$pathLivewire}");
+    private function put($path, $contents)
+    {
+        $this->files->put("{$path}", "{$contents}");
+    }
+    
+    protected function getStub()
+    {
+        // TODO: Implement getStub() method.
+    }
+
+    private function br()
+    {
+        $this->line('');
     }
 }

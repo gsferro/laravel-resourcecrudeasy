@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use DatatablesEasy\Helpers\DatatablesEasy;
 use Illuminate\Support\Facades\Validator;
 use Exception;
-use Gsferro\ResponseView\Traits;
+use Gsferro\ResponseView\Traits\ResponseView;
 
 /**
  * Reuso generico as operações de crud e response ajax
@@ -35,12 +35,13 @@ use Gsferro\ResponseView\Traits;
 trait ResourceCrudEasy
 {
     use ResponseJSON, ResponseView;
-    public $model;
-    public $sessionName;
-    public $viewIndex;
-    public $viewForm;
-    public $redirectStoreYourserf  = false;
-    public $redirectUpdateYourserf = false;
+    protected $model;
+    protected $sessionName;
+    protected $viewIndex;
+    protected $viewForm;
+    protected $addBreadcrumb          = true;
+    protected $redirectStoreYourserf  = false;
+    protected $redirectUpdateYourserf = false;
     /*
     |---------------------------------------------------
     | Pegar as view pela convenção do nome da Entidade
@@ -162,8 +163,10 @@ trait ResourceCrudEasy
      */
     public function create()
     {
-        $this->setBreadcumbEntidade();
-        $this->addBreadcrumb('Novo registro');
+        if ($this->addBreadcrumb) {
+            $this->setBreadcumbEntidade();
+            $this->addBreadcrumb('Novo registro');
+        }
         return $this->view($this->getViewForm());
     }
 

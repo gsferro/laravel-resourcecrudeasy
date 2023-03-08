@@ -1,22 +1,25 @@
 <?php
 
-namespace {{ namespace }};
+namespace App\Http\Controllers;
 
-use {{ rootNamespace }}Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Gsferro\ResourceCrudEasy\Traits\ResourceCrudEasy;
+use App\Models\{{{ class }}};
 
-class {{ class }} extends Controller
+class {{ class }}Controller extends Controller
 {
     use ResourceCrudEasy;
 
-    public function __construct(Eloquent $model)
+    public function __construct({{ class }} $model)
     {
         $this->model       = $model;
         // $this->viewIndex = '{{ class_folder }}.index';
         // $this->viewForm  = '{{ class_folder }}.form';
 
-        $this->addTitulo('Documento');
+        // default true
+        if ($this->addBreadcrumb) {
+            $this->addTitulo('{{ class_title }}');
+        }
+
         $this->addMergeData('model', $this->model);
     }
 }
