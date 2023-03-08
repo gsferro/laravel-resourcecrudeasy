@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 beforeEach(function () {
     // Se usar Seeder
-    // $this->seed({{ class }}Seeder::class);
+    // $this->seed(\Database\Seeders\{{ class }}Seeder::class);
 
     // se usar factory
     // {{ class }}::factory()->create();
