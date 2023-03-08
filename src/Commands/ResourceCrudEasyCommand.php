@@ -18,9 +18,9 @@ class ResourceCrudEasyCommand extends GeneratorCommand
     private bool   $createSeeder   = false;
     private bool   $createMigrate  = true;
     //    private bool   $createService   = false;
-//    private bool   $createDash   = false;
-//    private bool   $createModal  = false;
-//    private bool   $createImport = false;
+    //    private bool   $createDash   = false;
+    //    private bool   $createModal  = false;
+    //    private bool   $createImport = false;
 
     /**
      * The console command name.
@@ -235,9 +235,9 @@ class ResourceCrudEasyCommand extends GeneratorCommand
         $this->createFactory = (bool)($this->option('factory') ? : $this->confirm('Create Factory?', true));
         $this->createSeeder  = (bool)($this->option('seeder')  ? : $this->confirm('Create Seeder?', !$this->createFactory));
         $this->createMigrate = (bool)($this->option('migrate') ? : $this->confirm('Create Migrate?', true));
-//        $this->createDash   = (bool) ($this->option('dashboard') ?: $this->confirm('Create Dashboard?', true));
-//        $this->createImport = (bool) ($this->option('import')    ?: $this->confirm('Create Import Excel?', true));
-//        $this->createModal  = (bool) ($this->option('modal')     ?: $this->confirm('Create Modal?', false));
+        //        $this->createDash   = (bool) ($this->option('dashboard') ?: $this->confirm('Create Dashboard?', true));
+        //        $this->createImport = (bool) ($this->option('import')    ?: $this->confirm('Create Import Excel?', true));
+        //        $this->createModal  = (bool) ($this->option('modal')     ?: $this->confirm('Create Modal?', false));
     }
 
     /**
@@ -346,7 +346,7 @@ class ResourceCrudEasyCommand extends GeneratorCommand
         // sempre fazer override
         $override      = true;
         // caso exista, pega o nome
-        $existsMigrate = false;
+        $existsMigrate = null;
         // lista todos as migrates
         $migrations = dir(database_path('migrations'));
         // le toda a pastas
@@ -364,11 +364,11 @@ class ResourceCrudEasyCommand extends GeneratorCommand
                 return;
             }
         }
-
+        $migrations->close();
         // o nome sera ou o atual ou novo
         $migrateName = $existsMigrate ?? now()->format('Y_m_d_his') . '_' . $arquivo;
         $path        = 'database\migrations\\'.$migrateName;
-        
+
         // caso tenha criado o seeder, coloca para executar ao rodar a migrate
         $stub        = $this->createSeeder ? 'migrate_seeder' : 'migrate';
         $contents    = $this->buildClassEntite($this->entite, $stub);
