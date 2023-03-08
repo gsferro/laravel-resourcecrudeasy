@@ -4,12 +4,15 @@ namespace Gsferro\ResourceCrudEasy\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Stringable;
 use Symfony\Component\Console\Input\InputArgument;
 use Illuminate\Support\Str;
 
 class ResourceCrudEasyCommand extends GeneratorCommand
 {
     private string $entite;
+    private Stringable $str;
 //    private bool   $createDash   = false;
 //    private bool   $createModal  = false;
 //    private bool   $createImport = false;
@@ -55,6 +58,7 @@ class ResourceCrudEasyCommand extends GeneratorCommand
     public function handle()
     {
         $this->entite = ucfirst($this->argument('entite'));
+        $this->str    = Str::of($this->entite);
 
         $this->br();
         $this->comment("Preper create Entite [ {$this->entite} ]");
@@ -131,13 +135,27 @@ class ResourceCrudEasyCommand extends GeneratorCommand
             |---------------------------------------------------
             */
             $this->createModel();
-            
+
             /*
             |---------------------------------------------------
             | Criar controller
             |---------------------------------------------------
             */
             $this->createController();
+
+            /*
+            |---------------------------------------------------
+            | Criar Tests
+            |---------------------------------------------------
+            */
+            $this->createPestUnit();
+
+            /*
+            |---------------------------------------------------
+            | Publish Route
+            |---------------------------------------------------
+            */
+            $this->publishRoute();
             
             /*
             |---------------------------------------------------
@@ -223,20 +241,27 @@ class ResourceCrudEasyCommand extends GeneratorCommand
 
     private function applyReplace($stub)
     {
-        $str = Str::of($this->entite);
-        
+//        $str = Str::of($this->entite);
+
         $params     = [
-            '/\{{ class }}/'        => $str,
-            '/\{{ class_folder }}/' => $str->snake(),
-            '/\{{ class_title }}/'  => $str->snake()->title()->replace('_', ' '),
-            '/\{{ model }}/'        => $str,
-            
+            '/\{{ class }}/'        => $this->str,
+            '/\{{ class_folder }}/' => $this->str->snake(),
+            '/\{{ class_title }}/'  => $this->str->snake()->title()->replace('_', ' '),
+            '/\{{ model }}/'        => $this->str,
+
             /*
             |---------------------------------------------------
             | Especifico Models
             |---------------------------------------------------
             */
-            '/\{{ class_table }}/' => $str->snake()->plural(),
+            '/\{{ class_table }}/' => $this->str->snake()->plural(),
+            
+            /*
+            |---------------------------------------------------
+            | Especifico Route
+            |---------------------------------------------------
+            */
+            '/\{{ class_route_slug }}/' => $this->str->snake()->slug()->plural(),
         ];
 
         return preg_replace(
@@ -254,14 +279,10 @@ class ResourceCrudEasyCommand extends GeneratorCommand
     {
         $contents = $this->buildClassEntite($this->entite, 'model');
         $path     = 'app\Models\\' . $this->entite . '.php';
-        
-        $this->put($path, $contents);
 
-        $this->comment('Model created:');
-        $this->comment("$path");
-        $this->br();
+        $this->put($path, $contents, 'Model created:');
     }
-    
+
     /*
     |---------------------------------------------------
     | Criar Controller
@@ -271,20 +292,56 @@ class ResourceCrudEasyCommand extends GeneratorCommand
     {
         $contents = $this->buildClassEntite($this->entite, 'controller');
         $path     = 'app\Http\Controllers\\' . $this->entite . 'Controller.php';
-        
-        $this->put($path, $contents);
-        
-        $this->comment('Controller created:');
-        $this->comment("$path");
-        $this->br();
+
+        $this->put($path, $contents, 'Controller created:');
     }
-    
+
     /*
     |---------------------------------------------------
     | Criar Service
     |---------------------------------------------------
     */
 
+    /*
+    |---------------------------------------------------
+    | Criar Pest Test
+    |---------------------------------------------------
+    |
+    | Unit from Models
+    | Feature from Controller and Services
+    |
+    */
+    private function createPestUnit()
+    {
+        $contents = $this->buildClassEntite($this->entite, 'pest_unit');
+        $path     = 'tests\Unit\Models\\' . $this->entite . 'UnitTest.php';
+
+        $this->makeDirectory($path);
+
+        $this->put($path, $contents, 'PestTest Unit created:');
+    }
+
+    /*
+    |---------------------------------------------------
+    | Publish Route
+    |---------------------------------------------------
+    */
+    private function publishRoute()
+    {
+        $path         = 'routes/web.php';
+        $base          = base_path($path);
+        $routeContents = file_get_contents($base);
+
+        if (str_contains($routeContents, $this->str->snake()->slug()->plural())) {
+            return ;
+        }
+        
+        $contents = $this->buildClassEntite($this->entite, 'web');
+
+        $routeContents .= "\n\n".$contents;
+        $this->put($path, $routeContents, 'Route Web Updated:');
+    }
+    
     /*
     |---------------------------------------------------
     | Reuso
@@ -302,18 +359,32 @@ class ResourceCrudEasyCommand extends GeneratorCommand
         return $this->applyReplace($stub);
     }
 
-    private function put($path, $contents)
+    private function put($path, $contents, string $message)
     {
         $this->files->put("{$path}", "{$contents}");
+
+        $this->message($path, $message);
     }
-    
-    protected function getStub()
+
+    private function message($path, string $message)
     {
-        // TODO: Implement getStub() method.
+        $this->comment($message);
+        $this->comment("$path");
+        $this->br();
     }
 
     private function br()
     {
         $this->line('');
+    }
+
+    /*
+    |---------------------------------------------------
+    | GeneratorCommand
+    |---------------------------------------------------
+    */
+    protected function getStub()
+    {
+        // TODO: Implement getStub() method.
     }
 }
