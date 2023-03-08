@@ -5,6 +5,9 @@ namespace App\Models;
 use Gsferro\ResourceCrudEasy\Models\AppBaseModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Database\Factories\{{ class }}Factory;
 
 class {{ class }} extends AppBaseModel
 {
@@ -13,8 +16,10 @@ class {{ class }} extends AppBaseModel
     | Uses
     |---------------------------------------------------
     */
+    use HasFactory;
     // use SoftDeletes;
     // use Cachable;
+
 
     /*
     |---------------------------------------------------
@@ -72,4 +77,13 @@ class {{ class }} extends AppBaseModel
     |---------------------------------------------------
     */
 
+    /*
+    |---------------------------------------------------
+    | Factory
+    |---------------------------------------------------
+    */
+    protected static function newFactory(): Factory
+    {
+        return {{ class }}Factory::new();
+    }
 }

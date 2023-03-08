@@ -1,0 +1,72 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+beforeEach(function () {
+    $routesByName    = Route::getRoutes()->getRoutesByName();
+    $this->routes    = [];
+    $this->routeName = '{{ class_route_slug }}';
+
+    foreach ($routesByName as $name => $route) {
+
+        if (!str_contains($name, $this->routeName)) {
+            continue;
+        }
+        $this->routes[$name] = $route;
+    }
+
+    $this->controllerName = 'App\Http\Controllers\{{ class }}Controller';
+});
+
+test('The Routes Resource exists', function ()
+{
+    expect($this->routes)
+        ->toBeArray()
+        ->not()->toBeEmpty()
+        ->toBeGreaterThanOrEqual(7); // 7 route resource
+});
+
+test('The Controller is config from package ResourceCrudEasy', function (){
+    // use trait
+    expect(class_uses($this->controllerName))
+        ->toBeArray()
+        ->toHaveKey('Gsferro\ResourceCrudEasy\Traits\ResourceCrudEasy')
+    ;
+});
+
+test('The Actions routes handled Resource Controller', function ()
+{
+    if (empty($this->routes)) {
+        $this->markAsRisky("Routes not implemented");
+    }
+
+    $methods = [
+        'index' => 'GET',
+        'create' => 'GET',
+        'store' => 'POST',
+        'show' => 'GET',
+        'edit' => 'GET',
+        'update' => 'PUT',
+        'destroy' => 'DELETE',
+    ];
+
+    foreach ($methods as $method => $veb) {
+        $name  = "{$this->routeName}.{$method}";
+        $route = $this->routes[ $name ];
+
+        if (!isset($route)) {
+            $this->markAsRisky("Route name [ {$name} ] not implemented");
+        }
+
+        // exists
+        expect($route)->not()->toBeEmpty();
+
+        // method use verb
+        expect($route->methods)->toBeArray()->toContain($veb);
+
+        // alias use method in controller
+        expect($route->action['controller'])
+            ->not()->toBeEmpty()
+            ->toEqual("{$this->controllerName}@{$method}");
+    }
+});

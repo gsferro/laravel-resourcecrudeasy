@@ -1,0 +1,61 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use App\Models\{{ class }};
+
+class {{ class }}Seeder extends Seeder
+{
+    /**
+     * Use the seeder from test the Entite {{ class }}
+     *
+     * @return array
+     */
+    public static function dados(): array
+    {
+        return [
+            // exemple
+            [
+                'id' => 1,
+                // ...
+            ],
+            // TODO generate by database or other package
+        ];
+    }
+
+
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run(): void
+    {
+        // protection if use Sql Server
+        if (config('database.connections') == "sqlsrv") {
+            DB::unprepared('SET IDENTITY_INSERT {{ class_table }} ON');
+        }
+
+        DB::transaction(function () {
+            /*
+            |---------------------------------------------------
+            | Case use caclabe in model
+            |---------------------------------------------------
+            */
+            $new   = new {{ class }}();
+            $model = ($new->hasNamedScope('disableCache'))
+                ? $new::disableCache()
+                : $new;
+            foreach (self::dados() as $dado) {
+                $model->updateOrCreate(["id" => $dado["id"]], $dado);
+            }
+        });
+
+        // protection if use Sql Server
+        if (config('database.connections') == "sqlsrv") {
+            DB::unprepared('SET IDENTITY_INSERT {{ class_table }} OFF');
+        }
+    }
+}
