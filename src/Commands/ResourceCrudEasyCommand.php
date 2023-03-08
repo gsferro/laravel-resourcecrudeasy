@@ -182,7 +182,18 @@ class ResourceCrudEasyCommand extends GeneratorCommand
             |---------------------------------------------------
             */
             '/\{{ class_route_slug }}/' => $this->str->snake()->slug()->plural(),
+            
+            /*
+            |---------------------------------------------------
+            | colocar ou não para cada pergunta um comment
+            |---------------------------------------------------
+            */
+            '/\{{ comment_seeder }}/' => $this->createSeeder ? '' : '// ',
+            '/\{{ comment_factory }}/' => $this->createFactory ? '' : '// ',
+            
         ];
+        
+        
 
         return preg_replace(
             array_keys($params),

@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 beforeEach(function () {
     // Se usar Seeder
-    // $this->seed(\Database\Seeders\{{ class }}Seeder::class);
+    {{ comment_seeder }}$this->seed(\Database\Seeders\{{ class }}Seeder::class);
 
     // se usar factory
-    // {{ class }}::factory()->create();
+    {{ comment_factory }}{{ class }}::factory()->create();
 
     // atributo para reuso
     $this->model = {{ class }}::inRandomOrder()->first();
