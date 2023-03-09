@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Validator;
 use Exception;
 use Gsferro\ResponseView\Traits\ResponseView;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
+use Throwable;
 
 /**
  * Reuso generico as operações de crud e response ajax
@@ -35,15 +38,35 @@ use Illuminate\Support\Str;
 trait ResourceCrudEasy
 {
     use ResponseJSON, ResponseView;
+    use ResouceCrudViews;
 
     public Model $model;
-    protected string $viewIndex;
-    protected string $viewCreate;
-    protected string $viewEdit;
-    protected string $viewForm;
-    protected bool   $useBreadcrumb          = true;
-    protected bool   $redirectStoreYourserf  = false;
-    protected bool   $redirectUpdateYourserf = false;
+
+    /*
+    |---------------------------------------------------
+    | Use breadcrumb
+    |---------------------------------------------------
+    */
+    protected bool $useBreadcrumb = true;
+
+    /*
+    |---------------------------------------------------
+    | Set type arquiture
+    |---------------------------------------------------
+    */
+    public bool $isSPA = false;
+
+    /*
+    |---------------------------------------------------
+    | redirect from actoin
+    |---------------------------------------------------
+    |
+    | TODO revisar redirect
+    |
+    */
+//    protected string $redirectStore  = 'index';
+//    protected string $redirectUpdate = 'index';
+
     /*
     |---------------------------------------------------
     | Pegar as view pela convenção do nome da Entidade
@@ -54,62 +77,6 @@ trait ResourceCrudEasy
     | Pasta (resources > views) -> usuarios_autorizados (snake_case)
     |
     */
-
-    /**
-     * Verifica se foi setado um caminho para a view index ou retorna via conveção
-     *
-     * @return string
-     */
-    public function getViewIndex()
-    {
-        if (!empty($this->viewIndex)) {
-            return $this->viewIndex;
-        }
-
-        return $this->getPathView('index');
-    }
-    
-    public function getViewCreate()
-    {
-        if (!empty($this->viewCreate)) {
-            return $this->viewCreate;
-        }
-
-        return $this->getPathView('create');
-    }
-    public function getViewEdit()
-    {
-        if (!empty($this->viewEdit)) {
-            return $this->viewEdit;
-        }
-
-        return $this->getPathView('edit');
-    }
-
-    /**
-     * Verifica se foi setado um caminho para a view form ou retorna via conveção
-     *
-     * @return string
-     */
-    public function getViewForm()
-    {
-        if (!empty($this->viewForm)) {
-            return $this->viewForm;
-        }
-
-        return $this->getPathView('form');
-    }
-
-    /**
-     * retorna a caminho da view de acordo com a Entidade (model)
-     *
-     * @param $view
-     * @return string
-     */
-    private function getPathView($view)
-    {
-        return Str::of($this->getEntidade())->snake() . ".{$view}";
-    }
 
     /**
      * Pega o nome da Entidade (model)
@@ -126,9 +93,10 @@ trait ResourceCrudEasy
 
     /*
     |---------------------------------------------------
-    | Return views
+    | Metodos Resource
     |---------------------------------------------------
     */
+
     /**
      * Display a listing of the resource.
      *
@@ -141,36 +109,6 @@ trait ResourceCrudEasy
         }
 
         return $this->view($this->getViewIndex());
-    }
-
-    public function filtro($request)
-    {
-        $dados = $request->except('_token');
-        // limpa os nulos
-        foreach ($dados as $index => $dado) {
-            if (is_null($dado)) {
-                unset($dados[ $index ]);
-            }
-        }
-
-        // processo de datatable
-        session()->put($this->sessionName, $dados);
-
-        $this->addData('form', $dados);
-        return $this->view($this->getViewIndex());
-    }
-
-    public function grid()
-    {
-        // se tiver filtro repassa
-        if (!empty(session($this->sessionName))) {
-            return Laratables::recordsOf($this->model, function ($q) {
-                return $q->where(session($this->sessionName));
-            });
-        }
-
-        // se não, chama direto
-        return Laratables::recordsOf($this->model);
     }
 
     /**
@@ -236,12 +174,7 @@ trait ResourceCrudEasy
         $this->addData("relations", $this->model->viewShowRelations($this->modelFind($uuid)));
         return $this->view('modais.show');
     }
-    /////////////////////////////////////////////////////////////////////////////////////////////////
-    /*
-    |---------------------------------------------------
-    | Operações
-    |---------------------------------------------------
-    */
+
     /**
      * Store a newly created resource in storage.
      *
@@ -250,43 +183,59 @@ trait ResourceCrudEasy
      */
     public function store(Request $request)
     {
-        // encapsulamento do request com sanitize
-        $dados = sanitize($request->all());
+        $route = $this->getRouteRedirectStore();
+        $dados = $request->all();
+        try {
+            $result = DB::transaction(function () use ($request, $dados) {
+                $request->validate($this->rules()[ 'store' ]);
 
-        // validação backend se for necessário
-        if (isset($this->model->rules[ "store" ])) {
-            $validator = Validator::make($dados, $this->model->rules[ "store" ] ?? []);
-            if ($validator->fails()) {
-                return $this->validateFails(__('messages.56'), $validator->messages()->toArray());
-            }
+                $result = $this->model->create($dados);
+                // TODO insere in relation
+
+                return $result;
+            });
+
+            return $this->isSPA
+                ? $this->success($result)
+                : redirect()->route($route); // , $this->redirectStore == 'edit' ? ['resource_crud' => $result->uuid] : []
+
+        } catch (ValidationException $validator) {
+            $exception = [
+                "error"   => $validator->errors(),
+                "code"    => 422,
+                "type"    => "ValidationException",
+                "message" => $validator->getMessage(),
+            ];
+        } /*catch (ServiceUnavailableHttpException $e) {
+            $exception = [
+                "code"    => 503,
+                "message" => $e->getMessage(),
+                "type"    => "ServiceUnavailableHttpException",
+            ];
+        }*/ catch (Throwable $throwable) {
+            $exception = [
+                "error"   => $throwable->errors(),
+                "code"    => 500,
+                "type"    => "Throwable",
+                "message" => config('app.debug', true)
+                                ? $throwable->getMessage()
+                                : __("Ops... Erro Inesperado!"),
+            ];
         }
 
-        //////////////////////////////////////////////////////////////////////////////////
-        if (!empty($request->file('foto'))) {
-            try {
-                $dados[ "foto" ] = uploadFoto($request);
-            } catch (Exception $e) {
-                return $this->error($e->getMessage());
-            }
-        } else {
-            unset($dados[ "foto" ]);
-        }
-        //////////////////////////////////////////////////////////////////////////////////
+        /*
+        |---------------------------------------------------
+        | Look up Tables Principles
+        |---------------------------------------------------
+        |
+        | 1- Caso seja view
+        |   1.1 - verificar se tem que retornar para a mesma tela
+        |
+        */
 
-        //Inicia o Database Transaction
-        DB::beginTransaction();
-        $result = $this->model->create($dados);
-        //dd($dados, $result);
-        if (!$result) {
-            DB::rollBack();
-            logCreate("Cadastrar dados na model " . get_class($this->model), "F");
-            $this->codeError(400);
-            return $this->error(__('messages.45'));
-        }
-
-        DB::commit();
-        logCreate("Cadastrar dados na model " . get_class($this->model));
-        return $this->success($result->uuid, __('messages.41'));
+        return $this->isSPA
+            ? $this->error($exception, $dados, $exception['code'])
+            : redirect()->route($this->getRouteName('index'))->withInput()->withErrors($exception['error']);
     }
 
     /**
@@ -343,6 +292,17 @@ trait ResourceCrudEasy
         return $this->success($find, __('messages.42'));
     }
 
+    public function destroy($find)
+    {
+        // TODO implemented
+    }
+
+    /*
+    |---------------------------------------------------
+    | Metodos Reuso
+    |---------------------------------------------------
+    */
+
     /**
      * Verifica os dados que vieram do form com os dados do registro
      * retorna os valores que foram alterados
@@ -385,5 +345,69 @@ trait ResourceCrudEasy
     public function hasBreadcrumb(): bool
     {
         return $this->useBreadcrumb;
+    }
+
+    /**
+     * TODO package autovalidate
+    */
+    public function rules(): array
+    {
+        return $this->model::$rules;
+    }
+
+    private function getRouteName(string $method): string
+    {
+        return Str::of($this->getEntidade())->snake()->slug(). ".{$method}";
+    }
+
+    /*
+    |---------------------------------------------------
+    | Analisar
+    |---------------------------------------------------
+    */
+    /*public function filtro($request)
+    {
+        $dados = $request->except('_token');
+        // limpa os nulos
+        foreach ($dados as $index => $dado) {
+            if (is_null($dado)) {
+                unset($dados[ $index ]);
+            }
+        }
+
+        // processo de datatable
+        session()->put($this->sessionName, $dados);
+
+        $this->addData('form', $dados);
+        return $this->view($this->getViewIndex());
+    }
+
+    public function grid()
+    {
+        // se tiver filtro repassa
+        if (!empty(session($this->sessionName))) {
+            return Laratables::recordsOf($this->model, function ($q) {
+                return $q->where(session($this->sessionName));
+            });
+        }
+
+        // se não, chama direto
+        return Laratables::recordsOf($this->model);
+    }*/
+    /**
+     * @return string
+     */
+    public function getRouteRedirectStore(): string
+    {
+        // TODO revisar redirect
+        return route($this->getRouteName('index')); //  ?? $this->redirectStore
+    }
+    /**
+     * @return string
+     */
+    public function getRouteRedirectUpdate(): string
+    {
+        // TODO revisar redirect
+        return route($this->getRouteName('index')); //  ?? $this->redirectUpdate
     }
 }

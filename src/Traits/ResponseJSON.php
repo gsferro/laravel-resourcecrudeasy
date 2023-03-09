@@ -11,15 +11,15 @@ namespace Gsferro\ResourceCrudEasy\Traits;
  */
 trait ResponseJSON
 {
-    protected $erro_code = 404;
-    protected $msgTrue   = "Realizado com sucesso";
+    protected $code    = 404;
+    protected $msgTrue = "Realizado com sucesso";
     protected $msgFalse  = "Falhou ao realizar";
     protected $result    = [];
 
     // herdando de ResponseJSON caso queira mudar o code response
     protected function codeError($code)
     {
-        $this->erro_code = $code;
+        $this->code = $code;
     }
     // herdando de ResponseJSON caso queira mudar o code response
     protected function addResult($result)
@@ -32,17 +32,17 @@ trait ResponseJSON
      *
      * @param $error
      * @param array $data
-     * @param int $_code
+     * @param int $code
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function error($error = null, array $data = [], $_code = null)
+    protected function error($error = [], array $data = [], $code = null)
     {
         // caso queira passar direto ou pegar default
-        $code = $_code ? : $this->erro_code;
+        $code = $code ?? $this->code;
 
-        $res = [
+        $res = $error + [
             'success' => false,
-            'message' => $error ?? $this->msgFalse,
+            'message' => $this->msgFalse,
             'code'    => $code
         ];
 
@@ -70,7 +70,6 @@ trait ResponseJSON
      */
     protected function success($result, $message = null)
     {
-        
         $res = [
             'success' => true,
             'data'    => $result,
@@ -79,7 +78,7 @@ trait ResponseJSON
 
         // TODO analise de como enviar o feedback
         session()->flash('msgSucesso', $res["message"]);
-        
+
         return $res;
     }
     ///////////////////////////////////////////////// resposta
@@ -93,10 +92,8 @@ trait ResponseJSON
      */
     protected function verify($operation, $msgTrue = null, $msgFalse = null)
     {
-        if ($operation) {
-            return $this->success($this->result, $msgTrue);
-        } else {
-            return $this->error($msgFalse, $this->result, $this->erro_code);
-        }
+        return $operation 
+            ? $this->success($this->result, $msgTrue) 
+            : $this->error($msgFalse, $this->result, $this->code);
     }
 }

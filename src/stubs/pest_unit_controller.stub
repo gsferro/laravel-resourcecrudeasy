@@ -1,11 +1,12 @@
 <?php
 
+use App\Models\{{ class }};
 use Illuminate\Support\Facades\Route;
 
 beforeEach(function () {
     $routesByName    = Route::getRoutes()->getRoutesByName();
     $this->routes    = [];
-    $this->routeName = '{{ class_route_slug }}';
+    $this->routeName = '{{ class_route_slug }}.';
 
     foreach ($routesByName as $name => $route) {
 
@@ -43,37 +44,44 @@ test('The Actions routes handled Resource Controller', function ()
     }
 
     $methods = [
-        'index' => 'GET',
-        'create' => 'GET',
-        'store' => 'POST',
-        'show' => 'GET',
-        'edit' => 'GET',
-        'update' => 'PUT',
+        'index'   => 'GET',
+        'create'  => 'GET',
+        'store'   => 'POST',
+        'show'    => 'GET',
+        'edit'    => 'GET',
+        'update'  => 'PUT',
         'destroy' => 'DELETE',
     ];
 
-    foreach ($methods as $method => $veb) {
-        $name  = "{$this->routeName}.{$method}";
-        $route = $this->routes[ $name ];
-
-        if (!isset($route)) {
-            $this->markTestSkipped("Route name [ {$name} ] not implemented");
-        }
+    foreach ($this->routes as $route) {
+        $method = str_replace($this->routeName, '', $route->action["as"]);
 
         // exists
         expect($route)->not()->toBeEmpty();
 
         // method use verb
-        expect($route->methods)->toBeArray()->toContain($veb);
+        expect($route->methods)->toBeArray()->toContain($methods[$method]);
 
         // alias use method in controller
         expect($route->action['controller'])
             ->not()->toBeEmpty()
             ->toEqual("{$this->controllerName}@{$method}");
+
+        expect(method_exists($this->controller, $method))->toBeTrue();
     }
 });
 
 test('Attribute model instanced is {{ class }}', function () {
     expect($this->controller->model)
-        ->toBeInstanceOf(\App\Models\{{ class }}::class);
+        ->toBeInstanceOf({{ class }}::class);
+});
+
+/**
+ * TODO package autovalidate
+*/
+test('Rules use in controller is a configured in model', function () {
+    expect($this->controller->rules())
+        ->toBeArray()
+        ->toEqual({{ class }}::$rules)
+    ;
 });

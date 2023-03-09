@@ -213,7 +213,8 @@ class ResourceCrudEasyCommand extends GeneratorCommand
             | Especifico Route
             |---------------------------------------------------
             */
-            '/\{{ class_route_slug }}/' => $this->str->snake()->slug()->plural(),
+            '/\{{ class_route_slug }}/' => $this->str->snake()->slug(),
+            '/\{{ class_route_slug_plural }}/' => $this->str->snake()->slug()->plural(),
 
             /*
             |---------------------------------------------------

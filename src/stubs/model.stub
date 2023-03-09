@@ -51,15 +51,21 @@ class {{ class }} extends AppBaseModel
     |---------------------------------------------------
     | Rules from Validate
     |---------------------------------------------------
+    |
+    | TODO package autovalidate
+    |
     */
 
     /**
      * Validation rules
-     *
-     * @var array
      */
-    public static $rules = [
+    public static array $rules = [
+        'store' => [
 
+        ],
+        'update' => [
+
+        ],
     ];
 
     /*

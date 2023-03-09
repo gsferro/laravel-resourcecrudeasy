@@ -63,8 +63,13 @@ class {{ class }} extends AppBaseModel
      *
      * @var array
      */
-    public static $rules = [
+    public static array $rules = [
+        'store' => [
 
+        ],
+        'update' => [
+
+        ],
     ];
 
     /*
