@@ -12,12 +12,12 @@ use Illuminate\Support\Str;
 
 class ResourceCrudEasyCommand extends GeneratorCommand
 {
-    private string $entite;
+    private string     $entite;
     private Stringable $str;
-    private bool   $createFactory  = true;
-    private bool   $createSeeder   = false;
-    private bool   $createMigrate  = true;
-    //    private bool   $createService   = false;
+    private bool       $useFactory = true;
+    private bool       $useSeeder  = false;
+    private bool       $useMigrate = true;
+//    private bool   $useService   = false;
 //    private bool   $createDash   = false;
 //    private bool   $createModal  = false;
 //    private bool   $createImport = false;
@@ -55,6 +55,27 @@ class ResourceCrudEasyCommand extends GeneratorCommand
         ];
     }
 
+    private function messageWellcome()
+    {
+        $this->br();
+        $this->comment("  _____                                                         _____                      _ 
+ |  __ \                                                       / ____|                    | |
+ | |__) |   ___   ___    ___    _   _   _ __    ___    ___    | |       _ __   _   _    __| |
+ |  _  /   / _ \ / __|  / _ \  | | | | | '__|  / __|  / _ \   | |      | '__| | | | |  / _` |
+ | | \ \  |  __/ \__ \ | (_) | | |_| | | |    | (__  |  __/   | |____  | |    | |_| | | (_| |
+ |_|  \_\  \___| |___/  \___/   \__,_| |_|     \___|  \___|    \_____| |_|     \__,_|  \__,_|
+                                                                                             
+                                                                                             ");
+        /*$this->comment(" _____                                                         _____                      _     ______                       
+ |  __ \                                                       / ____|                    | |   |  ____|                      
+ | |__) |   ___   ___    ___    _   _   _ __    ___    ___    | |       _ __   _   _    __| |   | |__      __ _   ___   _   _ 
+ |  _  /   / _ \ / __|  / _ \  | | | | | '__|  / __|  / _ \   | |      | '__| | | | |  / _` |   |  __|    / _` | / __| | | | |
+ | | \ \  |  __/ \__ \ | (_) | | |_| | | |    | (__  |  __/   | |____  | |    | |_| | | (_| |   | |____  | (_| | \__ \ | |_| |
+ |_|  \_\  \___| |___/  \___/   \__,_| |_|     \___|  \___|    \_____| |_|     \__,_|  \__,_|   |______|  \__,_| |___/  \__, |
+                                                                                                                         __/ |
+                                                                                                                        |___/ ");*/
+    }
+    
     /**
      * Execute the console command.
      *
@@ -65,10 +86,13 @@ class ResourceCrudEasyCommand extends GeneratorCommand
         $this->entite = ucfirst($this->argument('entite'));
         $this->str    = Str::of($this->entite);
 
-        $this->br();
-        $this->comment("Preper create Entite [ {$this->entite} ]");
-        $this->br();
-
+        /*
+        |---------------------------------------------------
+        | Wellcome package
+        |---------------------------------------------------
+        */
+        $this->messageWellcome();
+        
         /*
         |---------------------------------------------------
         | Questions
@@ -105,26 +129,33 @@ class ResourceCrudEasyCommand extends GeneratorCommand
             | Criar Models
             |---------------------------------------------------
             */
-            $this->createModel();
-            $this->createFactory();
-            $this->createSeeder();
-            $this->createMigrate();
+            $this->generateModel();
+            $this->generateFactory();
+            $this->generateSeeder();
+            $this->generateMigrate();
 
             /*
             |---------------------------------------------------
             | Criar controller
             |---------------------------------------------------
             */
-            $this->createController();
+            $this->generateController();
+            
+            /*
+            |---------------------------------------------------
+            | Gerar Views
+            |---------------------------------------------------
+            */
+            $this->generateView();
 
             /*
             |---------------------------------------------------
             | Criar Tests
             |---------------------------------------------------
             */
-            $this->createPestUnitModel();
-            $this->createPestUnitController();
-            $this->createPestFeatureController();
+            $this->generatePestUnitModel();
+            $this->generatePestUnitController();
+            $this->generatePestFeatureController();
 
             /*
             |---------------------------------------------------
@@ -140,9 +171,9 @@ class ResourceCrudEasyCommand extends GeneratorCommand
 
     private function verifyParams()
     {
-        $this->createFactory = (bool)($this->option('factory') ? : $this->confirm('Create Factory?', true));
-        $this->createSeeder  = (bool)($this->option('seeder')  ? : $this->confirm('Create Seeder?', !$this->createFactory));
-        $this->createMigrate = (bool)($this->option('migrate') ? : $this->confirm('Create Migrate?', true));
+        $this->useFactory = (bool)($this->option('factory') ? : $this->confirm('Create Factory?', true));
+        $this->useSeeder  = (bool)($this->option('seeder')  ? : $this->confirm('Create Seeder?', !$this->useFactory));
+        $this->useMigrate = (bool)($this->option('migrate') ? : $this->confirm('Create Migrate?', true));
 //        $this->createDash   = (bool) ($this->option('dashboard') ?: $this->confirm('Create Dashboard?', true));
 //        $this->createImport = (bool) ($this->option('import')    ?: $this->confirm('Create Import Excel?', true));
 //        $this->createModal  = (bool) ($this->option('modal')     ?: $this->confirm('Create Modal?', false));
@@ -183,18 +214,16 @@ class ResourceCrudEasyCommand extends GeneratorCommand
             |---------------------------------------------------
             */
             '/\{{ class_route_slug }}/' => $this->str->snake()->slug()->plural(),
-            
+
             /*
             |---------------------------------------------------
             | colocar ou não para cada pergunta um comment
             |---------------------------------------------------
             */
-            '/\{{ comment_seeder }}/' => $this->createSeeder ? '' : '// ',
-            '/\{{ comment_factory }}/' => $this->createFactory ? '' : '// ',
-            
+            '/\{{ comment_seeder }}/' => $this->useSeeder ? '' : '// ',
+            '/\{{ comment_factory }}/' => $this->useFactory ? '' : '// ',
+
         ];
-        
-        
 
         return preg_replace(
             array_keys($params),
@@ -213,18 +242,16 @@ class ResourceCrudEasyCommand extends GeneratorCommand
     | Police (?)
     |
     */
-    private function createModel(): void
+    private function generateModel(): void
     {
-        $path     = 'app\Models\\' . $this->entite . '.php';
-        $stub     = $this->createFactory ? 'model_factory' : 'model';
-        $contents = $this->buildClassEntite($this->entite, $stub);
-
-        $this->put($path, $contents, 'Model created:');
+        $path = 'app\Models\\' . $this->entite . '.php';
+        $stub = $this->useFactory ? 'model_factory' : 'model';
+        $this->generate($path, $stub, 'Model');
     }
 
-    private function createFactory(): void
+    private function generateFactory(): void
     {
-        if (!$this->createFactory ) {
+        if (!$this->useFactory ) {
             return;
         }
 
@@ -238,32 +265,32 @@ class ResourceCrudEasyCommand extends GeneratorCommand
             ]);
         }
 
+        // TODO by datatable
+        // $this->generate($path, 'factory', 'Factory');
+
         $this->message($path, 'Factory created:');
     }
 
-    private function createSeeder(): void
+    private function generateSeeder(): void
     {
-        if (!$this->createSeeder ) {
+        if (!$this->useSeeder ) {
             return;
         }
 
-        $path     = 'database\seeders\\' . $this->entite . 'Seeder.php';
-        $stub     = 'seeder';
-        $contents = $this->buildClassEntite($this->entite, $stub);
-
-        $this->put($path, $contents, 'Seeder created:');
+        $path = 'database\seeders\\' . $this->entite . 'Seeder.php';
+        $this->generate($path, 'seeder', 'Seeder');
     }
 
-    private function createMigrate(): void
+    private function generateMigrate(): void
     {
-        if (!$this->createMigrate ) {
+        if (!$this->useMigrate) {
             return;
         }
 
         // nome da table
-        $arquivo = $this->str->snake().'_table.php';
+        $arquivo = $this->str->snake() . '_table.php';
         // sempre fazer override
-        $override      = true;
+        $override = true;
         // caso exista, pega o nome
         $existsMigrate = null;
         // lista todos as migrates
@@ -286,13 +313,11 @@ class ResourceCrudEasyCommand extends GeneratorCommand
         $migrations->close();
         // o nome sera ou o atual ou novo
         $migrateName = $existsMigrate ?? now()->format('Y_m_d_his') . '_' . $arquivo;
-        $path        = 'database\migrations\\'.$migrateName;
+        $path        = 'database\migrations\\' . $migrateName;
 
         // caso tenha criado o seeder, coloca para executar ao rodar a migrate
-        $stub        = $this->createSeeder ? 'migrate_seeder' : 'migrate';
-        $contents    = $this->buildClassEntite($this->entite, $stub);
-
-        $this->put($path, $contents, 'Migration created:');
+        $stub = $this->useSeeder ? 'migrate_seeder' : 'migrate';
+        $this->generate($path, $stub, 'Migration');
     }
 
     /*
@@ -300,12 +325,20 @@ class ResourceCrudEasyCommand extends GeneratorCommand
     | Criar Controller
     |---------------------------------------------------
     */
-    private function createController(): void
+    private function generateController(): void
     {
-        $path     = 'app\Http\Controllers\\' . $this->entite . 'Controller.php';
-        $contents = $this->buildClassEntite($this->entite, 'controller');
+        $path = 'app\Http\Controllers\\' . $this->entite . 'Controller.php';
+        $this->generate($path, 'controller', 'Controllers');
+    }
 
-        $this->put($path, $contents, 'Controller created:');
+    /*
+    |---------------------------------------------------
+    | Gerar Views
+    |---------------------------------------------------
+    */
+    private function generateView()
+    {
+        
     }
 
     /*
@@ -323,31 +356,22 @@ class ResourceCrudEasyCommand extends GeneratorCommand
     | Feature from Controller and Services
     |
     */
-    private function createPestUnitModel(): void
+    private function generatePestUnitModel(): void
     {
         $path     = 'tests\Unit\Models\\' . $this->entite . 'Test.php';
-        $contents = $this->buildClassEntite($this->entite, 'pest_unit_model');
-
-        $this->makeDirectory($path);
-        $this->put($path, $contents, 'PestTest Unit Models created:');
+        $this->generate($path, 'pest_unit_model', 'PestTest Unit Models');
     }
 
-    private function createPestUnitController(): void
+    private function generatePestUnitController(): void
     {
-        $path     = 'tests\Unit\Controllers\\' . $this->entite . 'ControllerTest.php';
-        $contents = $this->buildClassEntite($this->entite, 'pest_unit_controller');
-
-        $this->makeDirectory($path);
-        $this->put($path, $contents, 'PestTest Unit Controllers created:');
+        $path = 'tests\Unit\Controllers\\' . $this->entite . 'ControllerTest.php';
+        $this->generate($path, 'pest_unit_controller', 'PestTest Unit Controllers');
     }
 
-    private function createPestFeatureController(): void
+    private function generatePestFeatureController(): void
     {
-        $path     = 'tests\Feature\Controllers\\' . $this->entite . 'ControllerTest.php';
-        $contents = $this->buildClassEntite($this->entite, 'pest_feature_controller');
-
-        $this->makeDirectory($path);
-        $this->put($path, $contents, 'PestTest Feature Controllers created:');
+        $path = 'tests\Feature\Controllers\\' . $this->entite . 'ControllerTest.php';
+        $this->generate($path, 'pest_feature_controller', 'PestTest Feature Controllers');
     }
 
     /*
@@ -376,9 +400,17 @@ class ResourceCrudEasyCommand extends GeneratorCommand
     | Reuso
     |---------------------------------------------------
     */
-    protected function buildClassEntite($name, string $type)
+    private function generate(string $path, string $stub, string $message)
     {
-        $stub = $this->files->get($this->getStubEntite($type));
+        $contents = $this->buildClassEntite($this->entite, $stub);
+
+        $this->makeDirectory($path);
+        $this->put($path, $contents, $message);
+    }
+
+    protected function buildClassEntite($name, string $stubType)
+    {
+        $stub = $this->files->get($this->getStubEntite($stubType));
 
         return $this->replaceClass($stub, $name);
     }
@@ -397,7 +429,7 @@ class ResourceCrudEasyCommand extends GeneratorCommand
 
     private function message($path, string $message)
     {
-        $this->comment($message);
+        $this->comment(">> $message created:");
         $this->comment("$path");
         $this->br();
     }
