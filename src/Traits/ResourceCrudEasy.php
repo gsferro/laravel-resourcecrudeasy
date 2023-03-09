@@ -38,6 +38,8 @@ trait ResourceCrudEasy
 
     protected Model  $model;
     protected string $viewIndex;
+    protected string $viewCreate;
+    protected string $viewEdit;
     protected string $viewForm;
     protected bool   $useBreadcrumb          = true;
     protected bool   $redirectStoreYourserf  = false;
@@ -65,6 +67,23 @@ trait ResourceCrudEasy
         }
 
         return $this->getPathView('index');
+    }
+    
+    public function getViewCreate()
+    {
+        if (!empty($this->viewCreate)) {
+            return $this->viewCreate;
+        }
+
+        return $this->getPathView('create');
+    }
+    public function getViewEdit()
+    {
+        if (!empty($this->viewEdit)) {
+            return $this->viewEdit;
+        }
+
+        return $this->getPathView('edit');
     }
 
     /**
@@ -164,7 +183,7 @@ trait ResourceCrudEasy
         if ($this->hasBreadcrumb()) {
             $this->addBreadcrumb(__('Novo registro'));
         }
-        return $this->view($this->getViewForm());
+        return $this->view($this->getViewCreate());
     }
 
     /**
@@ -181,7 +200,7 @@ trait ResourceCrudEasy
         if ($this->hasBreadcrumb()) {
             $this->addBreadcrumb(__('Editar'));
         }
-        return $this->view($this->getViewForm());
+        return $this->view($this->getViewEdit());
     }
 
     /**

@@ -58,24 +58,24 @@ class ResourceCrudEasyCommand extends GeneratorCommand
     private function messageWellcome()
     {
         $this->br();
-        $this->comment("  _____                                                         _____                      _ 
+        $this->comment("  _____                                                         _____                      _
  |  __ \                                                       / ____|                    | |
  | |__) |   ___   ___    ___    _   _   _ __    ___    ___    | |       _ __   _   _    __| |
  |  _  /   / _ \ / __|  / _ \  | | | | | '__|  / __|  / _ \   | |      | '__| | | | |  / _` |
  | | \ \  |  __/ \__ \ | (_) | | |_| | | |    | (__  |  __/   | |____  | |    | |_| | | (_| |
  |_|  \_\  \___| |___/  \___/   \__,_| |_|     \___|  \___|    \_____| |_|     \__,_|  \__,_|
-                                                                                             
+
                                                                                              ");
-        /*$this->comment(" _____                                                         _____                      _     ______                       
- |  __ \                                                       / ____|                    | |   |  ____|                      
- | |__) |   ___   ___    ___    _   _   _ __    ___    ___    | |       _ __   _   _    __| |   | |__      __ _   ___   _   _ 
+        /*$this->comment(" _____                                                         _____                      _     ______
+ |  __ \                                                       / ____|                    | |   |  ____|
+ | |__) |   ___   ___    ___    _   _   _ __    ___    ___    | |       _ __   _   _    __| |   | |__      __ _   ___   _   _
  |  _  /   / _ \ / __|  / _ \  | | | | | '__|  / __|  / _ \   | |      | '__| | | | |  / _` |   |  __|    / _` | / __| | | | |
  | | \ \  |  __/ \__ \ | (_) | | |_| | | |    | (__  |  __/   | |____  | |    | |_| | | (_| |   | |____  | (_| | \__ \ | |_| |
  |_|  \_\  \___| |___/  \___/   \__,_| |_|     \___|  \___|    \_____| |_|     \__,_|  \__,_|   |______|  \__,_| |___/  \__, |
                                                                                                                          __/ |
                                                                                                                         |___/ ");*/
     }
-    
+
     /**
      * Execute the console command.
      *
@@ -92,7 +92,7 @@ class ResourceCrudEasyCommand extends GeneratorCommand
         |---------------------------------------------------
         */
         $this->messageWellcome();
-        
+
         /*
         |---------------------------------------------------
         | Questions
@@ -140,13 +140,13 @@ class ResourceCrudEasyCommand extends GeneratorCommand
             |---------------------------------------------------
             */
             $this->generateController();
-            
+
             /*
             |---------------------------------------------------
             | Gerar Views
             |---------------------------------------------------
             */
-            $this->generateView();
+            $this->generateViews();
 
             /*
             |---------------------------------------------------
@@ -336,9 +336,24 @@ class ResourceCrudEasyCommand extends GeneratorCommand
     | Gerar Views
     |---------------------------------------------------
     */
-    private function generateView()
+    private function generateViews()
     {
-        
+        // TODO by database
+        $pathBase = 'resources\views\\';
+
+        $views = [
+            'index',
+            'form',
+            'create',
+            'edit',
+            // 'filter',
+            // 'table',
+        ];
+
+        foreach ($views as $view) {
+            $index = $pathBase.$this->str->snake() . "\\$view.blade.php";
+            $this->generate($index, "view_{$view}", 'View '. ucfirst($view));    
+        }
     }
 
     /*

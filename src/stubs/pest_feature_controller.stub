@@ -29,7 +29,7 @@ test('Create return view configured', function () {
     // status 200
     $resp->assertOk();
     // view
-    $resp->assertViewIs($this->controller->getViewForm());
+    $resp->assertViewIs($this->controller->getViewCreate());
 });
 
 test('Edit return view configured', function () {
@@ -44,7 +44,7 @@ test('Edit return view configured', function () {
     // status 200
     $resp->assertOk();
     // view
-    $resp->assertViewIs($this->controller->getViewForm());
+    $resp->assertViewIs($this->controller->getViewEdit());
 });
 
 test('If model use uuid not find with pk', function () {
