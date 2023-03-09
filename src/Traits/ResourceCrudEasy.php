@@ -36,7 +36,7 @@ trait ResourceCrudEasy
 {
     use ResponseJSON, ResponseView;
 
-    protected Model  $model;
+    public Model $model;
     protected string $viewIndex;
     protected string $viewCreate;
     protected string $viewEdit;

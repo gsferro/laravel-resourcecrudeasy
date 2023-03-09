@@ -11,9 +11,7 @@ class {{ class }}Controller extends Controller
 
     public function __construct({{ class }} $model)
     {
-        $this->model       = $model;
-        // $this->viewIndex = '{{ class_folder }}.index';
-        // $this->viewForm  = '{{ class_folder }}.form';
+        $this->model = $model;
 
         // default true
         if ($this->hasBreadcrumb()) {

@@ -15,7 +15,9 @@ beforeEach(function () {
         $this->routes[$name] = $route;
     }
 
+    // atributo para reuso
     $this->controllerName = 'App\Http\Controllers\{{ class }}Controller';
+    $this->controller     = app()->make($this->controllerName);
 });
 
 test('The Routes Resource exists', function ()
@@ -69,4 +71,9 @@ test('The Actions routes handled Resource Controller', function ()
             ->not()->toBeEmpty()
             ->toEqual("{$this->controllerName}@{$method}");
     }
+});
+
+test('Attribute model instanced is {{ class }}', function () {
+    expect($this->controller->model)
+        ->toBeInstanceOf(\App\Models\{{ class }}::class);
 });
