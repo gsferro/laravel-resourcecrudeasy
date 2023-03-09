@@ -37,7 +37,7 @@ test('The Controller is config from package ResourceCrudEasy', function (){
 test('The Actions routes handled Resource Controller', function ()
 {
     if (empty($this->routes)) {
-        $this->markAsRisky("Routes not implemented");
+        $this->markTestSkipped('Routes not implemented');
     }
 
     $methods = [
@@ -55,7 +55,7 @@ test('The Actions routes handled Resource Controller', function ()
         $route = $this->routes[ $name ];
 
         if (!isset($route)) {
-            $this->markAsRisky("Route name [ {$name} ] not implemented");
+            $this->markTestSkipped("Route name [ {$name} ] not implemented");
         }
 
         // exists

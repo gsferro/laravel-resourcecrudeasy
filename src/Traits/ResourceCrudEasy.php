@@ -2,7 +2,6 @@
 
 namespace Gsferro\ResourceCrudEasy\Traits;
 
-use Freshbitsweb\Laratables\Laratables;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +9,7 @@ use DatatablesEasy\Helpers\DatatablesEasy;
 use Illuminate\Support\Facades\Validator;
 use Exception;
 use Gsferro\ResponseView\Traits\ResponseView;
+use Illuminate\Support\Str;
 
 /**
  * Reuso generico as operações de crud e response ajax
@@ -35,13 +35,13 @@ use Gsferro\ResponseView\Traits\ResponseView;
 trait ResourceCrudEasy
 {
     use ResponseJSON, ResponseView;
-    protected $model;
-    protected $sessionName;
-    protected $viewIndex;
-    protected $viewForm;
-    protected $addBreadcrumb          = true;
-    protected $redirectStoreYourserf  = false;
-    protected $redirectUpdateYourserf = false;
+
+    protected Model  $model;
+    protected string $viewIndex;
+    protected string $viewForm;
+    protected bool   $useBreadcrumb          = true;
+    protected bool   $redirectStoreYourserf  = false;
+    protected bool   $redirectUpdateYourserf = false;
     /*
     |---------------------------------------------------
     | Pegar as view pela convenção do nome da Entidade
@@ -89,7 +89,7 @@ trait ResourceCrudEasy
      */
     private function getPathView($view)
     {
-        return snake_case($this->getEntidade(), '_') . ".{$view}";
+        return Str::of($this->getEntidade())->snake() . ".{$view}";
     }
 
     /**
@@ -97,12 +97,12 @@ trait ResourceCrudEasy
      *
      * @return string|string[]
      */
-    private function getEntidade()
+    private function getEntidade(): string
     {
         if ($this->model == "App\User")
             return "User";
 
-        return str_replace("App\Model\\", "", get_class($this->model));
+        return str_replace("App\Models\\", "", get_class($this->model));
     }
 
     /*
@@ -115,14 +115,12 @@ trait ResourceCrudEasy
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Request $request)
+    public function index()
     {
-        //        if (strtolower($request->method()) == "ajax") return $this->grid();
-        if (strtolower($request->method()) == "post") {
-            return $this->filter($request);
+        if ($this->hasBreadcrumb()) {
+            $this->addBreadcrumb(__('Listagem'));
         }
 
-        //        dump($this->sessionName);
         return $this->view($this->getViewIndex());
     }
 
@@ -163,9 +161,8 @@ trait ResourceCrudEasy
      */
     public function create()
     {
-        if ($this->addBreadcrumb) {
-            $this->setBreadcumbEntidade();
-            $this->addBreadcrumb('Novo registro');
+        if ($this->hasBreadcrumb()) {
+            $this->addBreadcrumb(__('Novo registro'));
         }
         return $this->view($this->getViewForm());
     }
@@ -181,21 +178,10 @@ trait ResourceCrudEasy
     {
         $this->addData('model', $this->modelFind($find));
 
-        $this->setBreadcumbEntidade();
-        $this->addBreadcrumb('Editar');
-        return $this->view($this->getViewForm());
-    }
-
-    /*
-    |---------------------------------------------------
-    | Caso não sete no controller um breadcrumb
-    |---------------------------------------------------
-    */
-    private function setBreadcumbEntidade()
-    {
-        if (!array_key_exists('breadcrumb', $this->getMergeData())) {
-            $this->addBreadcrumb($this->getMergeData('titulo'));
+        if ($this->hasBreadcrumb()) {
+            $this->addBreadcrumb(__('Editar'));
         }
+        return $this->view($this->getViewForm());
     }
 
     /**
@@ -372,8 +358,13 @@ trait ResourceCrudEasy
      */
     private function modelFind($find)
     {
-        return (method_exists($this->model, 'getUuidColumnName') != null) ?
-            $this->model->findByUuid($find) :
-            $this->model->find($find);
+        return (method_exists($this->model, 'getUuidColumnName') != null)
+            ? $this->model->findByUuid($find)
+            : $this->model->findOrFail($find);
+    }
+
+    public function hasBreadcrumb(): bool
+    {
+        return $this->useBreadcrumb;
     }
 }

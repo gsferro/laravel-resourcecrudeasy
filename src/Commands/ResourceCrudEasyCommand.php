@@ -124,6 +124,7 @@ class ResourceCrudEasyCommand extends GeneratorCommand
             */
             $this->createPestUnitModel();
             $this->createPestUnitController();
+            $this->createPestFeatureController();
 
             /*
             |---------------------------------------------------
@@ -331,7 +332,6 @@ class ResourceCrudEasyCommand extends GeneratorCommand
         $this->put($path, $contents, 'PestTest Unit Models created:');
     }
 
-
     private function createPestUnitController(): void
     {
         $path     = 'tests\Unit\Controllers\\' . $this->entite . 'ControllerTest.php';
@@ -339,6 +339,15 @@ class ResourceCrudEasyCommand extends GeneratorCommand
 
         $this->makeDirectory($path);
         $this->put($path, $contents, 'PestTest Unit Controllers created:');
+    }
+
+    private function createPestFeatureController(): void
+    {
+        $path     = 'tests\Feature\Controllers\\' . $this->entite . 'ControllerTest.php';
+        $contents = $this->buildClassEntite($this->entite, 'pest_feature_controller');
+
+        $this->makeDirectory($path);
+        $this->put($path, $contents, 'PestTest Feature Controllers created:');
     }
 
     /*

@@ -1,0 +1,73 @@
+<?php
+
+use App\Models\{{ class }};
+
+beforeEach(function () {
+    // Model Using Uuid
+    $instance            = new {{ class }};
+    $this->collumPrimary = $instance->getKeyName();
+    $this->collumUuid    = (method_exists($instance, 'getUuidColumnName') != null)
+        ? $instance->getUuidColumnName()
+        : null;
+    // real find
+    $this->find = $this->collumUuid ?? $this->collumPrimary;
+
+    // atributo para reuso
+    $this->controller = app()->make('App\Http\Controllers\{{ class }}Controller');
+});
+
+test('Index return view configured', function () {
+    $resp = $this->get(route('{{ class_route_slug }}.index'));
+    // status 200
+    $resp->assertOk();
+    // view
+    $resp->assertViewIs($this->controller->getViewIndex());
+});
+
+test('Create return view configured', function () {
+    $resp = $this->get(route('{{ class_route_slug }}.create'));
+    // status 200
+    $resp->assertOk();
+    // view
+    $resp->assertViewIs($this->controller->getViewForm());
+});
+
+test('Edit return view configured', function () {
+
+    // create dados
+    $this->seed(\Database\Seeders\{{ class }}Seeder::class);
+    // {{ class }}::factory()->create();
+
+    $model = {{ class }}::inRandomOrder()->first();
+
+    $resp = $this->get(route('{{ class_route_slug }}.edit', [$model->{$this->find}]));
+    // status 200
+    $resp->assertOk();
+    // view
+    $resp->assertViewIs($this->controller->getViewForm());
+});
+
+test('If model use uuid not find with pk', function () {
+
+    if (is_null($this->collumUuid)) {
+        $this->markTestSkipped('Model not using package uuid');
+    }
+
+    // create dados
+    $this->seed(\Database\Seeders\{{ class }}Seeder::class);
+    // {{ class }}::factory()->create();
+
+    $model = {{ class }}::inRandomOrder()->first();
+
+    $resp = $this->get(route('{{ class_route_slug }}.edit', [$model->{$this->collumPrimary}]));
+    // status 404
+    $resp->assertNotFound();
+});
+
+test('If exist configured Breadcrumb, return var', function () {
+    if (!$this->controller->hasBreadcrumb()) {
+        $this->markTestSkipped('Controller not use Breadcrumb');
+    }
+
+    $this->get(route('{{ class_route_slug }}.index'))->assertViewHas('titulo');
+});

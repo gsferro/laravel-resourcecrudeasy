@@ -5,16 +5,15 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    /**
-     * @var string
-     */
-    private $tableName = '{{ class_table }}';
+
+    private string $tableName = '{{ class_table }}';
 
     public function up()
     {
         if (!Schema::hasTable($this->tableName)) {
             Schema::create($this->tableName, function (Blueprint $table) {
-                $table->id();
+                $table->increments('id');
+                $table->uuid('uuid');
                 // TODO by datatable
 
                 $table->timestamps();

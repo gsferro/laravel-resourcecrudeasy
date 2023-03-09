@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Gsferro\ResourceCrudEasy\Models\AppBaseModel;
+use YourAppRocks\EloquentUuid\Traits\HasUuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,6 +17,7 @@ class {{ class }} extends AppBaseModel
     | Uses
     |---------------------------------------------------
     */
+    use HasUuid;
     use HasFactory;
     // use SoftDeletes;
     // use Cachable;

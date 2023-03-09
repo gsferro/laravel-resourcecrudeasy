@@ -16,7 +16,7 @@ class {{ class }}Controller extends Controller
         // $this->viewForm  = '{{ class_folder }}.form';
 
         // default true
-        if ($this->addBreadcrumb) {
+        if ($this->hasBreadcrumb()) {
             $this->addTitulo('{{ class_title }}');
         }
 
