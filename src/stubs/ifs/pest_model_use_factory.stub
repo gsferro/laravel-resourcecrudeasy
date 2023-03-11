@@ -1,0 +1,8 @@
+
+test('Model is configured to use {{ class }}Factory', function ()
+{
+    expect(method_exists($this->model, 'newFactory'))
+        ->toBeTrue();
+    expect($this->model::newFactory())
+        ->toBeInstanceOf(\Database\Factories\{{ class }}Factory::class);
+})->group('configured');

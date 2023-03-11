@@ -12,9 +12,9 @@ use Illuminate\Support\Str;
 
 class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
 {
-    private bool       $useFactory = true;
-    private bool       $useSeeder  = false;
-    private bool       $useMigrate = true;
+    private bool $useFactory = true;
+    private bool $useSeeder  = false;
+    private bool $useMigrate = true;
 
     /**
      * The console command name.
@@ -97,8 +97,16 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             |---------------------------------------------------
             | Criar Tests
             |---------------------------------------------------
+            |
+            | - Unit
+            |   - Model
+            |   - Factory
+            |   - Seeder
+            |
             */
             $this->generatePestUnitModel();
+            $this->generatePestUnitFactory();
+            $this->generatePestUnitSeeder();
 
         } catch (\Exception $e) {
             dump('Ops...', $e->getMessage());
@@ -139,20 +147,8 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             return;
         }
 
-        $name = "{$this->entite}Factory";
-        $path = "database/factories/{$name}.php";
-
-        if (! file_exists($path)){
-            $this->callSilent("make:factory", [
-                "name" => $name,
-                "-m"   => $this->entite,
-            ]);
-        }
-
-        // TODO by datatable
-        // $this->generate($path, 'factory', 'Factory');
-
-        $this->message($path, 'Factory created:');
+        $path = 'database\factories\\' . $this->entite . 'Factory.php';
+        $this->generate($path, 'factory', 'Factory');
     }
 
     private function generateSeeder(): void
@@ -214,32 +210,65 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     */
     private function generatePestUnitModel(): void
     {
-        $path     = 'tests\Unit\Models\\' . $this->entite . 'Test.php';
-        $this->generate($path, 'pest_unit_model', 'PestTest Unit Models');
+        $path     = 'tests\Unit\\' . $this->entite . '\Model\\' . $this->entite . 'Test.php';
+        $this->generate($path, 'tests/unit/model', 'PestTest Unit Models');
+    }
+    
+    private function generatePestUnitFactory(): void
+    {
+        if (!$this->useFactory) {
+            return;
+        }
+        $path     = 'tests\Unit\\' . $this->entite . '\Factory\\' . $this->entite . 'FactoryTest.php';
+        $this->generate($path, 'tests/unit/factory', 'PestTest Unit Factory');
+    }
+    
+    private function generatePestUnitSeeder(): void
+    {
+        if (!$this->useSeeder) {
+            return;
+        }
+        $path     = 'tests\Unit\\' . $this->entite . '\Seeder\\' . $this->entite . 'SeederTest.php';
+        $this->generate($path, 'tests/unit/seeder', 'PestTest Unit Seeder');
     }
     
     /*
     |---------------------------------------------------
     | Override
     |---------------------------------------------------
+    |
+    | Todo melhorar o replace de stub dentro de stub
+    |
     */
     protected function applyReplace($stub)
     {
-        $parent = parent::applyReplace($stub);
         $params = [
             /*
             |---------------------------------------------------
-            | colocar ou não para cada pergunta um comment
+            | Blocos
             |---------------------------------------------------
             */
-            '/\{{ comment_seeder }}/'  => $this->useSeeder ? '' : '// ',
-            '/\{{ comment_factory }}/' => $this->useFactory ? '' : '// ',
+            '/\{{ bloco_pest_model_use_factory }}/' => $this->applyReplaceBlocoFactory(),
         ];
 
-        return preg_replace(
+        $localStub = preg_replace(
             array_keys($params),
             array_values($params),
-            $parent
+            $stub
         );
+        
+        return parent::applyReplace($localStub);
+    }
+    
+    /*
+    |---------------------------------------------------
+    | Blocos
+    |---------------------------------------------------
+    */
+    private function applyReplaceBlocoFactory()
+    {
+        return $this->useFactory 
+            ? $this->files->get($this->getStubEntite('ifs/pest_model_use_factory'))
+            : '';
     }
 }

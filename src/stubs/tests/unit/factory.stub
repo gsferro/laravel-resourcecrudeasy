@@ -1,0 +1,24 @@
+<?php
+
+use Database\Factories\{{ class }}Factory;
+
+beforeEach(function() 
+{
+    // atributo para reuso
+    $this->factory = new {{ class }}Factory;
+});
+
+test('{{ class }}Factory is Factory', function()
+{
+    expect($this->factory)->toBeInstanceOf(\Illuminate\Database\Eloquent\Factories\Factory::class);
+})->group( 'configured');
+
+test('{{ class }}Factory is cofigured from Model {{ class }}', function()
+{
+    expect($this->factory->modelName())->toEqual(App\Models\{{ class }}::class);
+})->group( 'configured');
+
+test('Method definition implemented', function()
+{
+    expect(method_exists($this->factory, 'definition'))->toBeTrue();
+})->group( 'configured');

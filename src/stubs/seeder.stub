@@ -13,7 +13,7 @@ class {{ class }}Seeder extends Seeder
      *
      * @return array
      */
-    public static function dados(): array
+    public static function rows(): array
     {
         return [
             // exemple
@@ -48,8 +48,8 @@ class {{ class }}Seeder extends Seeder
             $model = ($new->hasNamedScope('disableCache'))
                 ? $new::disableCache()
                 : $new;
-            foreach (self::dados() as $dado) {
-                $model->updateOrCreate(["id" => $dado["id"]], $dado);
+            foreach (self::rows() as $row) {
+                $model->updateOrCreate(["id" => $row["id"]], $row);
             }
         });
 

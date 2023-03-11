@@ -64,7 +64,9 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
 
     protected function applyReplace($stub)
     {
-        $params     = [
+        $localStub = $this->applyReplaceAfter($stub);
+        
+        $params = [
             '/\{{ class }}/'        => $this->str,
             '/\{{ class_folder }}/' => $this->str->snake(),
             '/\{{ class_title }}/'  => $this->str->snake()->title()->replace('_', ' '),
@@ -82,9 +84,27 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
             | Especifico Route
             |---------------------------------------------------
             */
-            '/\{{ class_route_slug }}/' => $this->str->snake()->slug(),
+            '/\{{ class_route_slug }}/'        => $this->str->snake()->slug(),
             '/\{{ class_route_slug_plural }}/' => $this->str->snake()->slug()->plural(),
+        ];
 
+        return preg_replace(
+            array_keys($params),
+            array_values($params),
+            $localStub
+        );
+    }
+    
+    protected function applyReplaceAfter($stub)
+    {
+        $params = [
+            /*
+            |---------------------------------------------------
+            | Use Exists
+            |---------------------------------------------------
+            */
+            '/\{{ use_factory_exists }}/' => $this->useFactoryExists(),
+            '/\{{ use_seeder_exists }}/'  => $this->useSeederExists(),
         ];
 
         return preg_replace(
@@ -93,7 +113,7 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
             $stub
         );
     }
-    
+
     /*
     |---------------------------------------------------
     | Reuso
@@ -147,5 +167,27 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
     protected function getStub()
     {
         // TODO: Implement getStub() method.
+    }
+
+    private function useFactoryExists()
+    {
+//        return $this->classExists('\Database\Factories\\'. $this->entite .'Factory' )
+        return $this->classExists(database_path('factories/' . $this->entite .'Factory.php') )
+            ? $this->files->get($this->getStubEntite('ifs/use_factory_exists'))
+            : '';
+    }
+    
+    private function useSeederExists()
+    {
+//        return $this->classExists('\Database\Seeders\\'. $this->entite .'Seeder' )
+        return $this->classExists(database_path('seeders/' . $this->entite .'Seeder.php') )
+            ? $this->files->get($this->getStubEntite('ifs/use_seeder_exists'))
+            : '';
+    }
+    
+    private function classExists($class): bool
+    {
+        return file_exists($class);
+//        return class_exists($class);
     }
 }

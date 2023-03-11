@@ -1,0 +1,122 @@
+<?php
+
+use App\Models\{{ class }};
+
+beforeEach(function() 
+{
+    // Model Using Uuid
+    $this->instance      = new {{ class }};
+    $this->collumPrimary = $this->instance->getKeyName();
+    $this->collumUuid    = (method_exists($this->instance, 'getUuidColumnName') != null)
+        ? $this->instance->getUuidColumnName()
+        : null;
+
+    // for modelFind
+    $this->find = $this->collumUuid ?? $this->collumPrimary;
+
+    // set controller
+    $this->controller = app()->make('App\Http\Controllers\{{ class }}Controller');
+});
+
+test('Index return view configured', function() 
+{
+    $resp = $this->get(route('{{ class_route_slug }}.index'));
+    // status 200
+    $resp->assertOk();
+    // view
+    $resp->assertViewIs($this->controller->getViewIndex());
+});
+
+test('Create return view configured', function() 
+{
+    $resp = $this->get(route('{{ class_route_slug }}.create'));
+    // status 200
+    $resp->assertOk();
+    // view
+    $resp->assertViewIs($this->controller->getViewCreate());
+});
+
+test('Edit return view configured', function() 
+{
+    {{ use_factory_exists }}
+    {{ use_seeder_exists }}
+    // get random
+    $model = {{ class }}::inRandomOrder()->first();
+
+    // get in route edit using element created
+    $this->get(route('{{ class_route_slug }}.edit', [$model->{$this->find}]))
+        // status 200
+        ->assertOk()
+        // view
+        ->assertViewIs($this->controller->getViewEdit());
+});
+
+test('If model use uuid not find with pk', function() 
+{
+    if (is_null($this->collumUuid)) {
+        $this->markTestSkipped('Model not using package uuid');
+    }
+    {{ use_factory_exists }}
+    {{ use_seeder_exists }}
+    // get random
+    $model = {{ class }}::inRandomOrder()->first();
+
+    // get in route edit using element created
+    $this->get(route('{{ class_route_slug }}.edit', [$model->{$this->collumPrimary}]))
+        // status 404
+        ->assertNotFound();
+});
+
+test('If exist configured Breadcrumb, return var $titulo', function() 
+{
+    if (!$this->controller->hasBreadcrumb()) {
+        $this->markTestSkipped('Controller not use Breadcrumb');
+    }
+    $this->get(route('{{ class_route_slug }}.index'))->assertViewHas('titulo');
+});
+
+test('Store save in database', function() {
+    $dados = {{ class }}::factory()->make()->toArray();
+    if (empty($dados)) {
+        $this->markTestSkipped('Factory not implemented');
+    }
+    $this->post(route('{{ class_route_slug }}.store'), $dados);
+    $this->assertDatabaseCount($this->instance->getTable(), 1);
+});
+
+test('Store fail from validate', function() 
+{
+    if (empty({{ class }}::$rules[ 'store' ])) {
+        $this->markTestSkipped('Rule from store not implemented in Model.');
+    }
+    // no caso de ser spa ou ssr
+    $code = $this->controller->isSPA ? 422 : 302;
+    $resp = $this->post(route('{{ class_route_slug }}.store'), [])->assertStatus($code);
+
+    switch($code) {
+        case 302:
+            $resp->assertRedirect($this->controller->getRouteRedirectStore());
+        break;
+        case 422:
+            $json = $resp->json();
+            expect($json['code'])->toBe(422);
+            expect($json['type'])->toBe('ValidationException');
+            expect($json['success'])->toBe(false);
+            expect($json)->toBeArray();
+
+            // verify if return is expect
+            expect(
+                array_diff(
+                    array_keys($json), [
+                    "error",
+                    "data",
+                    "code",
+                    "success",
+                    "message",
+                    "type",
+                ])
+            )
+                ->toBeEmpty();
+        break;
+    }
+});

@@ -1,0 +1,24 @@
+<?php
+
+use Database\Seeders\{{ class }}Seeder;
+
+beforeEach(function()
+{
+    // atributo para reuso
+    $this->seeder = new {{ class }}Seeder;
+});
+
+test('{{ class }}Seeder is Seeder', function()
+{
+    expect($this->seeder)->toBeInstanceOf(\Illuminate\Database\Seeder::class);
+})->group( 'configured');
+
+test('Method run implemented', function()
+{
+    expect(method_exists($this->seeder, 'run'))->toBeTrue();
+})->group( 'configured');
+
+test('Method rows the standard of Package ResourceCrudEasy implemented', function()
+{
+    expect(method_exists($this->seeder, 'rows'))->toBeTrue();
+})->group( 'configured');

@@ -1,0 +1,57 @@
+<?php
+
+use App\Models\{{ class }};
+use Gsferro\ResourceCrudEasy\Models\AppBaseModel;
+use Illuminate\Database\Eloquent\Model;
+
+beforeEach(function() 
+{
+    {{ use_factory_exists }}
+    {{ use_seeder_exists }}
+    // atributo para reuso
+    $this->model = {{ class }}::inRandomOrder()->first();
+});
+
+test('{{ class }} is Model', function()
+{
+    // name table
+    expect($this->model->getTable())
+            ->not()->toBeEmpty()
+            ->toBeString();
+
+    // classes the Model
+    expect($this->model)
+        ->toBeObject()
+        ->toBeInstanceOf({{ class }}::class)
+        ->toBeInstanceOf(Model::class);
+})->group( 'configured');
+
+test('Attributes the model {{ class }}', function()
+{
+   if (empty($this->model)) {
+       $this->markTestSkipped('not results from this test');
+   }
+
+    expect($this->model)->not()->toBeEmpty();
+    expect($this->model->id)->not()->toBeEmpty()->toBeInt();
+    // TODO gerenate by table
+})->group( 'attributes');
+
+test('Model is configured to use AppBaseModel', function()
+{
+    // use AppBaseModel
+    expect($this->model)
+        ->toBeInstanceOf(AppBaseModel::class);
+
+    // pacote FilterEasy
+    expect($this->model->hasNamedScope('filterEasy'))
+        ->toBeTrue();
+
+    // pacote Audits
+    expect($this->model->getAuditInclude())
+        ->toBeArray()
+        ->toEqual($this->model->getFillable());
+
+    // TODO pacote PowerModel
+})->group( 'configured');
+{{ bloco_pest_model_use_factory }}

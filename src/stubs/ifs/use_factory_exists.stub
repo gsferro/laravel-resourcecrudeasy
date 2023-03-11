@@ -1,0 +1,2 @@
+    // create element in database with factory
+    {{ class }}::factory()->create();

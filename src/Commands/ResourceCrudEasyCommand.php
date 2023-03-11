@@ -47,7 +47,7 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
     {
         $this->entite = ucfirst($this->argument('entite'));
         $this->str    = Str::of($this->entite);
-        
+
         /*
         |---------------------------------------------------
         | Generate Principle
@@ -58,7 +58,7 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
         | - model: gsferro:resource-crud-model
         | - controller
         | - Pest
-        |    - Unit Model: gsferro:resource-crud-model 
+        |    - Unit Model: gsferro:resource-crud-model
         |    - Feature Controller
         | - todo:
         |       - preenchimento model e migration with fields
@@ -70,7 +70,7 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
         try {
             /*
             |---------------------------------------------------
-            | Criar Models 
+            | Criar Models
             |---------------------------------------------------
             */
             $this->call('gsferro:resource-crud-model', [
@@ -143,7 +143,7 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
 
         foreach ($views as $view) {
             $index = $pathBase.$this->str->snake() . "\\$view.blade.php";
-            $this->generate($index, "view_{$view}", 'View '. ucfirst($view));    
+            $this->generate($index, "view_{$view}", 'View '. ucfirst($view));
         }
     }
 
@@ -169,13 +169,13 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
     private function generatePestUnitController(): void
     {
         $path = 'tests\Unit\Controllers\\' . $this->entite . 'ControllerTest.php';
-        $this->generate($path, 'pest_unit_controller', 'PestTest Unit Controllers');
+        $this->generate($path, 'tests/unit/controller', 'PestTest Unit Controllers');
     }
 
     private function generatePestFeatureController(): void
     {
         $path = 'tests\Feature\Controllers\\' . $this->entite . 'ControllerTest.php';
-        $this->generate($path, 'pest_feature_controller', 'PestTest Feature Controllers');
+        $this->generate($path, 'tests/feature/controller', 'PestTest Feature Controllers');
     }
 
     /*
@@ -197,5 +197,18 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
 
         $routeContents .= "\n\n".$contents;
         $this->put($path, $routeContents, 'Route Web Updated:');
+    }
+    
+    /*
+    |---------------------------------------------------
+    | Override
+    |---------------------------------------------------
+    |
+    | Todo melhorar o replace de stub dentro de stub
+    |
+    */
+    protected function applyReplace($stub)
+    {
+        return parent::applyReplace($stub);
     }
 }

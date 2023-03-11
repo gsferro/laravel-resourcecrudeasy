@@ -1,0 +1,2 @@
+    // create element in database with seeder
+    $this->seed(\Database\Seeders\{{ class }}Seeder::class);
