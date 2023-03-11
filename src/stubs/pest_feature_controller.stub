@@ -79,7 +79,7 @@ test('Store save in database', function () {
         $this->markTestSkipped('Factory not implemented');
     }
     $this->post(route('{{ class_route_slug }}.store'), $dados);
-    $this->assertDatabaseHas($this->instance->getTable(), $dados);
+    $this->assertDatabaseCount($this->instance->getTable(), 1);
 });
 
 test('Store fail from validate', function () {

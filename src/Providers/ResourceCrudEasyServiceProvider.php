@@ -3,6 +3,7 @@
 namespace Gsferro\ResourceCrudEasy\Providers;
 
 use Gsferro\ResourceCrudEasy\Commands\ResourceCrudEasyCommand;
+use Gsferro\ResourceCrudEasy\Commands\ResourceCrudEasyModelCommand;
 use Illuminate\Support\ServiceProvider;
 
 class ResourceCrudEasyServiceProvider extends ServiceProvider
@@ -17,6 +18,7 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 ResourceCrudEasyCommand::class,
+                ResourceCrudEasyModelCommand::class,
             ]);
         }
         /*

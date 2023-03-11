@@ -21,13 +21,11 @@ beforeEach(function () {
     $this->controller     = app()->make($this->controllerName);
 });
 
-test('The Routes Resource exists', function ()
+test('{{ class }}Controller is Controller', function()
 {
-    expect($this->routes)
-        ->toBeArray()
-        ->not()->toBeEmpty()
-        ->toBeGreaterThanOrEqual(7); // 7 route resource
-});
+    expect($this->controller)
+        ->toBeInstanceOf(\App\Http\Controllers\Controller::class);
+})->group( 'configured');
 
 test('The Controller is config from package ResourceCrudEasy', function (){
     // use trait
@@ -35,6 +33,14 @@ test('The Controller is config from package ResourceCrudEasy', function (){
         ->toBeArray()
         ->toHaveKey('Gsferro\ResourceCrudEasy\Traits\ResourceCrudEasy')
     ;
+});
+
+test('The Routes Resource exists', function ()
+{
+    expect($this->routes)
+        ->toBeArray()
+        ->not()->toBeEmpty()
+        ->toBeGreaterThanOrEqual(7); // 7 route resource
 });
 
 test('The Actions routes handled Resource Controller', function ()

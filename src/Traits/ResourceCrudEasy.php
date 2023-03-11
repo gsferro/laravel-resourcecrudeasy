@@ -2,8 +2,10 @@
 
 namespace Gsferro\ResourceCrudEasy\Traits;
 
+use App\Models\ResourceCrud;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use DatatablesEasy\Helpers\DatatablesEasy;
 use Illuminate\Support\Facades\Validator;
@@ -183,20 +185,23 @@ trait ResourceCrudEasy
      */
     public function store(Request $request)
     {
-        $route = $this->getRouteRedirectStore();
-        $dados = $request->all();
+        $route      = $this->getRouteRedirectStore();
+        $attributes = $request->all();
         try {
-            $result = DB::transaction(function () use ($request, $dados) {
+            $transaction = DB::transaction(function () use ($request, $attributes) {
                 $request->validate($this->rules()[ 'store' ]);
 
-                $result = $this->model->create($dados);
-                // TODO insere in relation
+                $model  = $this->model->fill($attributes);
+                $update = $this->updateRelations($model, $attributes);
+                if (!$update->exists) {
+                    $update->save();
+                }
 
-                return $result;
+                return $model;
             });
 
             return $this->isSPA
-                ? $this->success($result)
+                ? $this->success($transaction)
                 : redirect()->route($route); // , $this->redirectStore == 'edit' ? ['resource_crud' => $result->uuid] : []
 
         } catch (ValidationException $validator) {
@@ -206,13 +211,15 @@ trait ResourceCrudEasy
                 "type"    => "ValidationException",
                 "message" => $validator->getMessage(),
             ];
-        } /*catch (ServiceUnavailableHttpException $e) {
+        }
+        /*catch (ServiceUnavailableHttpException $e) {
             $exception = [
                 "code"    => 503,
                 "message" => $e->getMessage(),
                 "type"    => "ServiceUnavailableHttpException",
             ];
-        }*/ catch (Throwable $throwable) {
+        }*/
+        catch (Throwable $throwable) {
             $exception = [
                 "error"   => $throwable->errors(),
                 "code"    => 500,
@@ -234,7 +241,7 @@ trait ResourceCrudEasy
         */
 
         return $this->isSPA
-            ? $this->error($exception, $dados, $exception['code'])
+            ? $this->error($exception, $attributes, $exception['code'])
             : redirect()->route($this->getRouteName('index'))->withInput()->withErrors($exception['error']);
     }
 
@@ -409,5 +416,102 @@ trait ResourceCrudEasy
     {
         // TODO revisar redirect
         return route($this->getRouteName('index')); //  ?? $this->redirectUpdate
+    }
+
+
+    /*
+    |---------------------------------------------------
+    |
+    |---------------------------------------------------
+    */
+    private function updateRelations(Model $model, $attributes): Model
+    {
+        foreach ($attributes as $key => $val) {
+            if (isset($model) &&
+                method_exists($model, $key) &&
+                is_a($model->$key(), 'Illuminate\Database\Eloquent\Relations\Relation')
+            ) {
+                $methodClass = get_class($model->$key($key));
+
+                switch ($methodClass) {
+                    case 'Illuminate\Database\Eloquent\Relations\BelongsToMany':
+                        $new_values = Arr::get($attributes, $key, []);
+                        if (array_search('', $new_values) !== false) {
+                            unset($new_values[array_search('', $new_values)]);
+                        }
+                        $model->$key()->sync(array_values($new_values));
+                    break;
+                    case 'Illuminate\Database\Eloquent\Relations\BelongsTo':
+                        $attributesRelation = Arr::get($attributes, $key, null);
+
+                        // TODO Update
+                        // create new register
+                        $relation = $model->$key()->create($attributesRelation);
+
+                        // necessário setar no relacionamento o campo fk
+                        // $foreignKeyName = $model->$key()->getForeignKeyName(); // fk
+                        // $ownerKeyName = $model->$key()->getOwnerKeyName(); // pk to relation
+                        // $model->$foreignKeyName = $relation->$ownerKeyName;
+
+                        // faz a associate ao registro principal
+                        $model = $model->$key()->associate($relation);
+                    break;
+                    case 'Illuminate\Database\Eloquent\Relations\HasOne':
+                        // precisa salvar para pegar o pk
+                        $model->save();
+
+                        $attributesRelation = Arr::get($attributes, $key, null);
+
+                        // get name pk model
+                        $keyName = $model->getKeyName();
+
+                        // get name fk
+                        $foreignKey     = $model->$key()->getOneOfManySubQuerySelectColumns();
+                        $foreignKeyName = explode('.', $foreignKey)[ 1 ];
+
+                        // without not set (update)
+                        if (empty($attributesRelation[ $foreignKeyName ])) {
+                            $attributesRelation[ $foreignKeyName ] = $model->$keyName;
+                        }
+
+                        // get name classe to hasOne
+                        $related  = get_class($model->$key()->newRelatedInstanceFor($model));
+
+                        // TODO Update
+                        // create new register into relation
+                        $related::create($attributesRelation);
+                    break;
+                    case 'Illuminate\Database\Eloquent\Relations\HasOneOrMany':
+                    break;
+                    case 'Illuminate\Database\Eloquent\Relations\HasMany':
+                        $new_values = Arr::get($attributes, $key, []);
+                        if (array_search('', $new_values) !== false) {
+                            unset($new_values[array_search('', $new_values)]);
+                        }
+
+                        $foreignKeyName = $model->$key()->getForeignKeyName();
+                        foreach ($model->$key as $rel) {
+                            if (!in_array($rel->id, $new_values)) {
+                                $rel->$foreignKeyName = null;
+                                $rel->save();
+                            }
+                            unset($new_values[array_search($rel->id, $new_values)]);
+                        }
+
+                        if (count($new_values) > 0) {
+                            // pega a class da model
+                            $related = get_class($model->$key()->getRelated());
+                            foreach ($new_values as $val) {
+                                $rel = $related::find($val);
+                                $rel->$foreignKeyName = $model->id;
+                                $rel->save();
+                            }
+                        }
+                    break;
+                }
+            }
+        }
+
+        return $model;
     }
 }
