@@ -36,11 +36,40 @@ class SchemaBuilderService
     /**
      * Retorna todas as colunas da table
      * 
+     * @param bool $includePrimaryKeys true
      * @return array
      */
-    public function getColumnListing(): array
+    public function getColumnListing(bool $includePrimaryKeys = true, bool $includeTimestamps = false): array
     {
-        return $this->builder->getColumnListing($this->table);
+        $columnListing = $this->builder->getColumnListing($this->table);
+        $columnsPk     = $includePrimaryKeys
+            ? $columnListing
+            : array_diff($columnListing, $this->primaryKeys());
+
+        $columnsTimes = $includeTimestamps
+            ? $columnsPk
+            : array_diff($columnsPk, [
+                'created_at',
+                'updated_at',
+                'deleted_at',
+            ]);
+
+        return array_values($columnsTimes);
+    }
+
+    /**
+     * Pega todos os tipos das colunas
+     * 
+     * @param array $columns
+     * @return array
+     */
+    public function getTypeFromColumns(array $columns): array
+    {
+        $types = [];
+        foreach ($columns as $column) {
+            $types[ $column ] = $this->getColumnType($column);
+        }
+        return $types;
     }
 
     /**

@@ -42,14 +42,14 @@ class {{ class }} extends AppBaseModel
      * @var array
      */
     public $fillable = [
-
+        {{ fillable }}
     ];
 
     /**
      * @var array
      */
     protected $casts = [
-
+        {{ cast }}
     ];
 
     /*

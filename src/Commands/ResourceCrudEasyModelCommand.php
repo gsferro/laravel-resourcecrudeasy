@@ -95,6 +95,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             |---------------------------------------------------
             */
             $this->generateModel();
+            dd(1);
             $this->generateFactory();
             $this->generateSeeder();
             $this->generateMigrate();
@@ -257,9 +258,38 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             |---------------------------------------------------
             */
             '/\{{ bloco_pest_model_use_factory }}/' => $this->applyReplaceBlocoFactory(),
+
+            /*
+            |---------------------------------------------------
+            | Default not table
+            |---------------------------------------------------
+            */
+            '/\{{ fillable }}/' => '',
+            '/\{{ cast }}/' => '',
         ];
 
-//        if ()
+        /*
+        |---------------------------------------------------
+        | Gerenate by table
+        |---------------------------------------------------
+        */
+        if (!is_null($this->table)) {
+            $columnListings = $this->schema->getColumnListing(false);
+            $fillable       = "";
+            $casts          = "";
+            
+            // para colocar elegantemente no arquivo
+            foreach ($columnListings as $column) {
+                $str = "'{$column}'";
+                $this->interpolate($fillable, "{$str}, ");
+                $this->interpolate($casts, "{$str} => '{$this->schema->getColumnType($column)}', ");
+            }
+
+            $params = [
+                '/\{{ fillable }}/' => $fillable,
+                '/\{{ cast }}/'     => $casts,
+            ] + $params;
+        }
 
         $localStub = preg_replace(
             array_keys($params),
@@ -307,4 +337,12 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             $this->schema = new SchemaBuilderService($this->table, $this->connection);
         }
     }
+
+
+    private function interpolate(string &$string, string $add, $delimiter = null)
+    {
+//        $delimiter = $delimiter ?? $this->delimiter;
+        $string .= (strlen($string) == 0 ? $delimiter : '        ' ).$add. PHP_EOL;
+    }
+
 }
