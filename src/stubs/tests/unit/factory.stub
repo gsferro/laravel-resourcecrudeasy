@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\{{ class }};
 use Database\Factories\{{ class }}Factory;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 beforeEach(function() 
 {
@@ -10,12 +12,12 @@ beforeEach(function()
 
 test('{{ class }}Factory is Factory', function()
 {
-    expect($this->factory)->toBeInstanceOf(\Illuminate\Database\Eloquent\Factories\Factory::class);
+    expect($this->factory)->toBeInstanceOf(Factory::class);
 })->group( 'configured');
 
 test('{{ class }}Factory is cofigured from Model {{ class }}', function()
 {
-    expect($this->factory->modelName())->toEqual(App\Models\{{ class }}::class);
+    expect($this->factory->modelName())->toEqual({{ class }}::class);
 })->group( 'configured');
 
 test('Method definition implemented', function()

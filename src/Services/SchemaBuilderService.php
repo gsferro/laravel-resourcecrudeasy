@@ -59,6 +59,41 @@ class SchemaBuilderService
     }
 
     /**
+     * verifica se a coluna exists
+     * 
+     * @param string $column
+     * @return bool
+     */
+    public function hasColumn(string $column): bool
+    {
+        return $this->builder->hasColumn($this->table, $column);
+    }
+    
+    /**
+     * verifica se a coluna exists
+     * 
+     * @return bool
+     */
+    public function hasColumnsTimestamps(): bool
+    {
+        return $this->hasColumns([
+            'created_at',
+            'updated_at',
+        ]);
+    }
+
+    /**
+     * verifica se as colunas exists
+     * 
+     * @param array $columns
+     * @return bool
+     */
+    public function hasColumns(array $columns): bool
+    {
+        return $this->builder->hasColumns($this->table, $columns);
+    }
+
+    /**
      * Pega todos os tipos das colunas
      *
      * @param array $columns

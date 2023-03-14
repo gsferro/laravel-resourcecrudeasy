@@ -26,6 +26,7 @@ class {{ class }} extends AppBaseModel
     */
     public $table = '{{ class_table }}';
     {{ pk_string }}
+    {{ timestamps }}
 
     // protected $dates = ['deleted_at'];
 

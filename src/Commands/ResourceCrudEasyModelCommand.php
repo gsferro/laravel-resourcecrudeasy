@@ -264,11 +264,12 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             | Default not table
             |---------------------------------------------------
             */
-            '/\{{ pk_string }}/'   => '',
-            '/\{{ BelongsTo }}/'   => '',
-            '/\{{ fillable }}/'    => '',
-            '/\{{ cast }}/'        => '',
-            '/\{{ relations }}/'   => '',
+            '/\{{ pk_string }}/'    => '',
+            '/\{{ timestamps }}/'   => '',
+            '/\{{ BelongsTo }}/'    => '',
+            '/\{{ fillable }}/'     => '',
+            '/\{{ cast }}/'         => '',
+            '/\{{ relations }}/'    => '',
             '/\{{ rules_store }}/'  => '',
             '/\{{ rules_update }}/' => '',
         ];
@@ -279,63 +280,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         |---------------------------------------------------
         */
         if (!is_null($this->table)) {
-            // prepara variaveis
-            $pkString  = "";
-            $fillable   = "";
-            $rulesStore = "";
-            $casts      = "";
-            $relations  = "";
-            
-            // buscar colunas
-            $columnListings = $this->schema->getColumnListing();
-
-            // para colocar elegantemente no arquivo
-            foreach ($columnListings as $column) {
-                $str        = "'{$column}'";
-                $columnType = $this->schema->getColumnType($column);
-                
-                // caso a pk seja string
-                if ($this->schema->isPrimaryKey($column) && $columnType == 'string') {
-                    $pkString = $this->getStubModelPkString($column);
-                }
-                // não exibe 
-                if ($this->schema->isPrimaryKey($column)) {
-                    continue;
-                }
-
-                // fillable
-                $this->interpolate($fillable, "{$str}, ");
-
-                // store
-                $store = "{$columnType}";
-                if ($this->schema->getDoctrineColumn($column)[ "notnull" ]) {
-                    $store .= "|required";
-                }
-                $this->interpolate($rulesStore, "{$str} => '{$store}', ");
-
-                // casts
-                $this->interpolate($casts, "{$str} => '{$columnType}', ");
-
-                // relations
-                $foreinsKey = $this->schema->hasForeinsKey($column, true);
-                if ($foreinsKey !== false) {
-                    $belongto = $this->getStubRelatios('belongto', $foreinsKey);
-                    $this->interpolate($relations, $belongto);
-                }
-            }
-
-            $params = [
-                '/\{{ pk_string }}/' => $pkString,
-                '/\{{ fillable }}/'  => $fillable,
-                '/\{{ cast }}/'      => $casts,
-                '/\{{ relations }}/' => $relations,
-                '/\{{ BelongsTo }}/' => 'use Illuminate\Database\Eloquent\Relations\BelongsTo;',
-
-                // Nome tabela
-                '/\{{ class_table }}/' => $this->table,
-                '/\{{ rules_store }}/'  => $rulesStore,
-                '/\{{ rules_update }}/' => $casts, // default
-            ] + $params;
+            $params = $this->modelWithExistsTable($params);
         }
 
         return parent::applyReplace(preg_replace(
@@ -426,5 +371,72 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     private function interpolate(string &$string, string $add, $delimiter = null)
     {
         $string .= (strlen($string) == 0 ? $delimiter : '        ' ).$add. PHP_EOL;
+    }
+
+    /**
+     * @param array $params
+     * @return array
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    private function modelWithExistsTable(array $params): array
+    {
+        // prepara variaveis
+        $pkString   = "";
+        $fillable   = "";
+        $rulesStore = "";
+        $casts      = "";
+        $relations  = "";
+
+        // buscar colunas
+        $columnListings = $this->schema->getColumnListing();
+
+        // para colocar elegantemente no arquivo
+        foreach ($columnListings as $column) {
+            $str        = "'{$column}'";
+            $columnType = $this->schema->getColumnType($column);
+
+            // caso a pk seja string
+            if ($this->schema->isPrimaryKey($column) && $columnType == 'string') {
+                $pkString = $this->getStubModelPkString($column);
+            }
+            // não exibe 
+            if ($this->schema->isPrimaryKey($column)) {
+                continue;
+            }
+
+            // fillable
+            $this->interpolate($fillable, "{$str}, ");
+
+            // store
+            $store = "{$columnType}";
+            if ($this->schema->getDoctrineColumn($column)[ "notnull" ]) {
+                $store .= "|required";
+            }
+            $this->interpolate($rulesStore, "{$str} => '{$store}', ");
+
+            // casts
+            $this->interpolate($casts, "{$str} => '{$columnType}', ");
+
+            // relations
+            $foreinsKey = $this->schema->hasForeinsKey($column, true);
+            if ($foreinsKey !== false) {
+                $belongto = $this->getStubRelatios('belongto', $foreinsKey);
+                $this->interpolate($relations, $belongto);
+            }
+        }
+
+        return [
+                '/\{{ pk_string }}/'    => $pkString,
+                '/\{{ timestamps }}/'   => !$this->schema->hasColumnsTimestamps() ? 'public $timestamps = false;' : '',
+                '/\{{ fillable }}/'     => $fillable,
+                '/\{{ cast }}/'         => $casts,
+                '/\{{ relations }}/'    => $relations,
+                '/\{{ BelongsTo }}/'    => 'use Illuminate\Database\Eloquent\Relations\BelongsTo;',
+
+                // Nome tabela
+                '/\{{ class_table }}/'  => $this->table,
+                '/\{{ rules_store }}/'  => $rulesStore,
+                '/\{{ rules_update }}/' => $casts, // default
+            ] + $params;
     }
 }
