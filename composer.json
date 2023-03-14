@@ -21,9 +21,22 @@
         "your-app-rocks/eloquent-uuid": "^2.5",
         "genealabs/laravel-model-caching": "^0.11.3",
     },
+    "require-dev": {
+        "pestphp/pest": "^1.22",
+        "pestphp/pest-plugin-laravel": "^1.4",
+        "phpunit/phpunit": "^9.5.10"
+    },
     "autoload": {
         "psr-4": {
             "Gsferro\\ResourceCrudEasy\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
         }
     },
     "extra": {

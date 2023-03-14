@@ -12,7 +12,7 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
     {
         /*
         |---------------------------------------------------
-        | command
+        | commands
         |---------------------------------------------------
         */
         if ($this->app->runningInConsole()) {
@@ -26,9 +26,15 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
         | Publish
         |---------------------------------------------------
         */
-     /*   $this->loadViewsFrom(__DIR__.'/resources/views', 'responseview');
+        /*
+        $this->loadViewsFrom(__DIR__.'/resources/views', 'responseview');
         $this->publishes([
             __DIR__.'/resources/views' => resource_path('views/vendor/gsferro/responseview'),
-        ]);*/
+        ]);
+        */
+
+        $this->publishes([
+            __DIR__.'/tests' => base_path('tests'),
+        ]);
     }
 }
