@@ -1,0 +1,5 @@
+// {{ HasManys }}
+    public function {{ class_camel }}(): HasMany
+    {
+        return $this->hasMany({{ class }}::class, '{{ foreignKey }}', '{{ ownerKey }}');
+    }

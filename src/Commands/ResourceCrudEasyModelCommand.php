@@ -15,12 +15,15 @@ use function PHPUnit\Framework\isNull;
 
 class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
 {
+    // classes de apoio
     private bool $useFactory = true;
     private bool $useSeeder  = false;
     private bool $useMigrate = true;
-    private ?string $table = null;
-    private ?string $connection = null;
-    private ?SchemaBuilderService $schema = null;
+    
+    // exists table
+    private ?string               $table      = null;
+    private ?string               $connection = null;
+    private ?SchemaBuilderService $schema     = null;
 
     /**
      * The console command name.
@@ -254,6 +257,13 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         $params = [
             /*
             |---------------------------------------------------
+            | aplica o relacionamento invertido
+            |---------------------------------------------------
+            */
+//            '/\{{ HasManys }}/' => '{{ HasManys }}',
+            
+            /*
+            |---------------------------------------------------
             | Blocos
             |---------------------------------------------------
             */
@@ -264,14 +274,14 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             | Default not table
             |---------------------------------------------------
             */
-            '/\{{ pk_string }}/'    => '',
-            '/\{{ timestamps }}/'   => '',
-            '/\{{ BelongsTo }}/'    => '',
-            '/\{{ fillable }}/'     => '',
-            '/\{{ cast }}/'         => '',
-            '/\{{ relations }}/'    => '',
-            '/\{{ rules_store }}/'  => '',
-            '/\{{ rules_update }}/' => '',
+            '/\{{ pk_string }}/'           => '',
+            '/\{{ timestamps }}/'          => '',
+            '/\{{ belongs_to_relation }}/' => '',
+            '/\{{ fillable }}/'            => '',
+            '/\{{ cast }}/'                => '',
+            '/\{{ relations }}/'           => '',
+            '/\{{ rules_store }}/'         => '',
+            '/\{{ rules_update }}/'        => '',
         ];
 
         /*
@@ -422,21 +432,69 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             if ($foreinsKey !== false) {
                 $belongto = $this->getStubRelatios('belongto', $foreinsKey);
                 $this->interpolate($relations, $belongto);
+                
+                // TODO Set hasone Or hasMany in Model
+                $this->applyRelationHasInTableForeingKey($foreinsKey);
             }
         }
 
         return [
-                '/\{{ pk_string }}/'    => $pkString,
-                '/\{{ timestamps }}/'   => !$this->schema->hasColumnsTimestamps() ? 'public $timestamps = false;' : '',
-                '/\{{ fillable }}/'     => $fillable,
-                '/\{{ cast }}/'         => $casts,
-                '/\{{ relations }}/'    => $relations,
-                '/\{{ BelongsTo }}/'    => 'use Illuminate\Database\Eloquent\Relations\BelongsTo;',
+            '/\{{ pk_string }}/'  => $pkString,
+            '/\{{ timestamps }}/' => !$this->schema->hasColumnsTimestamps() ? 'public $timestamps = false;' : '',
+            '/\{{ fillable }}/'   => $fillable,
+            '/\{{ cast }}/'       => $casts,
+            '/\{{ relations }}/'  => $relations,
+            '/\{{ belongs_to_relation }}/'  => 'use Illuminate\Database\Eloquent\Relations\BelongsTo;',
+//            '/\{{ has_many_relation }}/'    => 'use Illuminate\Database\Eloquent\Relations\HasMany;',
 
-                // Nome tabela
-                '/\{{ class_table }}/'  => $this->table,
-                '/\{{ rules_store }}/'  => $rulesStore,
-                '/\{{ rules_update }}/' => $casts, // default
-            ] + $params;
+            // Nome tabela
+            '/\{{ class_table }}/'  => $this->table,
+            '/\{{ rules_store }}/'  => $rulesStore,
+            '/\{{ rules_update }}/' => $casts, // default
+        ] + $params;
+    }
+
+    /**
+     * quando estiver em uma table que tiver um belongto, vai no relacionamento e aplica o hasMany
+     * 
+     * @param array $foreinsKey
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    private function applyRelationHasInTableForeingKey(array $foreinsKey, string $type = 'has_many')
+    {
+        // TODO criar qdo não houver?
+        if (!$this->schema->hasModelWithTableName($foreinsKey['/\{{ table }}/'])) {
+            return;
+        }
+
+        // busca o arquivo
+        $path = 'app/Models/' . $foreinsKey[ '/\{{ related }}/' ] . '.php';
+        $base = base_path($path);
+
+        // pega todo o arquivo
+        $fileContents = file_get_contents($base);
+        
+        // caso já tenha sido configurado
+        if (str_contains($fileContents, $this->str->camel().'()')){
+            return;
+        }
+        
+        // prepara o stub
+        $hasManyStub = $this->getStubRelatios($type, $foreinsKey + [
+            // override
+            '/\{{ class }}/'       => $this->str,
+            '/\{{ class_camel }}/' => $this->str->camel(),
+        ]);
+        $params = [
+            // relation
+            '/\/\/\ \{{ HasManys }}/'    => $hasManyStub,
+        ];
+
+        // atualiza mesmo já tendo sido criado
+        $this->files->put("{$path}", preg_replace(
+            array_keys($params),
+            array_values($params),
+            $fileContents
+        ));
     }
 }

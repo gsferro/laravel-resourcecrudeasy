@@ -4,20 +4,23 @@ namespace Gsferro\ResourceCrudEasy\Services;
 
 use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use \Illuminate\Database\Schema\Builder;
-use \Illuminate\Support\Facades\DB;
+use Illuminate\Database\Schema\Builder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 
 class SchemaBuilderService
 {
     private Connection $connection;
     private Builder $builder;
+    private AbstractSchemaManager $manager;
 
     public function __construct(private string $table, string $connection = null)
     {
         $this->connection = DB::connection($connection);
         $this->builder    = $this->connection->getSchemaBuilder();
-
+        $this->manager    = $this->connection->getDoctrineSchemaManager();
+        
         throw_if(!$this->hasTable(),
             ModelNotFoundException::class,
             "Table [ {$this->table} ] not exists in database using connection [ {$this->connection->getDriverName()} ]"
@@ -152,8 +155,7 @@ class SchemaBuilderService
      */
     public function primaryKeys(): array
     {
-        return $this->connection
-            ->getDoctrineSchemaManager()
+        return $this->manager
             ->listTableDetails($this->table)
             ->getPrimaryKey()
             ->getColumns();
@@ -189,7 +191,7 @@ class SchemaBuilderService
      */
     public function getAllTables(): array
     {
-       return $this->connection->getDoctrineSchemaManager()->listTableNames();
+       return $this->manager->listTableNames();
     }
 
     /**
@@ -201,12 +203,11 @@ class SchemaBuilderService
      */
     public function hasForeinsKey(string $column, bool $fromStubReplace = false): bool|array
     {
-        $foreignKeys = $this->connection
-            ->getDoctrineSchemaManager()
-            ->listTableForeignKeys($this->table);
+        $foreignKeys = $this->manager->listTableForeignKeys($this->table);
 
         $keys = !$fromStubReplace
-            ? [
+            ? [ // todo talvez nem precise
+                // belongsto
                 'table',
                 'tableCamel',
                 'related',
@@ -215,6 +216,7 @@ class SchemaBuilderService
                 'ownerKey',
             ]
             : [
+                // belongsto
                 '/\{{ table }}/',
                 '/\{{ tableCamel }}/',
                 '/\{{ related }}/',
@@ -226,20 +228,29 @@ class SchemaBuilderService
         foreach ($foreignKeys as $foreingnKey) {
             if (in_array($column, $foreingnKey->getLocalColumns())) {
                 $tableName       = $foreingnKey->getForeignTableName();
-                // todo quando não houver, criar?
+                // TODO quando não houver, criar?
                 $relatedInstance = $this->hasModelWithTableName($tableName);
 
                 return array_combine($keys, [
+                    // belongsto
                     $tableName,
                     Str::of($tableName)->camel(),
                     Str::of($relatedInstance)->replace('App\Models\\', ''),
                     $relatedInstance,
                     $column,
                     current($foreingnKey->getForeignColumns()),
+                    
+                    // hasmany
                 ]);
             }
         }
 
         return false;
+    }
+
+    public function teste()
+    {
+//        $this->manager->listTableDetails();
+//        DB::connection()->getDoctrineSchemaManager()->listTables()
     }
 }

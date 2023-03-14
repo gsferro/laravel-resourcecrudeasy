@@ -6,7 +6,7 @@ use Gsferro\ResourceCrudEasy\Models\AppBaseModel;
 use YourAppRocks\EloquentUuid\Traits\HasUuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
-{{ BelongsTo }}
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasOne};
 
 class {{ class }} extends AppBaseModel
 {
@@ -68,8 +68,20 @@ class {{ class }} extends AppBaseModel
 
     /*
     |---------------------------------------------------
-    | Relationships
+    | Relationships - BelongsTo
     |---------------------------------------------------
     */
     {{ relations }}
+    /*
+    |---------------------------------------------------
+    | Relationships - HasManys
+    |---------------------------------------------------
+    */
+    //{{ HasManys }}
+    /*
+    |---------------------------------------------------
+    | Relationships - HasOnes
+    |---------------------------------------------------
+    */
+    //{{ HasOnes }}
 }

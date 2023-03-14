@@ -9,7 +9,7 @@ use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Database\Factories\{{ class }}Factory;
-{{ BelongsTo }}
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasOne};
 
 class {{ class }} extends AppBaseModel
 {
@@ -73,10 +73,23 @@ class {{ class }} extends AppBaseModel
 
     /*
     |---------------------------------------------------
-    | Relationships
+    | Relationships - BelongsTo
     |---------------------------------------------------
     */
     {{ relations }}
+    /*
+    |---------------------------------------------------
+    | Relationships - HasManys
+    |---------------------------------------------------
+    */
+    //{{ HasManys }}
+    /*
+    |---------------------------------------------------
+    | Relationships - HasOnes
+    |---------------------------------------------------
+    */
+    //{{ HasOnes }}
+
     /*
     |---------------------------------------------------
     | Factory

@@ -1,0 +1,5 @@
+// {{ HasOnes }}
+    public function {{ class_camel }}(): HasOne
+    {
+        return $this->hasOne({{ class }}::class, '{{ foreignKey }}', '{{ ownerKey }}');
+    }

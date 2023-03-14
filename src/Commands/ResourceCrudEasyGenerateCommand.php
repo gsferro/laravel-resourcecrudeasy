@@ -68,6 +68,7 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
         
         $params = [
             '/\{{ class }}/'        => $this->str,
+            '/\{{ class_camel }}/'  => $this->str->camel(),
             '/\{{ class_folder }}/' => $this->str->snake(),
             '/\{{ class_title }}/'  => $this->str->snake()->title()->replace('_', ' '),
             '/\{{ model }}/'        => $this->str,
