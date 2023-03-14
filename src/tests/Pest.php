@@ -1,5 +1,10 @@
 <?php
 
+use Database\Seeders\DatabaseSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\DuskTestCase;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -11,11 +16,6 @@
 |
 */
 
-use Database\Seeders\DatabaseSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\DuskTestCase;
-use \Illuminate\Foundation\Testing\DatabaseMigrations;
-
 uses(DuskTestCase::class, DatabaseMigrations::class)
     ->beforeEach(function () {
         $this->seed(DatabaseSeeder::class);
@@ -24,7 +24,7 @@ uses(DuskTestCase::class, DatabaseMigrations::class)
 
 uses(Tests\TestCase::class, RefreshDatabase::class)
     ->beforeAll(function () {
-//        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+//        $this->seed(DatabaseSeeder::class);
     })
     ->beforeEach(function () {
         $this->seed(DatabaseSeeder::class);
