@@ -98,7 +98,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             |---------------------------------------------------
             */
             $this->generateModel();
-            dd(1);
+//            dd(1);
             $this->generateFactory();
             $this->generateSeeder();
             $this->generateMigrate();
