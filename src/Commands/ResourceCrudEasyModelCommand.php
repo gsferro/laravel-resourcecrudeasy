@@ -2,6 +2,7 @@
 
 namespace Gsferro\ResourceCrudEasy\Commands;
 
+use Gsferro\ResourceCrudEasy\Services\SchemaBuilderService;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
@@ -9,12 +10,17 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Stringable;
 use Symfony\Component\Console\Input\InputArgument;
 use Illuminate\Support\Str;
+use function PHPUnit\Framework\isNan;
+use function PHPUnit\Framework\isNull;
 
 class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
 {
     private bool $useFactory = true;
     private bool $useSeeder  = false;
     private bool $useMigrate = true;
+    private ?string $table = null;
+    private ?string $connection = null;
+    private ?SchemaBuilderService $schema = null;
 
     /**
      * The console command name.
@@ -28,7 +34,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
      *
      * @var string
      */
-    protected $signature = 'gsferro:resource-crud-model {entite : Entite name} {--factory} {--seeder} {--migrate}';
+    protected $signature = 'gsferro:resource-crud-model {entite : Entite name} {--table=} {--connection=} {--factory} {--seeder} {--migrate}';
 
     /**
      * The console command description.
@@ -115,6 +121,8 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
 
     private function verifyParams()
     {
+        $this->verifyDatabase($connection);
+
         $this->useFactory = (bool)($this->option('factory') ? : $this->confirm('Create Factory?', true));
         $this->useSeeder  = (bool)($this->option('seeder')  ? : $this->confirm('Create Seeder?', !$this->useFactory));
         $this->useMigrate = (bool)($this->option('migrate') ? : $this->confirm('Create Migrate?', true));
@@ -213,7 +221,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         $path     = 'tests\Unit\\' . $this->entite . '\Model\\' . $this->entite . 'Test.php';
         $this->generate($path, 'tests/unit/model', 'PestTest Unit Models');
     }
-    
+
     private function generatePestUnitFactory(): void
     {
         if (!$this->useFactory) {
@@ -222,7 +230,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         $path     = 'tests\Unit\\' . $this->entite . '\Factory\\' . $this->entite . 'FactoryTest.php';
         $this->generate($path, 'tests/unit/factory', 'PestTest Unit Factory');
     }
-    
+
     private function generatePestUnitSeeder(): void
     {
         if (!$this->useSeeder) {
@@ -231,7 +239,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         $path     = 'tests\Unit\\' . $this->entite . '\Seeder\\' . $this->entite . 'SeederTest.php';
         $this->generate($path, 'tests/unit/seeder', 'PestTest Unit Seeder');
     }
-    
+
     /*
     |---------------------------------------------------
     | Override
@@ -251,15 +259,17 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             '/\{{ bloco_pest_model_use_factory }}/' => $this->applyReplaceBlocoFactory(),
         ];
 
+//        if ()
+
         $localStub = preg_replace(
             array_keys($params),
             array_values($params),
             $stub
         );
-        
+
         return parent::applyReplace($localStub);
     }
-    
+
     /*
     |---------------------------------------------------
     | Blocos
@@ -267,8 +277,32 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     */
     private function applyReplaceBlocoFactory()
     {
-        return $this->useFactory 
+        return $this->useFactory
             ? $this->files->get($this->getStubEntite('ifs/pest_model_use_factory'))
             : '';
+    }
+
+    /**
+     * @param $connection
+     * @throws \Throwable
+     */
+    private function verifyDatabase($connection): void
+    {
+        /*
+                |---------------------------------------------------
+                | From Database
+                |---------------------------------------------------
+                */
+        $this->table      = (bool)$this->option('table') ? $this->option('table') : null;
+        $this->connection = (bool)$this->option('connection') ? $this->option('connection') : null;
+
+        throw_if(!in_array($this->connection, array_keys(config('database.connections'))),
+            \Exception::class,
+            "connection [ {$this->connection} ] not configured in your config database connections"
+        );
+
+        if (!is_null($this->table)) {
+            $this->schema = new SchemaBuilderService($this->table, $connection);
+        }
     }
 }

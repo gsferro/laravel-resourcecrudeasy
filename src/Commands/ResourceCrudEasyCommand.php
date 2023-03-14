@@ -29,7 +29,7 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
      *
      * @var string
      */
-    protected $signature = 'gsferro:resource-crud {entite : Entite name}';
+    protected $signature = 'gsferro:resource-crud {entite : Entite name} {--table=} {--connection=} {--api}';
 
     /**
      * The console command description.
@@ -47,6 +47,14 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
     {
         $this->entite = ucfirst($this->argument('entite'));
         $this->str    = Str::of($this->entite);
+
+        /*
+        |---------------------------------------------------
+        | From Database 
+        |---------------------------------------------------
+        */
+        $table      = $this->option('table');
+        $connection = $this->option('connection');
 
         /*
         |---------------------------------------------------
@@ -74,7 +82,9 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
             |---------------------------------------------------
             */
             $this->call('gsferro:resource-crud-model', [
-                "entite" => "{$this->entite}",
+                "entite"       => "{$this->entite}",
+                "--table"      => "{$table}",
+                "--connection" => "{$connection}",
             ]);
 
             /*
@@ -198,7 +208,7 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
         $routeContents .= "\n\n".$contents;
         $this->put($path, $routeContents, 'Route Web Updated:');
     }
-    
+
     /*
     |---------------------------------------------------
     | Override

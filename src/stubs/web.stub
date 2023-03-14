@@ -1,11 +1,13 @@
-Route::resource('{{ class_route_slug_plural }}', App\Http\Controllers\{{ class }}Controller::class, [
-     'names' => [
-         'index'   => '{{ class_route_slug }}.index',
-         'edit'    => '{{ class_route_slug }}.edit',
-         'create'  => '{{ class_route_slug }}.create',
-         'store'   => '{{ class_route_slug }}.store',
-         'update'  => '{{ class_route_slug }}.update',
-         // 'show'    => '{{ class_route_slug }}.show',
-         // 'destroy' => '{{ class_route_slug }}.delete',
-     ]
-])->except(['show', 'destroy']);
+Route::group(['name' => '{{ class_route_slug }}.'], function () {
+    Route::resource('{{ class_route_slug_plural }}', App\Http\Controllers\{{ class }}Controller::class, [
+         'names' => [
+             'index'   => 'index',
+             'edit'    => 'edit',
+             'create'  => 'create',
+             'store'   => 'store',
+             'update'  => 'update',
+             // 'show'    => 'show',
+             // 'destroy' => 'delete',
+         ]
+    ])->except(['show', 'destroy']);
+});
