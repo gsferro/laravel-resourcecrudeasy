@@ -121,7 +121,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
 
     private function verifyParams()
     {
-        $this->verifyDatabase($connection);
+        $this->verifyDatabase();
 
         $this->useFactory = (bool)($this->option('factory') ? : $this->confirm('Create Factory?', true));
         $this->useSeeder  = (bool)($this->option('seeder')  ? : $this->confirm('Create Seeder?', !$this->useFactory));
@@ -286,23 +286,25 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
      * @param $connection
      * @throws \Throwable
      */
-    private function verifyDatabase($connection): void
+    private function verifyDatabase(): void
     {
         /*
-                |---------------------------------------------------
-                | From Database
-                |---------------------------------------------------
-                */
+        |---------------------------------------------------
+        | From Database
+        |---------------------------------------------------
+        */
         $this->table      = (bool)$this->option('table') ? $this->option('table') : null;
         $this->connection = (bool)$this->option('connection') ? $this->option('connection') : null;
 
-        throw_if(!in_array($this->connection, array_keys(config('database.connections'))),
+        throw_if(
+            !is_null($this->connection) &&
+            !in_array($this->connection, array_keys(config('database.connections'))),
             \Exception::class,
             "connection [ {$this->connection} ] not configured in your config database connections"
         );
 
         if (!is_null($this->table)) {
-            $this->schema = new SchemaBuilderService($this->table, $connection);
+            $this->schema = new SchemaBuilderService($this->table, $this->connection);
         }
     }
 }

@@ -3,6 +3,7 @@
 namespace Gsferro\ResourceCrudEasy\Services;
 
 use Illuminate\Database\Connection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use \Illuminate\Database\Schema\Builder;
 use \Illuminate\Support\Facades\DB;
 
@@ -15,6 +16,21 @@ class SchemaBuilderService
     {
         $this->connection = DB::connection($connection);
         $this->builder    = $this->connection->getSchemaBuilder();
+        
+        throw_if(!$this->hasTable(),
+            ModelNotFoundException::class,
+            "Table [ {$this->table} ] not exists in database using connection [ {$this->connection->getDriverName()} ]"
+        );
+    }
+
+    /**
+     * Verifica se a table exists
+     * 
+     * @return bool
+     */
+    public function hasTable(): bool
+    {
+        return $this->builder->hasTable($this->table);
     }
 
     /**
