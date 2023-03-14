@@ -30,7 +30,7 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
     protected function messageWellcome(): void
     {
         $this->br();
-        $this->comment("  _____                                                         _____                      _
+        $this->info("  _____                                                         _____                      _
  |  __ \                                                       / ____|                    | |
  | |__) |   ___   ___    ___    _   _   _ __    ___    ___    | |       _ __   _   _    __| |
  |  _  /   / _ \ / __|  / _ \  | | | | | '__|  / __|  / _ \   | |      | '__| | | | |  / _` |

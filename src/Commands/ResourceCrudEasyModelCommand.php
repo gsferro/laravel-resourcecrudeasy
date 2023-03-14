@@ -19,7 +19,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     private bool $useFactory = true;
     private bool $useSeeder  = false;
     private bool $useMigrate = true;
-    
+
     // exists table
     private ?string               $table      = null;
     private ?string               $connection = null;
@@ -98,7 +98,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             |---------------------------------------------------
             */
             $this->generateModel();
-//            dd(1);
+            dd(1);
             $this->generateFactory();
             $this->generateSeeder();
             $this->generateMigrate();
@@ -261,7 +261,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             |---------------------------------------------------
             */
 //            '/\{{ HasManys }}/' => '{{ HasManys }}',
-            
+
             /*
             |---------------------------------------------------
             | Blocos
@@ -327,7 +327,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             $stub
         );
     }
-    
+
     /**
      * @param string $type
      * @param array $params
@@ -409,7 +409,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             if ($this->schema->isPrimaryKey($column) && $columnType == 'string') {
                 $pkString = $this->getStubModelPkString($column);
             }
-            // não exibe 
+            // não exibe
             if ($this->schema->isPrimaryKey($column)) {
                 continue;
             }
@@ -417,12 +417,8 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             // fillable
             $this->interpolate($fillable, "{$str}, ");
 
-            // store
-            $store = "{$columnType}";
-            if ($this->schema->getDoctrineColumn($column)[ "notnull" ]) {
-                $store .= "|required";
-            }
-            $this->interpolate($rulesStore, "{$str} => '{$store}', ");
+            // regras para colocar no rules['store']
+            $this->rulesStore($columnType, $column, $rulesStore, $str);
 
             // casts
             $this->interpolate($casts, "{$str} => '{$columnType}', ");
@@ -432,7 +428,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             if ($foreinsKey !== false) {
                 $belongto = $this->getStubRelatios('belongto', $foreinsKey);
                 $this->interpolate($relations, $belongto);
-                
+
                 // TODO Set hasone Or hasMany in Model
                 $this->applyRelationHasInTableForeingKey($foreinsKey);
             }
@@ -456,7 +452,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
 
     /**
      * quando estiver em uma table que tiver um belongto, vai no relacionamento e aplica o hasMany
-     * 
+     *
      * @param array $foreinsKey
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
@@ -473,12 +469,12 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
 
         // pega todo o arquivo
         $fileContents = file_get_contents($base);
-        
+
         // caso já tenha sido configurado
         if (str_contains($fileContents, $this->str->camel().'()')){
             return;
         }
-        
+
         // prepara o stub
         $hasManyStub = $this->getStubRelatios($type, $foreinsKey + [
             // override
@@ -496,5 +492,26 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             array_values($params),
             $fileContents
         ));
+    }
+
+    /**
+     * @param string $columnType
+     * @param mixed $column
+     * @param string $rulesStore
+     * @param string $str
+     */
+    private function rulesStore(string $columnType, mixed $column, string &$rulesStore, string $str): void
+    {
+        // store
+        $store = "{$columnType}";
+        // proteção contra type
+        if ($store == "guid") {
+            $store = "uuid";
+        }
+
+        if ($this->schema->getDoctrineColumn($column)[ "notnull" ]) {
+            $store .= "|required";
+        }
+        $this->interpolate($rulesStore, "{$str} => '{$store}', ");
     }
 }
