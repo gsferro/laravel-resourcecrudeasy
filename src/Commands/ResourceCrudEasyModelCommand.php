@@ -264,40 +264,85 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             | Default not table
             |---------------------------------------------------
             */
-            '/\{{ fillable }}/' => '',
-            '/\{{ cast }}/' => '',
+            '/\{{ pk_string }}/'   => '',
+            '/\{{ BelongsTo }}/'   => '',
+            '/\{{ fillable }}/'    => '',
+            '/\{{ cast }}/'        => '',
+            '/\{{ relations }}/'   => '',
+            '/\{{ rules_store }}/'  => '',
+            '/\{{ rules_update }}/' => '',
         ];
 
         /*
         |---------------------------------------------------
-        | Gerenate by table
+        | Especifico Models
         |---------------------------------------------------
         */
         if (!is_null($this->table)) {
-            $columnListings = $this->schema->getColumnListing(false);
-            $fillable       = "";
-            $casts          = "";
+            // prepara variaveis
+            $pkString  = "";
+            $fillable   = "";
+            $rulesStore = "";
+            $casts      = "";
+            $relations  = "";
             
+            // buscar colunas
+            $columnListings = $this->schema->getColumnListing();
+
             // para colocar elegantemente no arquivo
             foreach ($columnListings as $column) {
-                $str = "'{$column}'";
+                $str        = "'{$column}'";
+                $columnType = $this->schema->getColumnType($column);
+                
+                // caso a pk seja string
+                if ($this->schema->isPrimaryKey($column) && $columnType == 'string') {
+                    $pkString = $this->getStubModelPkString($column);
+                }
+                // não exibe 
+                if ($this->schema->isPrimaryKey($column)) {
+                    continue;
+                }
+
+                // fillable
                 $this->interpolate($fillable, "{$str}, ");
-                $this->interpolate($casts, "{$str} => '{$this->schema->getColumnType($column)}', ");
+
+                // store
+                $store = "{$columnType}";
+                if ($this->schema->getDoctrineColumn($column)[ "notnull" ]) {
+                    $store .= "|required";
+                }
+                $this->interpolate($rulesStore, "{$str} => '{$store}', ");
+
+                // casts
+                $this->interpolate($casts, "{$str} => '{$columnType}', ");
+
+                // relations
+                $foreinsKey = $this->schema->hasForeinsKey($column, true);
+                if ($foreinsKey !== false) {
+                    $belongto = $this->getStubRelatios('belongto', $foreinsKey);
+                    $this->interpolate($relations, $belongto);
+                }
             }
 
             $params = [
-                '/\{{ fillable }}/' => $fillable,
-                '/\{{ cast }}/'     => $casts,
+                '/\{{ pk_string }}/' => $pkString,
+                '/\{{ fillable }}/'  => $fillable,
+                '/\{{ cast }}/'      => $casts,
+                '/\{{ relations }}/' => $relations,
+                '/\{{ BelongsTo }}/' => 'use Illuminate\Database\Eloquent\Relations\BelongsTo;',
+
+                // Nome tabela
+                '/\{{ class_table }}/' => $this->table,
+                '/\{{ rules_store }}/'  => $rulesStore,
+                '/\{{ rules_update }}/' => $casts, // default
             ] + $params;
         }
 
-        $localStub = preg_replace(
+        return parent::applyReplace(preg_replace(
             array_keys($params),
             array_values($params),
             $stub
-        );
-
-        return parent::applyReplace($localStub);
+        ));
     }
 
     /*
@@ -310,6 +355,41 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         return $this->useFactory
             ? $this->files->get($this->getStubEntite('ifs/pest_model_use_factory'))
             : '';
+    }
+
+    /**
+     * @param string $type
+     * @param array $params
+     * @return array|string|string[]|null
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    private function getStubRelatios(string $type, array $params)
+    {
+        $stub = $this->files->get($this->getStubEntite('relations/' . $type));
+        return preg_replace(
+            array_keys($params),
+            array_values($params),
+            $stub
+        );
+    }
+    
+    /**
+     * @param string $type
+     * @param array $params
+     * @return array|string|string[]|null
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    private function getStubModelPkString(string $column)
+    {
+        $params = [
+            '/\{{ primaryKey }}/' => $column
+        ];
+        $stub = $this->files->get($this->getStubEntite('ifs/model_pk_string'));
+        return preg_replace(
+            array_keys($params),
+            array_values($params),
+            $stub
+        );
     }
 
     /**
@@ -338,11 +418,13 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         }
     }
 
-
+    /**
+     * @param string $string
+     * @param string $add
+     * @param null $delimiter
+     */
     private function interpolate(string &$string, string $add, $delimiter = null)
     {
-//        $delimiter = $delimiter ?? $this->delimiter;
         $string .= (strlen($string) == 0 ? $delimiter : '        ' ).$add. PHP_EOL;
     }
-
 }

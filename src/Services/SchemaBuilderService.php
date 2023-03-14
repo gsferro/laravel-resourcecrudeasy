@@ -6,6 +6,7 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use \Illuminate\Database\Schema\Builder;
 use \Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class SchemaBuilderService
 {
@@ -16,7 +17,7 @@ class SchemaBuilderService
     {
         $this->connection = DB::connection($connection);
         $this->builder    = $this->connection->getSchemaBuilder();
-        
+
         throw_if(!$this->hasTable(),
             ModelNotFoundException::class,
             "Table [ {$this->table} ] not exists in database using connection [ {$this->connection->getDriverName()} ]"
@@ -25,7 +26,7 @@ class SchemaBuilderService
 
     /**
      * Verifica se a table exists
-     * 
+     *
      * @return bool
      */
     public function hasTable(): bool
@@ -35,7 +36,7 @@ class SchemaBuilderService
 
     /**
      * Retorna todas as colunas da table
-     * 
+     *
      * @param bool $includePrimaryKeys true
      * @return array
      */
@@ -59,7 +60,7 @@ class SchemaBuilderService
 
     /**
      * Pega todos os tipos das colunas
-     * 
+     *
      * @param array $columns
      * @return array
      */
@@ -100,18 +101,18 @@ class SchemaBuilderService
 
     /**
      * verifica se a coluna é pk
-     * 
+     *
      * @param string $column
      * @return bool
      */
-    private function isPrimaryKey(string $column): bool
+    public function isPrimaryKey(string $column): bool
     {
         return in_array($column, $this->primaryKeys());
     }
 
     /**
      * Retorna as chaves pks
-     * 
+     *
      * @return array
      */
     public function primaryKeys(): array
@@ -126,19 +127,81 @@ class SchemaBuilderService
     /**
      * Verifica se a table já existe model eloquent criada
      * retorna a model ou false
-     * 
+     *
+     * @param string|null $table
      * @return bool|string
      */
-    public function hasModelWithTableName(): bool|string
+    public function hasModelWithTableName(string $table = null): bool|string
     {
         $path   = app_path('Models') . '/*.php';
         $models = collect(glob($path))->map(fn($file) => basename($file, '.php'))->toArray();
 
         foreach ($models as $model) {
             $instance = "App\Models\\$model";
-            $table    = (new $instance)->getTable();
-            if ($table == $this->table) {
+            $getTable    = (new $instance)->getTable();
+            if ($getTable == $table ?? $this->table) {
                 return $instance;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Todas as tabelas da conexão
+     *
+     * @return array
+     */
+    public function getAllTables(): array
+    {
+       return $this->connection->getDoctrineSchemaManager()->listTableNames();
+    }
+
+    /**
+     * Verifica se a coluna é uma foreing key e devolve os dados do relacionamento
+     *
+     * @param string $column
+     * @param bool $fromStubReplace
+     * @return bool|array
+     */
+    public function hasForeinsKey(string $column, bool $fromStubReplace = false): bool|array
+    {
+        $foreignKeys = $this->connection
+            ->getDoctrineSchemaManager()
+            ->listTableForeignKeys($this->table);
+
+        $keys = !$fromStubReplace
+            ? [
+                'table',
+                'tableCamel',
+                'related',
+                'relatedInstance',
+                'foreignKey',
+                'ownerKey',
+            ]
+            : [
+                '/\{{ table }}/',
+                '/\{{ tableCamel }}/',
+                '/\{{ related }}/',
+                '/\{{ relatedInstance }}/',
+                '/\{{ foreignKey }}/',
+                '/\{{ ownerKey }}/',
+            ];
+
+        foreach ($foreignKeys as $foreingnKey) {
+            if (in_array($column, $foreingnKey->getLocalColumns())) {
+                $tableName       = $foreingnKey->getForeignTableName();
+                // todo quando não houver, criar?
+                $relatedInstance = $this->hasModelWithTableName($tableName);
+
+                return array_combine($keys, [
+                    $tableName,
+                    Str::of($tableName)->camel(),
+                    Str::of($relatedInstance)->replace('App\Models\\', ''),
+                    $relatedInstance,
+                    $column,
+                    current($foreingnKey->getForeignColumns()),
+                ]);
             }
         }
 

@@ -1,0 +1,3 @@
+protected $primaryKey = '{{ primaryKey }}';
+    protected $keyType = "string";
+    public $incrementing = false;

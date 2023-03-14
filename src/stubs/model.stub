@@ -6,6 +6,7 @@ use Gsferro\ResourceCrudEasy\Models\AppBaseModel;
 use YourAppRocks\EloquentUuid\Traits\HasUuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
+{{ BelongsTo }}
 
 class {{ class }} extends AppBaseModel
 {
@@ -23,11 +24,8 @@ class {{ class }} extends AppBaseModel
     | Configs Table
     |---------------------------------------------------
     */
-
-    /**
-     * @var string
-     */
     public $table = '{{ class_table }}';
+    {{ pk_string }}
 
     // protected $dates = ['deleted_at'];
 
@@ -55,16 +53,15 @@ class {{ class }} extends AppBaseModel
     | TODO package autovalidate
     |
     */
-
     /**
      * Validation rules
      */
     public static array $rules = [
         'store' => [
-
+        {{ rules_store }}
         ],
         'update' => [
-
+        {{ rules_update }}
         ],
     ];
 
@@ -73,11 +70,5 @@ class {{ class }} extends AppBaseModel
     | Relationships
     |---------------------------------------------------
     */
-
-    /*
-    |---------------------------------------------------
-    | Scopes Locais | Globais
-    |---------------------------------------------------
-    */
-
+    {{ relations }}
 }

@@ -72,11 +72,7 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
             '/\{{ class_title }}/'  => $this->str->snake()->title()->replace('_', ' '),
             '/\{{ model }}/'        => $this->str,
 
-            /*
-            |---------------------------------------------------
-            | Especifico Models
-            |---------------------------------------------------
-            */
+            // Nome tabela
             '/\{{ class_table }}/' => $this->str->snake()->plural(),
 
             /*
