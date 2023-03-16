@@ -2,7 +2,7 @@
 
 namespace Gsferro\ResourceCrudEasy\Commands;
 
-use Gsferro\ResourceCrudEasy\Services\SchemaBuilderService;
+use Gsferro\DatabaseSchemaEasy\DatabaseSchemaEasy;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Stringable;
 use Symfony\Component\Console\Input\InputArgument;
 use Illuminate\Support\Str;
-use function PHPUnit\Framework\isNan;
-use function PHPUnit\Framework\isNull;
 
 class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
 {
@@ -21,9 +19,10 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     private bool $useMigrate = true;
 
     // exists table
-    private ?string               $table      = null;
-    private ?string               $connection = null;
-    private ?SchemaBuilderService $schema     = null;
+    private ?string             $table         = null;
+    private ?string             $connection    = null;
+    private ?DatabaseSchemaEasy $schema        = null;
+    private array               $columnListing = [];
 
     /**
      * The console command name.
@@ -98,7 +97,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             |---------------------------------------------------
             */
             $this->generateModel();
-            dd(1);
+            //            dd(1);
             $this->generateFactory();
             $this->generateSeeder();
             $this->generateMigrate();
@@ -118,6 +117,16 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             $this->generatePestUnitFactory();
             $this->generatePestUnitSeeder();
 
+            /*
+            |---------------------------------------------------
+            | Write Files Creates
+            |---------------------------------------------------
+            */
+            foreach ($this->messages as $message => $file) {
+                //                $this->message($message, )
+                dump($message, $file);
+            }
+
         } catch (\Exception $e) {
             dump('Ops...', $e->getMessage());
         }
@@ -130,9 +139,9 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         $this->useFactory = (bool)($this->option('factory') ? : $this->confirm('Create Factory?', true));
         $this->useSeeder  = (bool)($this->option('seeder')  ? : $this->confirm('Create Seeder?', !$this->useFactory));
         $this->useMigrate = (bool)($this->option('migrate') ? : $this->confirm('Create Migrate?', true));
-//        $this->createDash   = (bool) ($this->option('dashboard') ?: $this->confirm('Create Dashboard?', true));
-//        $this->createImport = (bool) ($this->option('import')    ?: $this->confirm('Create Import Excel?', true));
-//        $this->createModal  = (bool) ($this->option('modal')     ?: $this->confirm('Create Modal?', false));
+        //        $this->createDash   = (bool) ($this->option('dashboard') ?: $this->confirm('Create Dashboard?', true));
+        //        $this->createImport = (bool) ($this->option('import')    ?: $this->confirm('Create Import Excel?', true));
+        //        $this->createModal  = (bool) ($this->option('modal')     ?: $this->confirm('Create Modal?', false));
     }
 
     /*
@@ -260,7 +269,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             | aplica o relacionamento invertido
             |---------------------------------------------------
             */
-//            '/\{{ HasManys }}/' => '{{ HasManys }}',
+            //            '/\{{ HasManys }}/' => '{{ HasManys }}',
 
             /*
             |---------------------------------------------------
@@ -291,6 +300,9 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         */
         if (!is_null($this->table)) {
             $params = $this->modelWithExistsTable($params);
+            //            $params = $this->factoryWithExistsTable($params);
+            //            $params = $this->seederWithExistsTable($params);
+            //            $params = $this->migrateWithExistsTable($params);
         }
 
         return parent::applyReplace(preg_replace(
@@ -299,6 +311,21 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             $stub
         ));
     }
+
+    private function factoryWithExistsTable(array $params): array
+    {
+        if (!$this->useFactory ) {
+            return [];
+        }
+
+        // prepara variaveis
+        $fillable   = "";
+        $relations  = "";
+
+        // buscar colunas
+        $columnListings = $this->schema->getColumnListing();
+    }
+
 
     /*
     |---------------------------------------------------
@@ -369,7 +396,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         );
 
         if (!is_null($this->table)) {
-            $this->schema = new SchemaBuilderService($this->table, $this->connection);
+            $this->schema = dbSchemaEasy($this->table, $this->connection);
         }
     }
 
@@ -435,19 +462,19 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         }
 
         return [
-            '/\{{ pk_string }}/'  => $pkString,
-            '/\{{ timestamps }}/' => !$this->schema->hasColumnsTimestamps() ? 'public $timestamps = false;' : '',
-            '/\{{ fillable }}/'   => $fillable,
-            '/\{{ cast }}/'       => $casts,
-            '/\{{ relations }}/'  => $relations,
-            '/\{{ belongs_to_relation }}/'  => 'use Illuminate\Database\Eloquent\Relations\BelongsTo;',
-//            '/\{{ has_many_relation }}/'    => 'use Illuminate\Database\Eloquent\Relations\HasMany;',
+                '/\{{ pk_string }}/'  => $pkString,
+                '/\{{ timestamps }}/' => !$this->schema->hasColumnsTimestamps() ? 'public $timestamps = false;' : '',
+                '/\{{ fillable }}/'   => $fillable,
+                '/\{{ cast }}/'       => $casts,
+                '/\{{ relations }}/'  => $relations,
+                '/\{{ belongs_to_relation }}/'  => 'use Illuminate\Database\Eloquent\Relations\BelongsTo;',
+                //            '/\{{ has_many_relation }}/'    => 'use Illuminate\Database\Eloquent\Relations\HasMany;',
 
-            // Nome tabela
-            '/\{{ class_table }}/'  => $this->table,
-            '/\{{ rules_store }}/'  => $rulesStore,
-            '/\{{ rules_update }}/' => $casts, // default
-        ] + $params;
+                // Nome tabela
+                '/\{{ class_table }}/'  => $this->table,
+                '/\{{ rules_store }}/'  => $rulesStore,
+                '/\{{ rules_update }}/' => $casts, // default
+            ] + $params;
     }
 
     /**
@@ -477,10 +504,10 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
 
         // prepara o stub
         $hasManyStub = $this->getStubRelatios($type, $foreinsKey + [
-            // override
-            '/\{{ class }}/'       => $this->str,
-            '/\{{ class_camel }}/' => $this->str->camel(),
-        ]);
+                // override
+                '/\{{ class }}/'       => $this->str,
+                '/\{{ class_camel }}/' => $this->str->camel(),
+            ]);
         $params = [
             // relation
             '/\/\/\ \{{ HasManys }}/'    => $hasManyStub,
