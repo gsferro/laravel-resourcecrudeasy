@@ -3,6 +3,7 @@
 namespace Gsferro\ResourceCrudEasy\Commands;
 
 use Gsferro\DatabaseSchemaEasy\DatabaseSchemaEasy;
+use Gsferro\ResourceCrudEasy\Traits\WithExistsTableCommand;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
@@ -13,6 +14,8 @@ use Illuminate\Support\Str;
 
 class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
 {
+    use WithExistsTableCommand;
+
     // classes de apoio
     private bool $useFactory = true;
     private bool $useSeeder  = false;
@@ -36,7 +39,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
      *
      * @var string
      */
-    protected $signature = 'gsferro:resource-crud-model {entite : Entite name} {--table=} {--connection=} {--factory} {--seeder} {--migrate}';
+    protected $signature = 'gsferro:resource-crud-model {entite : Entite name} {--table=} {--connection=} {--factory} {--seeder} {--migrate} {--not-wellcome}';
 
     /**
      * The console command description.
@@ -60,7 +63,11 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         | Wellcome package
         |---------------------------------------------------
         */
-        $this->messageWellcome();
+        if (!$this->option('not-wellcome')) {
+            $this->messageWellcome();
+        }
+        
+        $this->info("Preper to Create [ {$this->entite} ]:");
 
         /*
         |---------------------------------------------------
@@ -122,10 +129,10 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             | Write Files Creates
             |---------------------------------------------------
             */
-            foreach ($this->messages as $message => $file) {
-                //                $this->message($message, )
-                dump($message, $file);
-            }
+//            foreach ($this->messages as $message => $file) {
+//                                $this->message($message, )
+//                dump($message, $file);
+//            }
 
         } catch (\Exception $e) {
             dump('Ops...', $e->getMessage());
@@ -299,10 +306,10 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         |---------------------------------------------------
         */
         if (!is_null($this->table)) {
-            $params = $this->modelWithExistsTable($params);
-            //            $params = $this->factoryWithExistsTable($params);
-            //            $params = $this->seederWithExistsTable($params);
-            //            $params = $this->migrateWithExistsTable($params);
+            $params = $this->modelTable($params);
+//            $params = $this->factoryTable($params);
+//            $params = $this->seederWithExistsTable($params);
+//            $params = $this->migrateWithExistsTable($params);
         }
 
         return parent::applyReplace(preg_replace(
@@ -310,20 +317,6 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             array_values($params),
             $stub
         ));
-    }
-
-    private function factoryWithExistsTable(array $params): array
-    {
-        if (!$this->useFactory ) {
-            return [];
-        }
-
-        // prepara variaveis
-        $fillable   = "";
-        $relations  = "";
-
-        // buscar colunas
-        $columnListings = $this->schema->getColumnListing();
     }
 
 
@@ -396,7 +389,8 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         );
 
         if (!is_null($this->table)) {
-            $this->schema = dbSchemaEasy($this->table, $this->connection);
+            $this->schema        = dbSchemaEasy($this->table, $this->connection);
+            $this->columnListing = $this->schema->getColumnListing();
         }
     }
 
@@ -408,73 +402,6 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     private function interpolate(string &$string, string $add, $delimiter = null)
     {
         $string .= (strlen($string) == 0 ? $delimiter : '        ' ).$add. PHP_EOL;
-    }
-
-    /**
-     * @param array $params
-     * @return array
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     */
-    private function modelWithExistsTable(array $params): array
-    {
-        // prepara variaveis
-        $pkString   = "";
-        $fillable   = "";
-        $rulesStore = "";
-        $casts      = "";
-        $relations  = "";
-
-        // buscar colunas
-        $columnListings = $this->schema->getColumnListing();
-
-        // para colocar elegantemente no arquivo
-        foreach ($columnListings as $column) {
-            $str        = "'{$column}'";
-            $columnType = $this->schema->getColumnType($column);
-
-            // caso a pk seja string
-            if ($this->schema->isPrimaryKey($column) && $columnType == 'string') {
-                $pkString = $this->getStubModelPkString($column);
-            }
-            // não exibe
-            if ($this->schema->isPrimaryKey($column)) {
-                continue;
-            }
-
-            // fillable
-            $this->interpolate($fillable, "{$str}, ");
-
-            // regras para colocar no rules['store']
-            $this->rulesStore($columnType, $column, $rulesStore, $str);
-
-            // casts
-            $this->interpolate($casts, "{$str} => '{$columnType}', ");
-
-            // relations
-            $foreinsKey = $this->schema->hasForeinsKey($column, true);
-            if ($foreinsKey !== false) {
-                $belongto = $this->getStubRelatios('belongto', $foreinsKey);
-                $this->interpolate($relations, $belongto);
-
-                // TODO Set hasone Or hasMany in Model
-                $this->applyRelationHasInTableForeingKey($foreinsKey);
-            }
-        }
-
-        return [
-                '/\{{ pk_string }}/'  => $pkString,
-                '/\{{ timestamps }}/' => !$this->schema->hasColumnsTimestamps() ? 'public $timestamps = false;' : '',
-                '/\{{ fillable }}/'   => $fillable,
-                '/\{{ cast }}/'       => $casts,
-                '/\{{ relations }}/'  => $relations,
-                '/\{{ belongs_to_relation }}/'  => 'use Illuminate\Database\Eloquent\Relations\BelongsTo;',
-                //            '/\{{ has_many_relation }}/'    => 'use Illuminate\Database\Eloquent\Relations\HasMany;',
-
-                // Nome tabela
-                '/\{{ class_table }}/'  => $this->table,
-                '/\{{ rules_store }}/'  => $rulesStore,
-                '/\{{ rules_update }}/' => $casts, // default
-            ] + $params;
     }
 
     /**

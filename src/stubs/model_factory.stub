@@ -73,13 +73,13 @@ class {{ class }} extends AppBaseModel
 
     /*
     |---------------------------------------------------
-    | Relationships - BelongsTo
+    | relacionamento - BelongsTo
     |---------------------------------------------------
     */
     {{ relations }}
     /*
     |---------------------------------------------------
-    | Relationships - HasManys
+    | Relationships - HasM
     |---------------------------------------------------
     */
     //{{ HasManys }}

@@ -29,7 +29,7 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
      *
      * @var string
      */
-    protected $signature = 'gsferro:resource-crud {entite : Entite name} {--table=} {--connection=} {--api}';
+    protected $signature = 'gsferro:resource-crud {entite : Entite name} {--table=} {--connection=} {--api} {--factory} {--seeder} {--migrate} {--not-wellcome}';
 
     /**
      * The console command description.
@@ -53,8 +53,12 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
         | From Database 
         |---------------------------------------------------
         */
-        $table      = $this->option('table');
-        $connection = $this->option('connection');
+        $table       = $this->option('table');
+        $connection  = $this->option('connection');
+        $factory     = $this->option('factory') ?? null;
+        $seeder      = $this->option('seeder') ?? null;
+        $migrate     = $this->option('migrate') ?? null;
+        $notWellcome = $this->option('not-wellcome') ?? null;
 
         /*
         |---------------------------------------------------
@@ -82,9 +86,13 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
             |---------------------------------------------------
             */
             $this->call('gsferro:resource-crud-model', [
-                "entite"       => "{$this->entite}",
-                "--table"      => "{$table}",
-                "--connection" => "{$connection}",
+                'entite'         => $this->entite,
+                '--table'        => $table,
+                '--connection'   => $connection,
+                '--factory'      => $factory,
+                '--seeder'       => $seeder,
+                '--migrate'      => $migrate,
+                '--not-wellcome' => $notWellcome,
             ]);
 
             /*
