@@ -4,12 +4,6 @@ namespace Gsferro\ResourceCrudEasy\Commands;
 
 use Gsferro\DatabaseSchemaEasy\DatabaseSchemaEasy;
 use Gsferro\ResourceCrudEasy\Traits\WithExistsTableCommand;
-use Illuminate\Console\GeneratorCommand;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Stringable;
-use Symfony\Component\Console\Input\InputArgument;
 use Illuminate\Support\Str;
 
 class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
@@ -27,6 +21,9 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     private ?DatabaseSchemaEasy $schema        = null;
     private array               $columnListing = [];
 
+    // controle de recursividade
+    private array $entites = [];
+
     /**
      * The console command name.
      *
@@ -39,7 +36,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
      *
      * @var string
      */
-    protected $signature = 'gsferro:resource-crud-model {entite : Entite name} {--table=} {--connection=} {--factory} {--seeder} {--migrate} {--not-wellcome}';
+    protected $signature = 'gsferro:resource-crud-model {entite : Entite name} {--table=} {--connection=} {--factory} {--seeder} {--migrate}';
 
     /**
      * The console command description.
@@ -48,26 +45,9 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
      */
     protected $description = 'Generate all files for new Model!';
 
-    /**
-     * Execute the console command.
-     *
-     * @return int
-     */
-    public function handle()
+    private function exec(string $entite, ?string $table = null, ?string $connection = null)
     {
-        $this->entite = ucfirst($this->argument('entite'));
-        $this->str    = Str::of($this->entite);
-
-        /*
-        |---------------------------------------------------
-        | Wellcome package
-        |---------------------------------------------------
-        */
-        if (!$this->option('not-wellcome')) {
-            $this->messageWellcome();
-        }
-        
-        $this->info("Preper to Create [ {$this->entite} ]:");
+        $this->info("Preper to Create [ {$entite} ]:");
 
         /*
         |---------------------------------------------------
@@ -75,7 +55,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         |---------------------------------------------------
         */
         // todo configuração
-        $this->verifyParams();
+        $this->verifyParams($entite, $table, $connection);
 
         /*
         |---------------------------------------------------
@@ -103,11 +83,11 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             | Criar Models
             |---------------------------------------------------
             */
-            $this->generateModel();
-            //            dd(1);
-            $this->generateFactory();
-            $this->generateSeeder();
-            $this->generateMigrate();
+            $this->generateModel($entite);
+            $this->generateFactory($entite);
+            $this->generateSeeder($entite);
+            return ;
+            $this->generateMigrate($entite);
 
             /*
             |---------------------------------------------------
@@ -120,35 +100,72 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             |   - Seeder
             |
             */
-            $this->generatePestUnitModel();
-            $this->generatePestUnitFactory();
-            $this->generatePestUnitSeeder();
+            $this->generatePestUnitModel($entite);
+            $this->generatePestUnitFactory($entite);
+            $this->generatePestUnitSeeder($entite);
 
             /*
             |---------------------------------------------------
             | Write Files Creates
             |---------------------------------------------------
             */
-//            foreach ($this->messages as $message => $file) {
-//                                $this->message($message, )
-//                dump($message, $file);
-//            }
+            //            foreach ($this->messages as $message => $file) {
+            //                                $this->message($message, )
+            //                dump($message, $file);
+            //            }
 
         } catch (\Exception $e) {
             dump('Ops...', $e->getMessage());
         }
     }
 
-    private function verifyParams()
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
+    public function handle()
     {
-        $this->verifyDatabase();
+        $this->entite = ucfirst($this->argument('entite'));
+        $this->str    = Str::of($this->entite);
 
-        $this->useFactory = (bool)($this->option('factory') ? : $this->confirm('Create Factory?', true));
-        $this->useSeeder  = (bool)($this->option('seeder')  ? : $this->confirm('Create Seeder?', !$this->useFactory));
-        $this->useMigrate = (bool)($this->option('migrate') ? : $this->confirm('Create Migrate?', true));
-        //        $this->createDash   = (bool) ($this->option('dashboard') ?: $this->confirm('Create Dashboard?', true));
-        //        $this->createImport = (bool) ($this->option('import')    ?: $this->confirm('Create Import Excel?', true));
-        //        $this->createModal  = (bool) ($this->option('modal')     ?: $this->confirm('Create Modal?', false));
+
+        //        dd($this->exec($this->entite), )
+
+        /*
+        |---------------------------------------------------
+        | Wellcome package
+        |---------------------------------------------------
+        */
+        $this->messageWellcome();
+
+        /*
+        |---------------------------------------------------
+        | Execute generate
+        |---------------------------------------------------
+        */
+        $this->exec($this->entite);
+        $this->exec('Grupos','grupos');
+        dd($this->entites);
+    }
+
+    private function verifyParams(string $entite, ?string $table = null, ?string $connection = null)
+    {
+        $this->entites[ $entite ] = [
+            'str' => Str::of($entite)
+        ];
+        $this->verifyDatabase($entite, $table, $connection);
+
+        // TODO na recursiva, tem que perguntar todas as infos
+        $factory = (bool)($this->option('factory') ? : $this->confirm('Create Factory?', true));
+        $seeder  = (bool)($this->option('seeder') ? : $this->confirm('Create Seeder?', !$factory));
+        $migrate = (bool)($this->option('migrate') ? : $this->confirm('Create Migrate?', true));
+
+        $this->entites[ $entite ] += [
+            'useFactory' => $factory,
+            'useSeeder'  => $seeder ,
+            'useMigrate' => $migrate,
+        ];
     }
 
     /*
@@ -162,41 +179,42 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     | Police (?)
     |
     */
-    private function generateModel(): void
+    private function generateModel(string $entite): void
     {
-        $path = 'app\Models\\' . $this->entite . '.php';
-        $stub = $this->useFactory ? 'model_factory' : 'model';
+
+        $path = 'app\Models\\' . $entite . '.php';
+        $stub = $this->entites[$entite]['useFactory'] ? 'model_factory' : 'model';
         $this->generate($path, $stub, 'Model');
     }
 
-    private function generateFactory(): void
+    private function generateFactory(string $entite): void
     {
-        if (!$this->useFactory ) {
+        if (!$this->entites[$entite]['useFactory'] ) {
             return;
         }
 
-        $path = 'database\factories\\' . $this->entite . 'Factory.php';
+        $path = 'database\factories\\' . $entite . 'Factory.php';
         $this->generate($path, 'factory', 'Factory');
     }
 
-    private function generateSeeder(): void
+    private function generateSeeder(string $entite): void
     {
-        if (!$this->useSeeder ) {
+        if (!$this->entites[$entite]['useSeeder'] ) {
             return;
         }
 
-        $path = 'database\seeders\\' . $this->entite . 'Seeder.php';
+        $path = 'database\seeders\\' . $entite . 'Seeder.php';
         $this->generate($path, 'seeder', 'Seeder');
     }
 
-    private function generateMigrate(): void
+    private function generateMigrate(string $entite): void
     {
-        if (!$this->useMigrate) {
+        if (!$this->entites[$entite]['useMigrate']) {
             return;
         }
 
         // nome da table
-        $arquivo = $this->str->snake() . '_table.php';
+        $arquivo = $this->entites[$entite]['str']->snake() . '_table.php';
         // sempre fazer override
         $override = true;
         // caso exista, pega o nome
@@ -224,7 +242,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         $path        = 'database\migrations\\' . $migrateName;
 
         // caso tenha criado o seeder, coloca para executar ao rodar a migrate
-        $stub = $this->useSeeder ? 'migrate_seeder' : 'migrate';
+        $stub = $this->entites[$entite]['useSeeder'] ? 'migrate_seeder' : 'migrate';
         $this->generate($path, $stub, 'Migration');
     }
 
@@ -236,27 +254,29 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     | Unit from Models
     |
     */
-    private function generatePestUnitModel(): void
+    private function generatePestUnitModel(string $entite): void
     {
-        $path     = 'tests\Unit\\' . $this->entite . '\Model\\' . $this->entite . 'Test.php';
+        $path = 'tests\Unit\\' . $entite . '\Model\\' . $entite . 'Test.php';
         $this->generate($path, 'tests/unit/model', 'PestTest Unit Models');
     }
 
-    private function generatePestUnitFactory(): void
+    private function generatePestUnitFactory(string $entite): void
     {
-        if (!$this->useFactory) {
+        if (!$this->entites[$entite]['useFactory'] ) {
             return;
         }
-        $path     = 'tests\Unit\\' . $this->entite . '\Factory\\' . $this->entite . 'FactoryTest.php';
+
+        $path = 'tests\Unit\\' . $entite . '\Factory\\' . $entite . 'FactoryTest.php';
         $this->generate($path, 'tests/unit/factory', 'PestTest Unit Factory');
     }
 
-    private function generatePestUnitSeeder(): void
+    private function generatePestUnitSeeder(string $entite): void
     {
-        if (!$this->useSeeder) {
+        if (!$this->entites[$entite]['useSeeder'] ) {
             return;
         }
-        $path     = 'tests\Unit\\' . $this->entite . '\Seeder\\' . $this->entite . 'SeederTest.php';
+
+        $path = 'tests\Unit\\' . $entite . '\Seeder\\' . $entite . 'SeederTest.php';
         $this->generate($path, 'tests/unit/seeder', 'PestTest Unit Seeder');
     }
 
@@ -307,9 +327,9 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         */
         if (!is_null($this->table)) {
             $params = $this->modelTable($params);
-//            $params = $this->factoryTable($params);
-//            $params = $this->seederWithExistsTable($params);
-//            $params = $this->migrateWithExistsTable($params);
+            //            $params = $this->factoryTable($params);
+            //            $params = $this->seederWithExistsTable($params);
+            //            $params = $this->migrateWithExistsTable($params);
         }
 
         return parent::applyReplace(preg_replace(
@@ -368,29 +388,45 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     }
 
     /**
-     * @param $connection
+     * @param string $entite
+     * @param string|null $table
+     * @param string|null $connection
      * @throws \Throwable
      */
-    private function verifyDatabase(): void
+    private function verifyDatabase(string $entite, ?string $table = null, ?string $connection = null): void
     {
         /*
         |---------------------------------------------------
         | From Database
         |---------------------------------------------------
         */
-        $this->table      = (bool)$this->option('table') ? $this->option('table') : null;
-        $this->connection = (bool)$this->option('connection') ? $this->option('connection') : null;
+        // se não tiver conexão, verifica se foi passado via option
+        if (is_null($connection)) {
+            $connection = (bool)$this->option('connection') ? $this->option('connection') : null;
+        }
 
         throw_if(
-            !is_null($this->connection) &&
-            !in_array($this->connection, array_keys(config('database.connections'))),
+            !is_null($connection) &&
+            !in_array($connection, array_keys(config('database.connections'))),
             \Exception::class,
-            "connection [ {$this->connection} ] not configured in your config database connections"
+            "connection [ $connection ] not configured in your config database connections"
         );
 
-        if (!is_null($this->table)) {
-            $this->schema        = dbSchemaEasy($this->table, $this->connection);
-            $this->columnListing = $this->schema->getColumnListing();
+        // se não tiver table, verifica se foi passado via option
+        if (is_null($table)) {
+            $table = (bool)$this->option('table') ? $this->option('table') : null;
+        }
+
+        if (!is_null($table)) {
+            $schema        = dbSchemaEasy($table, $connection);
+            $columnListing = $schema->getColumnListing();
+
+            $this->entites[ $entite ] += [
+                'table'         => $table,
+                'connection'    => $connection,
+                //                'schema'        => $schema,
+                'columnListing' => $columnListing,
+            ];
         }
     }
 
