@@ -84,6 +84,15 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
             */
             '/\{{ class_route_slug }}/'        => $str->snake()->slug(),
             '/\{{ class_route_slug_plural }}/' => $str->snake()->slug()->plural(),
+            
+            /*
+            |---------------------------------------------------
+            | Factory
+            |---------------------------------------------------
+            */
+            '/\{{ factory_fillables }}/' => '// Configure column´s of Model',
+            '/\{{ seeder_fillables }}/' => '//',
+            '/\{{ migrate_fillables }}/' => '//',
         ];
 
         return $this->replace($params, $localStub);
@@ -174,10 +183,9 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
             : '';
     }
     
-    private function classExists($class): bool
+    protected function classExists(string $class): bool
     {
         return file_exists($class);
-//        return class_exists($class);
     }
 
     protected function replace(array $params, string $stub)

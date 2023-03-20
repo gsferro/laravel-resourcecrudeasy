@@ -111,7 +111,6 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             $this->generateModel($entite);
             $this->generateFactory($entite);
             $this->generateSeeder($entite);
-            return ;
             $this->generateMigrate($entite);
 
             /*
@@ -322,17 +321,17 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         | Especifico Models
         |---------------------------------------------------
         */
+        $entitesTable = [];
         if (!is_null($this->entites[$entite]['table'])) {
-            $params = $this->modelTable($entite, $params) + $params;
-            //            $params = $this->factoryTable($params);
-            //            $params = $this->seederWithExistsTable($params);
-            //            $params = $this->migrateWithExistsTable($params);
+            $entitesTable = $this->modelTable($entite)
+                + $this->factoryTable($entite);
+//                + $this->seederTable($params);
+//              + $this->migrateWithExistsTable($params);
         }
 
-        $replaceStub = $this->replace($params, $stub);
+        $replaceStub = $this->replace($entitesTable + $params, $stub);
         return parent::applyReplace($replaceStub, $entite, $stubType);
     }
-
 
     /*
     |---------------------------------------------------

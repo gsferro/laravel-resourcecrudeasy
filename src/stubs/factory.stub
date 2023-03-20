@@ -14,7 +14,7 @@ class {{ class }}Factory extends Factory
     public function definition()
     {
         return [
-            //
+            {{ factory_fillables }}
         ];
     }
 }

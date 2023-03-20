@@ -8,7 +8,7 @@ use function Pest\Laravel\options;
 
 trait WithExistsTableCommand
 {
-    private function modelTable(string $entite, array $params): array
+    private function modelTable(string $entite): array
     {
         // prepara variaveis
         $pkString   = "";
@@ -62,36 +62,160 @@ trait WithExistsTableCommand
         }
 
         return [
-                '/\{{ pk_string }}/'  => $pkString,
-                '/\{{ timestamps }}/' => !$schema->hasColumnsTimestamps() ? 'public $timestamps = false;' : '',
-                '/\{{ fillable }}/'   => $fillable,
-                '/\{{ cast }}/'       => $casts,
-                '/\{{ relations }}/'  => $relations,
-                '/\{{ belongs_to_relation }}/'  => 'use Illuminate\Database\Eloquent\Relations\BelongsTo;',
-                //            '/\{{ has_many_relation }}/'    => 'use Illuminate\Database\Eloquent\Relations\HasMany;',
+            '/\{{ pk_string }}/'  => $pkString,
+            '/\{{ timestamps }}/' => !$schema->hasColumnsTimestamps() ? 'public $timestamps = false;' : '',
+            '/\{{ fillable }}/'   => $fillable,
+            '/\{{ cast }}/'       => $casts,
+            '/\{{ relations }}/'  => $relations,
+            '/\{{ belongs_to_relation }}/'  => 'use Illuminate\Database\Eloquent\Relations\BelongsTo;',
+            //            '/\{{ has_many_relation }}/'    => 'use Illuminate\Database\Eloquent\Relations\HasMany;',
 
-                // Nome tabela
-                '/\{{ class_table }}/'  => $entites['table'],
-                '/\{{ rules_store }}/'  => $rulesStore,
-                '/\{{ rules_update }}/' => $casts, // default
-            ] + $params;
+            // Nome tabela
+            '/\{{ class_table }}/'  => $entites['table'],
+            '/\{{ rules_store }}/'  => $rulesStore,
+            '/\{{ rules_update }}/' => $casts, // default
+        ];
     }
 
-    /**
-     * @param array $params
-     * @return array
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     */
-    private function factoryTable(array $params): array
+    private function factoryTable(string $entite): array
     {
-        if (!$this->useFactory ) {
+        $entites = $this->entites[ $entite ];
+        if (!$entites['useFactory'] ) {
             return [];
         }
 
-        // prepara variaveis
-        $fillable   = "";
-        $relations  = "";
+        // encapsulando
+        $schema = $entites[ 'schema' ];
 
+        // prepara variaveis
+        $factoryFillables = "";
+        $relations        = "";
+        $thisFake         = '$this->faker->';
+        $fake             = 'word';
+        foreach ($entites['columnListing'] as $column) {
+            if ($schema->isPrimaryKey($column)) {
+                continue;
+            }
+
+            $str = "'{$column}'";
+            // TODO get factory from relation, if exists
+            if ($this->contains($str, ['_id'])) {
+                // relations
+                $foreinsKey = $schema->hasForeinsKey($column);
+//                dump($foreinsKey);
+                // pega o nome da model 
+                $modelName = $foreinsKey[ 'related' ];
+                // pega o caminho do factory para ver se existe
+                $class = database_path('factories/' . $modelName . 'Factory.php');
+                // retorno default como id 1 ou factory
+                $add = !$this->classExists($class)
+                    ? "{$str} => 1, // TODO Factory Relation"
+                    : "{$str} => \App\Models\\$modelName::factory()->create()->id,";
+
+                $this->interpolate($factoryFillables, $add);
+                continue;
+            }
+
+            if ($this->contains($str, ['uuid'])) {
+                $this->interpolate($factoryFillables, "{$str} => {$thisFake}uuid,");
+                continue;
+            }
+
+            // get type column
+            $columnType = $schema->getColumnType($column);
+             switch ($columnType){
+                case 'string':
+                    if ($this->contains($str, ['nome', 'name'])) {
+                        $fake = "name";
+                    }
+                    if ($this->contains($str, ['titulo', 'title'])) {
+                        $fake = "title";
+                    }
+                    if ($this->contains($str, ['email'])) {
+                        $fake = "unique()->safeEmail";
+                    }
+                break;
+                case 'integer':
+                    $fake = "numerify";
+                break;
+            };
+
+            $faker = "{$thisFake}{$fake}";
+            $this->interpolate($factoryFillables, "{$str} => {$faker}, ");
+        }
+
+        return [
+            '/\{{ factory_fillables }}/' => $factoryFillables,
+        ];
+    }
+
+    private function seederTable(string $entite): array
+    {
+        $entites = $this->entites[ $entite ];
+        if (!$entites['useSeeder'] ) {
+            return [];
+        }
+
+        // TEMP
+        return [];
+
+        // encapsulando
+        $schema = $entites[ 'schema' ];
+
+        // prepara variaveis
+        $seederFillables = "";
+        $relations        = "";
+        $thisFake         = '$this->faker->';
+        $fake             = 'word';
+        foreach ($entites['columnListing'] as $column) {
+            if ($schema->isPrimaryKey($column)) {
+                continue;
+            }
+
+            $str = "'{$column}'";
+            // TODO get factory from relation, if exists
+            if ($this->contains($str, ['_id'])) {
+                $this->interpolate($seederFillables, "{$str} => 1, // TODO Factory Relation");
+                continue;
+            }
+
+            if ($this->contains($str, ['uuid'])) {
+                $this->interpolate($seederFillables, "{$str} => {$thisFake}uuid,");
+                continue;
+            }
+
+            // get type column
+            $columnType = $schema->getColumnType($column);
+             switch ($columnType){
+                case 'string':
+                    if ($this->contains($str, ['nome', 'name'])) {
+                        $fake = "name";
+                    }
+                    if ($this->contains($str, ['titulo', 'title'])) {
+                        $fake = "title";
+                    }
+                break;
+                case 'integer':
+                    $fake = "numerify";
+                break;
+            };
+
+            $faker = "{$thisFake}{$fake}";
+            $this->interpolate($seederFillables, "{$str} => {$faker}, ");
+        }
+
+        return [
+            '/\{{ seeder_fillables }}/' => $seederFillables,
+        ];
+    }
+
+    private function contains($str, array $arr)
+    {
+        foreach($arr as $a) {
+            if (stripos($str,$a) !== false)
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -107,20 +231,19 @@ trait WithExistsTableCommand
             return;
         }
 
-        $entite  = $foreinsKey[ 'tableCamel' ]->ucfirst();
         $options = [
-            'entite'     => $entite,
+            'entite'     => $foreinsKey[ 'tableCamel' ]->ucfirst(),
             'table'      => $table,
             'connection' => current($this->entites)[ 'connection' ], // pega a conexão da 1º chamada
         ];
 
-        $entite = $this->choice("Create a Completed Crud or only Model?", [
+        $choice = $this->choice("Create a Completed Crud or only Model?", [
 //            '1' => 'Completed',
             '2' => 'Only Model',
         ], 2);
 
-        match ($entite) {
-            'Completed' => '', //$this->call('gsferro:resource-crud', $options),
+        match ($choice) {
+//            'Completed' => '', //$this->call('gsferro:resource-crud', $options),
             'Only Model' => $this->exec($options['entite'], $options['table'], $options['connection']),
         };
     }
