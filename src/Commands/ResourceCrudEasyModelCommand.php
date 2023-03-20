@@ -461,7 +461,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             ]);
         $params = [
             // relation
-            '/\/\/\ \{{ HasManys }}/'    => $hasManyStub,
+            '/# HasMany/' => $hasManyStub,
         ];
 
         // atualiza mesmo já tendo sido criado

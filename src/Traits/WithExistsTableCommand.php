@@ -24,7 +24,7 @@ trait WithExistsTableCommand
             $str        = "'{$column}'";
             $columnType = $schema->getColumnType($column);
 
-            dump($str, $columnType);
+//            dump($str, $columnType);
 
             // caso a pk seja string
             if ($schema->isPrimaryKey($column) && $columnType == 'string') {
@@ -55,7 +55,6 @@ trait WithExistsTableCommand
             // new entite
             if (!$schema->hasModelWithTableName($foreinsKey['table'])) {
                 $this->newEntiteFromRelation($entites['table'], $foreinsKey);
-                continue;
             }
 
             // belongTo
@@ -115,11 +114,8 @@ trait WithExistsTableCommand
             'connection' => current($this->entites)[ 'connection' ], // pega a conexão da 1º chamada
         ];
 
-//        dd($this->entites, $entite, $options);
-//        $this->entites[ $entite ] += $options;
-
         $entite = $this->choice("Create a Completed Crud or only Model?", [
-            '1' => 'Completed',
+//            '1' => 'Completed',
             '2' => 'Only Model',
         ], 2);
 
