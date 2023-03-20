@@ -16,12 +16,9 @@ class {{ class }}Seeder extends Seeder
     public static function rows(): array
     {
         return [
-            // exemple
             [
-                'id' => 1,
-                // ...
+                {{ seeder_fillables }}
             ],
-            // TODO generate by database or other package
         ];
     }
 

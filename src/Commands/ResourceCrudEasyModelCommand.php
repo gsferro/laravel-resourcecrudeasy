@@ -324,9 +324,10 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         $entitesTable = [];
         if (!is_null($this->entites[$entite]['table'])) {
             $entitesTable = $this->modelTable($entite)
-                + $this->factoryTable($entite);
-//                + $this->seederTable($params);
-//              + $this->migrateWithExistsTable($params);
+                + $this->factoryTable($entite)
+                + $this->seederTable($entite)
+            ;
+//              + $this->migrateWithExistsTable($entite);
         }
 
         $replaceStub = $this->replace($entitesTable + $params, $stub);
@@ -405,7 +406,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         if (!is_null($table)) {
             $schema        = dbSchemaEasy($table, $connection);
             $columnListing = $schema->getColumnListing();
-            
+
             $this->entites[ $entite ] += [
                 'table'         => $table,
                 'connection'    => $connection,

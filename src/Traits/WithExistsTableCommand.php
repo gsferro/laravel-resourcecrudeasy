@@ -153,55 +153,13 @@ trait WithExistsTableCommand
     {
         $entites = $this->entites[ $entite ];
         if (!$entites['useSeeder'] ) {
-            return [];
+            return array();
         }
-
-        // TEMP
-        return [];
-
-        // encapsulando
-        $schema = $entites[ 'schema' ];
 
         // prepara variaveis
         $seederFillables = "";
-        $relations        = "";
-        $thisFake         = '$this->faker->';
-        $fake             = 'word';
         foreach ($entites['columnListing'] as $column) {
-            if ($schema->isPrimaryKey($column)) {
-                continue;
-            }
-
-            $str = "'{$column}'";
-            // TODO get factory from relation, if exists
-            if ($this->contains($str, ['_id'])) {
-                $this->interpolate($seederFillables, "{$str} => 1, // TODO Factory Relation");
-                continue;
-            }
-
-            if ($this->contains($str, ['uuid'])) {
-                $this->interpolate($seederFillables, "{$str} => {$thisFake}uuid,");
-                continue;
-            }
-
-            // get type column
-            $columnType = $schema->getColumnType($column);
-             switch ($columnType){
-                case 'string':
-                    if ($this->contains($str, ['nome', 'name'])) {
-                        $fake = "name";
-                    }
-                    if ($this->contains($str, ['titulo', 'title'])) {
-                        $fake = "title";
-                    }
-                break;
-                case 'integer':
-                    $fake = "numerify";
-                break;
-            };
-
-            $faker = "{$thisFake}{$fake}";
-            $this->interpolate($seederFillables, "{$str} => {$faker}, ");
+            $this->interpolate($seederFillables, "'{$column}' => '', ");
         }
 
         return [
