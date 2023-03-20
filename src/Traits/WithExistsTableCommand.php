@@ -4,15 +4,11 @@ namespace Gsferro\ResourceCrudEasy\Traits;
 
 use Gsferro\ResourceCrudEasy\Commands\ResourceCrudEasyModelRecursiveCommand;
 use Illuminate\Support\Facades\Artisan;
+use function Pest\Laravel\options;
 
 trait WithExistsTableCommand
 {
-    /**
-     * @param array $params
-     * @return array
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     */
-    private function modelTable(array $params): array
+    private function modelTable(string $entite, array $params): array
     {
         // prepara variaveis
         $pkString   = "";
@@ -21,17 +17,21 @@ trait WithExistsTableCommand
         $casts      = "";
         $relations  = "";
 
+        $entites = $this->entites[ $entite ];
+        $schema  = $entites[ 'schema' ];
         // para colocar elegantemente no arquivo
-        foreach ($this->columnListing as $column) {
+        foreach ($entites['columnListing'] as $column) {
             $str        = "'{$column}'";
-            $columnType = $this->schema->getColumnType($column);
+            $columnType = $schema->getColumnType($column);
+
+            dump($str, $columnType);
 
             // caso a pk seja string
-            if ($this->schema->isPrimaryKey($column) && $columnType == 'string') {
+            if ($schema->isPrimaryKey($column) && $columnType == 'string') {
                 $pkString = $this->getStubModelPkString($column);
             }
             // não exibe
-            if ($this->schema->isPrimaryKey($column)) {
+            if ($schema->isPrimaryKey($column)) {
                 continue;
             }
 
@@ -39,38 +39,32 @@ trait WithExistsTableCommand
             $this->interpolate($fillable, "{$str}, ");
 
             // regras para colocar no rules['store']
-            $this->rulesStore($columnType, $column, $rulesStore, $str);
+            $notNull = $schema->getDoctrineColumn($column)[ "notnull" ];
+            $this->rulesStore($columnType, $rulesStore, $str, $notNull);
 
             // casts
             $this->interpolate($casts, "{$str} => '{$columnType}', ");
 
             // relations
-            $foreinsKey = $this->schema->hasForeinsKey($column);
+            $foreinsKey = $schema->hasForeinsKey($column);
 
             if (!is_array($foreinsKey)) {
                 continue;
             }
 
-            dump($column, $this->entite);
-
-            // temp
-            $table = $this->entite;
-            
             // new entite
-            if (!$this->schema->hasModelWithTableName($foreinsKey['table'])) {
-                $this->newEntiteFromRelation($foreinsKey);
+            if (!$schema->hasModelWithTableName($foreinsKey['table'])) {
+                $this->newEntiteFromRelation($entites['table'], $foreinsKey);
                 continue;
             }
 
-            $this->entite = $table;
-            dump($column);
             // belongTo
-            $relations = $this->setBelongsTo($column, $relations);
+            $relations = $this->setBelongsTo($entite, $column, $relations);
         }
 
         return [
                 '/\{{ pk_string }}/'  => $pkString,
-                '/\{{ timestamps }}/' => !$this->schema->hasColumnsTimestamps() ? 'public $timestamps = false;' : '',
+                '/\{{ timestamps }}/' => !$schema->hasColumnsTimestamps() ? 'public $timestamps = false;' : '',
                 '/\{{ fillable }}/'   => $fillable,
                 '/\{{ cast }}/'       => $casts,
                 '/\{{ relations }}/'  => $relations,
@@ -78,7 +72,7 @@ trait WithExistsTableCommand
                 //            '/\{{ has_many_relation }}/'    => 'use Illuminate\Database\Eloquent\Relations\HasMany;',
 
                 // Nome tabela
-                '/\{{ class_table }}/'  => $this->table,
+                '/\{{ class_table }}/'  => $entites['table'],
                 '/\{{ rules_store }}/'  => $rulesStore,
                 '/\{{ rules_update }}/' => $casts, // default
             ] + $params;
@@ -105,48 +99,34 @@ trait WithExistsTableCommand
      * @param array $foreinsKey
      * @return int|void
      */
-    private function newEntiteFromRelation(array $foreinsKey)
+    private function newEntiteFromRelation(string $tableCurrent, array $foreinsKey)
     {
-        $this->comment("Your new model, based on table [ {$this->table} ], has a foreign key [ {$foreinsKey['foreignKey']} ] of table [ {$foreinsKey['table']} ] and this model has not yet been created.");
+        $table = $foreinsKey[ 'table' ];
+        $this->comment("Your new model, based on table [ {$tableCurrent} ], has a foreign key [ {$foreinsKey['foreignKey']} ] of table [ {$table} ] and this model has not yet been created.");
         $create = $this->confirm("Do you like to create now?", true);
         if (!$create) {
             return;
         }
-        
+
+        $entite  = $foreinsKey[ 'tableCamel' ]->ucfirst();
         $options = [
-            'entite'         => $foreinsKey[ 'tableCamel' ] ->ucfirst(),
-            '--table'        => $foreinsKey[ 'table' ],
-            '--connection'   => $this->connection,
-            '--not-wellcome' => true,
+            'entite'     => $entite,
+            'table'      => $table,
+            'connection' => current($this->entites)[ 'connection' ], // pega a conexão da 1º chamada
         ];
+
+//        dd($this->entites, $entite, $options);
+//        $this->entites[ $entite ] += $options;
 
         $entite = $this->choice("Create a Completed Crud or only Model?", [
             '1' => 'Completed',
             '2' => 'Only Model',
         ], 2);
 
-//        $call = New Artisan();
-        if ($entite == 'Only Model') {
-//            $recurse = $this->call('gsferro:resource-crud-model', $options);
-//            $recurse = app()->call('gsferro:resource-crud-model', $options);
-//            return app()->call(function () use ($options) {
-//                dump('--------------------');
-//            });
-
-            return $this->call('gsferro:resource-crud-model-recursive', $options);
-            $recursive = new ResourceCrudEasyModelRecursiveCommand();
-            return $recursive->call('gsferro:resource-crud-model-recursive', $options);
-
-            //            return $call::clearResolvedInstance($recurse);
-        }
-
-        return $this->call('gsferro:resource-crud', $options);
-        return \Illuminate\Support\Facades\Artisan::call('gsferro:resource-crud', $options);
-        
-       /* match ($entite) {
-            'Completed' => $this->call('gsferro:resource-crud', $options),
-            'Only Model' => $this->call('gsferro:resource-crud-model', $options),
-        };*/
+        match ($entite) {
+            'Completed' => '', //$this->call('gsferro:resource-crud', $options),
+            'Only Model' => $this->exec($options['entite'], $options['table'], $options['connection']),
+        };
     }
 
     /**
@@ -154,14 +134,14 @@ trait WithExistsTableCommand
      * @param string $relations
      * @return array
      */
-    private function setBelongsTo(mixed $column, string $relations): string
+    private function setBelongsTo(string $entite, string $column, string $relations): string
     {
-        $foreinsKey = $this->schema->hasForeinsKey($column, true);
+        $foreinsKey = $this->entites[$entite]['schema']->hasForeinsKey($column, true);
         $belongto   = $this->getStubRelatios('belongto', $foreinsKey);
         $this->interpolate($relations, $belongto);
 
         // TODO Set hasone Or hasMany in Model
-        $this->applyRelationHasInTableForeingKey($foreinsKey);
+        $this->applyRelationHasInTableForeingKey($entite, $foreinsKey);
         return $relations;
     }
 }

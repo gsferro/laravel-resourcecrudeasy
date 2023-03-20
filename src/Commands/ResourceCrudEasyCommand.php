@@ -29,7 +29,7 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
      *
      * @var string
      */
-    protected $signature = 'gsferro:resource-crud {entite : Entite name} {--table=} {--connection=} {--api} {--factory} {--seeder} {--migrate} {--not-wellcome}';
+    protected $signature = 'gsferro:resource-crud {entite : Entite name} {--table=} {--connection=} {--api} {--factory} {--seeder} {--migrate}';
 
     /**
      * The console command description.
@@ -58,7 +58,6 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
         $factory     = $this->option('factory') ?? null;
         $seeder      = $this->option('seeder') ?? null;
         $migrate     = $this->option('migrate') ?? null;
-        $notWellcome = $this->option('not-wellcome') ?? null;
 
         /*
         |---------------------------------------------------
@@ -92,7 +91,6 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
                 '--factory'      => $factory,
                 '--seeder'       => $seeder,
                 '--migrate'      => $migrate,
-                '--not-wellcome' => $notWellcome,
             ]);
 
             /*
@@ -137,7 +135,7 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
     private function generateController(): void
     {
         $path = 'app\Http\Controllers\\' . $this->entite . 'Controller.php';
-        $this->generate($path, 'controller', 'Controllers');
+        $this->generate($this->entite, $path, 'controller', 'Controllers');
     }
 
     /*
@@ -161,7 +159,7 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
 
         foreach ($views as $view) {
             $index = $pathBase.$this->str->snake() . "\\$view.blade.php";
-            $this->generate($index, "view_{$view}", 'View '. ucfirst($view));
+            $this->generate($this->entite, $index, "view_{$view}", 'View '. ucfirst($view));
         }
     }
 
@@ -187,13 +185,13 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
     private function generatePestUnitController(): void
     {
         $path = 'tests\Unit\Controllers\\' . $this->entite . 'ControllerTest.php';
-        $this->generate($path, 'tests/unit/controller', 'PestTest Unit Controllers');
+        $this->generate($this->entite, $path, 'tests/unit/controller', 'PestTest Unit Controllers');
     }
 
     private function generatePestFeatureController(): void
     {
         $path = 'tests\Feature\Controllers\\' . $this->entite . 'ControllerTest.php';
-        $this->generate($path, 'tests/feature/controller', 'PestTest Feature Controllers');
+        $this->generate($this->entite, $path, 'tests/feature/controller', 'PestTest Feature Controllers');
     }
 
     /*
@@ -225,8 +223,8 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
     | Todo melhorar o replace de stub dentro de stub
     |
     */
-    protected function applyReplace($stub)
+    protected function applyReplace($stub, string $entite, string $stubType)
     {
-        return parent::applyReplace($stub);
+        return parent::applyReplace($stub, $entite, $stubType);
     }
 }

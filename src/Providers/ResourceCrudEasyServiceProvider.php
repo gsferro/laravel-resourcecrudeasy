@@ -4,7 +4,6 @@ namespace Gsferro\ResourceCrudEasy\Providers;
 
 use Gsferro\ResourceCrudEasy\Commands\ResourceCrudEasyCommand;
 use Gsferro\ResourceCrudEasy\Commands\ResourceCrudEasyModelCommand;
-use Gsferro\ResourceCrudEasy\Commands\ResourceCrudEasyModelRecursiveCommand;
 use Illuminate\Support\ServiceProvider;
 
 class ResourceCrudEasyServiceProvider extends ServiceProvider
@@ -20,7 +19,6 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
             $this->commands([
                 ResourceCrudEasyCommand::class,
                 ResourceCrudEasyModelCommand::class,
-                ResourceCrudEasyModelRecursiveCommand::class,
             ]);
         }
         /*

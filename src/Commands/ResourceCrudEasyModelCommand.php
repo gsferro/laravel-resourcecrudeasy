@@ -21,9 +21,6 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     private ?DatabaseSchemaEasy $schema        = null;
     private array               $columnListing = [];
 
-    // controle de recursividade
-    private array $entites = [];
-
     /**
      * The console command name.
      *
@@ -45,8 +42,36 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
      */
     protected $description = 'Generate all files for new Model!';
 
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
+    public function handle()
+    {
+        $this->entite = ucfirst($this->argument('entite'));
+
+        /*
+        |---------------------------------------------------
+        | Wellcome package
+        |---------------------------------------------------
+        */
+        $this->messageWellcome();
+
+        /*
+        |---------------------------------------------------
+        | Execute generate
+        |---------------------------------------------------
+        */
+        $this->exec($this->entite);
+    }
+
     private function exec(string $entite, ?string $table = null, ?string $connection = null)
     {
+        // seta
+        $this->entites[ $entite ] = [
+            'str' => Str::of($entite)
+        ];
         $this->info("Preper to Create [ {$entite} ]:");
 
         /*
@@ -115,51 +140,23 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             //            }
 
         } catch (\Exception $e) {
-            dump('Ops...', $e->getMessage());
+            dump('Ops...', $e->getLine());
         }
-    }
-
-    /**
-     * Execute the console command.
-     *
-     * @return int
-     */
-    public function handle()
-    {
-        $this->entite = ucfirst($this->argument('entite'));
-        $this->str    = Str::of($this->entite);
-
-
-        //        dd($this->exec($this->entite), )
-
-        /*
-        |---------------------------------------------------
-        | Wellcome package
-        |---------------------------------------------------
-        */
-        $this->messageWellcome();
-
-        /*
-        |---------------------------------------------------
-        | Execute generate
-        |---------------------------------------------------
-        */
-        $this->exec($this->entite);
-        $this->exec('Grupos','grupos');
-        dd($this->entites);
     }
 
     private function verifyParams(string $entite, ?string $table = null, ?string $connection = null)
     {
-        $this->entites[ $entite ] = [
-            'str' => Str::of($entite)
-        ];
         $this->verifyDatabase($entite, $table, $connection);
 
-        // TODO na recursiva, tem que perguntar todas as infos
-        $factory = (bool)($this->option('factory') ? : $this->confirm('Create Factory?', true));
-        $seeder  = (bool)($this->option('seeder') ? : $this->confirm('Create Seeder?', !$factory));
-        $migrate = (bool)($this->option('migrate') ? : $this->confirm('Create Migrate?', true));
+        if (is_null($table)) {
+            $factory = (bool)($this->option('factory') ?: $this->confirm('Create Factory?', true));
+            $seeder  = (bool)($this->option('seeder')  ?: $this->confirm('Create Seeder?', !$factory));
+            $migrate = (bool)($this->option('migrate') ?: $this->confirm('Create Migrate?', true));
+        }
+
+        $factory = $factory ?? $this->confirm('Create Factory?', true);
+        $seeder  = $seeder  ?? $this->confirm('Create Seeder?', !$factory);
+        $migrate = $migrate ?? $this->confirm('Create Migrate?', true);
 
         $this->entites[ $entite ] += [
             'useFactory' => $factory,
@@ -184,7 +181,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
 
         $path = 'app\Models\\' . $entite . '.php';
         $stub = $this->entites[$entite]['useFactory'] ? 'model_factory' : 'model';
-        $this->generate($path, $stub, 'Model');
+        $this->generate($entite, $path, $stub, 'Model');
     }
 
     private function generateFactory(string $entite): void
@@ -194,7 +191,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         }
 
         $path = 'database\factories\\' . $entite . 'Factory.php';
-        $this->generate($path, 'factory', 'Factory');
+        $this->generate($entite, $path, 'factory', 'Factory');
     }
 
     private function generateSeeder(string $entite): void
@@ -204,7 +201,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         }
 
         $path = 'database\seeders\\' . $entite . 'Seeder.php';
-        $this->generate($path, 'seeder', 'Seeder');
+        $this->generate($entite, $path, 'seeder', 'Seeder');
     }
 
     private function generateMigrate(string $entite): void
@@ -243,7 +240,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
 
         // caso tenha criado o seeder, coloca para executar ao rodar a migrate
         $stub = $this->entites[$entite]['useSeeder'] ? 'migrate_seeder' : 'migrate';
-        $this->generate($path, $stub, 'Migration');
+        $this->generate($entite, $path, $stub, 'Migration');
     }
 
     /*
@@ -257,7 +254,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     private function generatePestUnitModel(string $entite): void
     {
         $path = 'tests\Unit\\' . $entite . '\Model\\' . $entite . 'Test.php';
-        $this->generate($path, 'tests/unit/model', 'PestTest Unit Models');
+        $this->generate($entite, $path, 'tests/unit/model', 'PestTest Unit Models');
     }
 
     private function generatePestUnitFactory(string $entite): void
@@ -267,7 +264,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         }
 
         $path = 'tests\Unit\\' . $entite . '\Factory\\' . $entite . 'FactoryTest.php';
-        $this->generate($path, 'tests/unit/factory', 'PestTest Unit Factory');
+        $this->generate($entite, $path, 'tests/unit/factory', 'PestTest Unit Factory');
     }
 
     private function generatePestUnitSeeder(string $entite): void
@@ -277,7 +274,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         }
 
         $path = 'tests\Unit\\' . $entite . '\Seeder\\' . $entite . 'SeederTest.php';
-        $this->generate($path, 'tests/unit/seeder', 'PestTest Unit Seeder');
+        $this->generate($entite, $path, 'tests/unit/seeder', 'PestTest Unit Seeder');
     }
 
     /*
@@ -288,7 +285,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     | Todo melhorar o replace de stub dentro de stub
     |
     */
-    protected function applyReplace($stub)
+    protected function applyReplace($stub, string $entite, string $stubType)
     {
         $params = [
             /*
@@ -303,7 +300,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             | Blocos
             |---------------------------------------------------
             */
-            '/\{{ bloco_pest_model_use_factory }}/' => $this->applyReplaceBlocoFactory(),
+            '/\{{ bloco_pest_model_use_factory }}/' => $this->applyReplaceBlocoFactory($entite),
 
             /*
             |---------------------------------------------------
@@ -325,18 +322,15 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         | Especifico Models
         |---------------------------------------------------
         */
-        if (!is_null($this->table)) {
-            $params = $this->modelTable($params);
+        if (!is_null($this->entites[$entite]['table'])) {
+            $params = $this->modelTable($entite, $params) + $params;
             //            $params = $this->factoryTable($params);
             //            $params = $this->seederWithExistsTable($params);
             //            $params = $this->migrateWithExistsTable($params);
         }
 
-        return parent::applyReplace(preg_replace(
-            array_keys($params),
-            array_values($params),
-            $stub
-        ));
+        $replaceStub = $this->replace($params, $stub);
+        return parent::applyReplace($replaceStub, $entite, $stubType);
     }
 
 
@@ -345,9 +339,9 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     | Blocos
     |---------------------------------------------------
     */
-    private function applyReplaceBlocoFactory()
+    private function applyReplaceBlocoFactory(string $entite)
     {
-        return $this->useFactory
+        return $this->entites[$entite]['useFactory']
             ? $this->files->get($this->getStubEntite('ifs/pest_model_use_factory'))
             : '';
     }
@@ -361,11 +355,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     private function getStubRelatios(string $type, array $params)
     {
         $stub = $this->files->get($this->getStubEntite('relations/' . $type));
-        return preg_replace(
-            array_keys($params),
-            array_values($params),
-            $stub
-        );
+        return $this->replace($params, $stub);
     }
 
     /**
@@ -380,11 +370,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             '/\{{ primaryKey }}/' => $column
         ];
         $stub = $this->files->get($this->getStubEntite('ifs/model_pk_string'));
-        return preg_replace(
-            array_keys($params),
-            array_values($params),
-            $stub
-        );
+        return $this->replace($params, $stub);
     }
 
     /**
@@ -420,11 +406,11 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         if (!is_null($table)) {
             $schema        = dbSchemaEasy($table, $connection);
             $columnListing = $schema->getColumnListing();
-
+            
             $this->entites[ $entite ] += [
                 'table'         => $table,
                 'connection'    => $connection,
-                //                'schema'        => $schema,
+                'schema'        => $schema,
                 'columnListing' => $columnListing,
             ];
         }
@@ -446,10 +432,11 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
      * @param array $foreinsKey
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    private function applyRelationHasInTableForeingKey(array $foreinsKey, string $type = 'has_many')
+    private function applyRelationHasInTableForeingKey(string $entite, array $foreinsKey, string $type = 'has_many')
     {
         // TODO criar qdo não houver?
-        if (!$this->schema->hasModelWithTableName($foreinsKey['/\{{ table }}/'])) {
+        $entites = $this->entites[$entite];
+        if (!$entites['schema']->hasModelWithTableName($foreinsKey['/\{{ table }}/'])) {
             return;
         }
 
@@ -461,15 +448,16 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         $fileContents = file_get_contents($base);
 
         // caso já tenha sido configurado
-        if (str_contains($fileContents, $this->str->camel().'()')){
+        $stringable = $entites['str'];
+        if (str_contains($fileContents, $stringable->camel().'()')){
             return;
         }
 
         // prepara o stub
         $hasManyStub = $this->getStubRelatios($type, $foreinsKey + [
                 // override
-                '/\{{ class }}/'       => $this->str,
-                '/\{{ class_camel }}/' => $this->str->camel(),
+                '/\{{ class }}/'       => $stringable,
+                '/\{{ class_camel }}/' => $stringable->camel(),
             ]);
         $params = [
             // relation
@@ -477,11 +465,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         ];
 
         // atualiza mesmo já tendo sido criado
-        $this->files->put("{$path}", preg_replace(
-            array_keys($params),
-            array_values($params),
-            $fileContents
-        ));
+        $this->files->put("{$path}", $this->replace($params, $fileContents));
     }
 
     /**
@@ -490,7 +474,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
      * @param string $rulesStore
      * @param string $str
      */
-    private function rulesStore(string $columnType, mixed $column, string &$rulesStore, string $str): void
+    private function rulesStore(string $columnType, string &$rulesStore, string $str, bool $notNull): void
     {
         // store
         $store = "{$columnType}";
@@ -499,7 +483,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             $store = "uuid";
         }
 
-        if ($this->schema->getDoctrineColumn($column)[ "notnull" ]) {
+        if ($notNull) {
             $store .= "|required";
         }
         $this->interpolate($rulesStore, "{$str} => '{$store}', ");
