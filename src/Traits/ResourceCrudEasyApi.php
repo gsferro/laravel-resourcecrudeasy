@@ -16,6 +16,7 @@ trait ResourceCrudEasyApi
 
     public Model $model;
     public bool  $isSPA = false;
+    public bool  $isAPI = false;
 
     /**
      * Display a listing of the resource.

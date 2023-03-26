@@ -20,6 +20,10 @@ beforeEach(function()
 
 test('Index return view configured', function()
 {
+    if($this->controller->isAPI) {
+        $this->markTestSkipped('Controller is API');
+    }
+
     $resp = $this->get(route('{{ class_route_slug }}.index'));
     // status 200
     $resp->assertOk();
@@ -29,6 +33,10 @@ test('Index return view configured', function()
 
 test('Create return view configured', function()
 {
+    if($this->controller->isAPI) {
+        $this->markTestSkipped('Controller is API');
+    }
+
     $resp = $this->get(route('{{ class_route_slug }}.create'));
     // status 200
     $resp->assertOk();
@@ -38,6 +46,10 @@ test('Create return view configured', function()
 
 test('Edit return view configured', function()
 {
+    if($this->controller->isAPI) {
+        $this->markTestSkipped('Controller is API');
+    }
+
     {{ use_factory_exists }}
     {{ use_seeder_exists }}
     // get random
@@ -53,6 +65,10 @@ test('Edit return view configured', function()
 
 test('If model use uuid not find with pk', function()
 {
+    if($this->controller->isAPI) {
+        $this->markTestSkipped('Controller is API');
+    }
+
     if (is_null($this->collumUuid)) {
         $this->markTestSkipped('Model not using package uuid');
     }
@@ -69,8 +85,8 @@ test('If model use uuid not find with pk', function()
 
 test('If exist configured Breadcrumb, return var $titulo', function()
 {
-    if($this->controller->isSPA) {
-        $this->markTestSkipped('Controller is SPA');
+    if($this->controller->isAPI) {
+        $this->markTestSkipped('Controller is API');
     }
 
     if (!$this->controller->hasBreadcrumb()) {
@@ -135,6 +151,10 @@ test('Update save in database', function() {
     }
     // new
     $update = $this->instance::factory()->make()->toArray();
+    if (empty($update)) {
+        $this->markTestSkipped('Factory not implemented for update');
+    }
+
     // route update
     $route  = route('{{ class_route_slug }}.update', [$dados->uuid]);
     // code by is spa

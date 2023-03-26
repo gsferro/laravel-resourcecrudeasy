@@ -30,10 +30,11 @@ test('{{ class }}Controller is Controller', function()
 
 test('The Controller is config from package ResourceCrudEasy', function()
 {
+    $useApi = $this->controller->isAPI ? 'ResourceCrudEasyApi' : 'ResourceCrudEasy';
     // use trait
     expect(class_uses($this->controllerName))
         ->toBeArray()
-        ->toHaveKey('Gsferro\ResourceCrudEasy\Traits\ResourceCrudEasy')
+        ->toHaveKey("Gsferro\ResourceCrudEasy\Traits\\$useApi")
     ;
 });
 
