@@ -84,26 +84,27 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
             */
             '/\{{ class_route_slug }}/'        => $str->snake()->slug(),
             '/\{{ class_route_slug_plural }}/' => $str->snake()->slug()->plural(),
-            
+
             /*
             |---------------------------------------------------
-            | Factory
+            | Using Table
             |---------------------------------------------------
             */
             '/\{{ factory_fillables }}/' => '// Configure column´s of Model',
-            '/\{{ seeder_fillables }}/' => '//',
-            '/\{{ migrate_fillables }}/' => '//',
+            '/\{{ seeder_fillables }}/'  => '//',
+            '/\{{ migrate_fillables }}/' => '$table->uuid(\'uuid\');'.PHP_EOL.PHP_EOL.'$table->timestamps();',
+            '/\{{ migrate_relation }}/'  => '',
         ];
 
         return $this->replace($params, $localStub);
     }
-    
+
     protected function applyReplaceAfter($stub, ?string $entite = null)
     {
         if (is_null($entite)) {
             return $stub;
         }
-        
+
         $params = [
             /*
             |---------------------------------------------------
@@ -114,7 +115,7 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
             '/\{{ use_seeder_exists }}/'  => $this->useSeederExists($entite),
         ];
 
-        return $this->replace($params, $stub); 
+        return $this->replace($params, $stub);
     }
 
     /*
@@ -169,7 +170,7 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
         $class = database_path('factories/' . $entite . 'Factory.php');
         return $this->useExists($class, 'ifs/use_factory_exists');
     }
-    
+
     private function useSeederExists(string $entite): string
     {
         $class = database_path('seeders/' . $entite . 'Seeder.php');
@@ -182,7 +183,7 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
             ? $this->files->get($this->getStubEntite($stubType))
             : '';
     }
-    
+
     protected function classExists(string $class): bool
     {
         return file_exists($class);
@@ -196,7 +197,7 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
             $stub
         );
     }
-    
+
     /*
     |---------------------------------------------------
     | GeneratorCommand

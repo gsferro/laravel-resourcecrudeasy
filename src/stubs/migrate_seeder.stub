@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Artisan;
 
 return new class extends Migration {
 
@@ -13,15 +14,13 @@ return new class extends Migration {
         if (!Schema::hasTable($this->tableName)) {
             Schema::create($this->tableName, function (Blueprint $table) {
                 $table->increments('id');
-                $table->uuid('uuid');
-                // TODO by datatable
-
-                $table->timestamps();
+                {{ migrate_fillables }}
+                {{ migrate_relation }}
             });
 
             // run seeder in create table if not runner your testing
             if (!app()->environment('testing')) {
-                \Illuminate\Support\Facades\Artisan::call('db:seed --class={{ class }}Seeder');
+                Artisan::call('db:seed --class={{ class }}Seeder');
             }
         }
     }

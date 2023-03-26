@@ -13,10 +13,8 @@ return new class extends Migration {
         if (!Schema::hasTable($this->tableName)) {
             Schema::create($this->tableName, function (Blueprint $table) {
                 $table->increments('id');
-                $table->uuid('uuid');
-                // TODO by datatable
-
-                $table->timestamps();
+                {{ migrate_fillables }}
+                {{ migrate_relation }}
             });
         }
     }

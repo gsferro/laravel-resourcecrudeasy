@@ -139,7 +139,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             //            }
 
         } catch (\Exception $e) {
-            dump('Ops...', $e->getLine());
+            dump('Ops...', $e->getMessage(), $e->getCode(), $e->getLine() );
         }
     }
 
@@ -177,7 +177,6 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     */
     private function generateModel(string $entite): void
     {
-
         $path = 'app\Models\\' . $entite . '.php';
         $stub = $this->entites[$entite]['useFactory'] ? 'model_factory' : 'model';
         $this->generate($entite, $path, $stub, 'Model');
@@ -220,7 +219,8 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         // le toda a pastas
         while ($migration = $migrations->read()) {
             // verifica se a migrate é o arquivo que sera criado
-            if (str_contains($migration, $arquivo)) {
+            if (substr($migration, 18) == $arquivo) {
+
                 // salva o nome para replace, em caso de override
                 $existsMigrate = $migration;
                 // pergunta ao usuário se deseja fazer override
@@ -318,16 +318,27 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
 
         /*
         |---------------------------------------------------
-        | Especifico Models
+        | if exists table
         |---------------------------------------------------
         */
         $entitesTable = [];
         if (!is_null($this->entites[$entite]['table'])) {
-            $entitesTable = $this->modelTable($entite)
-                + $this->factoryTable($entite)
-                + $this->seederTable($entite)
-            ;
-//              + $this->migrateWithExistsTable($entite);
+            switch ($stubType) {
+                case 'model_factory':
+                case 'model':
+                    $entitesTable = $this->modelTable($entite);
+                break;
+                case 'factory':
+                    $entitesTable = $this->factoryTable($entite);
+                break;
+                case 'seeder':
+                    $entitesTable = $this->seederTable($entite);
+                break;
+                case 'migrate_seeder':
+                case 'migrate':
+                    $entitesTable = $this->migrateTable($entite);
+                break;
+            }
         }
 
         $replaceStub = $this->replace($entitesTable + $params, $stub);
@@ -403,6 +414,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             $table = (bool)$this->option('table') ? $this->option('table') : null;
         }
 
+        // se for setado uma table
         if (!is_null($table)) {
             $schema        = dbSchemaEasy($table, $connection);
             $columnListing = $schema->getColumnListing();
@@ -471,21 +483,62 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     /**
      * @param string $columnType
      * @param mixed $column
-     * @param string $rulesStore
+     * @param string $rules
      * @param string $str
      */
-    private function rulesStore(string $columnType, string &$rulesStore, string $str, bool $notNull): void
+    private function replaceRules(string $columnType, string &$rules, string $str, bool $notNull): void
     {
-        // store
-        $store = "{$columnType}";
         // proteção contra type
-        if ($store == "guid") {
-            $store = "uuid";
-        }
+        $rule = $this->replaceTypeColumnRules($columnType);
 
         if ($notNull) {
-            $store .= "|required";
+            $rule .= "|required";
         }
-        $this->interpolate($rulesStore, "{$str} => '{$store}', ");
+        $this->interpolate($rules, "{$str} => '{$rule}', ");
+    }
+
+    /**
+     * @param string $columnType
+     * @return string
+     */
+    private function replaceTypeColumnRules(string $columnType): string
+    {
+        switch ($columnType) {
+            case 'guid':
+                $columnType = "uuid";
+            break;
+            case 'decimal':
+                $columnType = "numeric";
+            break;
+            case 'datetime':
+                $columnType = "date_format:Y-m-d H:i:s";
+            break;
+            case 'smallint':
+            case 'bigint':
+                $columnType = "integer";
+            break;
+        }
+        return $columnType;
+    }
+    
+    /**
+     * @param string $columnType
+     * @return string
+     */
+    private function replaceTypeColumnCast(string $columnType): string
+    {
+        switch ($columnType) {
+            case 'guid':
+                $columnType = "uuid";
+            break;
+//            case 'decimal':
+//                $columnType = "numeric";
+//            break;
+            case 'smallint':
+            case 'bigint':
+                $columnType = "integer";
+            break;
+        }
+        return $columnType;
     }
 }
