@@ -2,7 +2,7 @@
 
 use App\Models\{{ class }};
 
-beforeEach(function() 
+beforeEach(function()
 {
     // Model Using Uuid
     $this->instance      = new {{ class }};
@@ -18,7 +18,7 @@ beforeEach(function()
     $this->controller = app()->make('App\Http\Controllers\{{ class }}Controller');
 });
 
-test('Index return view configured', function() 
+test('Index return view configured', function()
 {
     $resp = $this->get(route('{{ class_route_slug }}.index'));
     // status 200
@@ -27,7 +27,7 @@ test('Index return view configured', function()
     $resp->assertViewIs($this->controller->getViewIndex());
 });
 
-test('Create return view configured', function() 
+test('Create return view configured', function()
 {
     $resp = $this->get(route('{{ class_route_slug }}.create'));
     // status 200
@@ -36,12 +36,12 @@ test('Create return view configured', function()
     $resp->assertViewIs($this->controller->getViewCreate());
 });
 
-test('Edit return view configured', function() 
+test('Edit return view configured', function()
 {
     {{ use_factory_exists }}
     {{ use_seeder_exists }}
     // get random
-    $model = {{ class }}::inRandomOrder()->first();
+    $model = $this->instance::inRandomOrder()->first();
 
     // get in route edit using element created
     $this->get(route('{{ class_route_slug }}.edit', [$model->{$this->find}]))
@@ -51,7 +51,7 @@ test('Edit return view configured', function()
         ->assertViewIs($this->controller->getViewEdit());
 });
 
-test('If model use uuid not find with pk', function() 
+test('If model use uuid not find with pk', function()
 {
     if (is_null($this->collumUuid)) {
         $this->markTestSkipped('Model not using package uuid');
@@ -59,7 +59,7 @@ test('If model use uuid not find with pk', function()
     {{ use_factory_exists }}
     {{ use_seeder_exists }}
     // get random
-    $model = {{ class }}::inRandomOrder()->first();
+    $model = $this->instance::inRandomOrder()->first();
 
     // get in route edit using element created
     $this->get(route('{{ class_route_slug }}.edit', [$model->{$this->collumPrimary}]))
@@ -67,26 +67,34 @@ test('If model use uuid not find with pk', function()
         ->assertNotFound();
 });
 
-test('If exist configured Breadcrumb, return var $titulo', function() 
+test('If exist configured Breadcrumb, return var $titulo', function()
 {
+    if($this->controller->isSPA) {
+        $this->markTestSkipped('Controller is SPA');
+    }
+
     if (!$this->controller->hasBreadcrumb()) {
         $this->markTestSkipped('Controller not use Breadcrumb');
     }
+
     $this->get(route('{{ class_route_slug }}.index'))->assertViewHas('titulo');
 });
 
 test('Store save in database', function() {
-    $dados = {{ class }}::factory()->make()->toArray();
+    $dados = $this->instance::factory()->make()->toArray();
     if (empty($dados)) {
         $this->markTestSkipped('Factory not implemented');
     }
-    $this->post(route('{{ class_route_slug }}.store'), $dados);
+
+    $route = route('{{ class_route_slug }}.store');
+    $this->post($route, $dados)->assertCreated();
     $this->assertDatabaseCount($this->instance->getTable(), 1);
+    $this->assertDatabaseHas($this->instance->getTable(), $dados);
 });
 
-test('Store fail from validate', function() 
+test('Store fail from validate', function()
 {
-    if (empty({{ class }}::$rules[ 'store' ])) {
+    if (empty($this->instance::$rules[ 'store' ])) {
         $this->markTestSkipped('Rule from store not implemented in Model.');
     }
     // no caso de ser spa ou ssr
@@ -115,8 +123,24 @@ test('Store fail from validate', function()
                     "message",
                     "type",
                 ])
-            )
-                ->toBeEmpty();
+            )->toBeEmpty();
         break;
     }
+});
+
+test('Update save in database', function() {
+    $dados = $this->instance::factory()->create();
+    if (empty($dados)) {
+        $this->markTestSkipped('Factory not implemented');
+    }
+    // new
+    $update = $this->instance::factory()->make()->toArray();
+    // route update
+    $route  = route('{{ class_route_slug }}.update', [$dados->uuid]);
+    // code by is spa
+    $code = $this->controller->isSPA ? 200 : 302;
+    $this->put($route, $update)->assertStatus($code);
+
+    $this->assertDatabaseCount($this->instance->getTable(), 1);
+    $this->assertDatabaseHas($this->instance->getTable(), $update);
 });

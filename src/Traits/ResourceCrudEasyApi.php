@@ -38,21 +38,21 @@ trait ResourceCrudEasyApi
         $route      = $this->getRouteRedirectStore();
         $attributes = $request->all();
         try {
-            $transaction = DB::transaction(function () use ($request, $attributes) {
-                $request->validate($this->rules()[ 'store' ]);
-
+            $request->validate($this->rules()[ 'store' ]);
+            $transaction = DB::transaction(function () use ($attributes) {
                 $model  = $this->model->fill($attributes);
                 $update = $this->updateRelations($model, $attributes);
                 if (!$update->exists) {
                     $update->save();
                 }
+                $model->save();
 
                 return $model;
             });
 
             return $this->isSPA
-                ? $this->success($transaction)
-                : redirect()->route($route); // , $this->redirectStore == 'edit' ? ['resource_crud' => $result->uuid] : []
+                ? $this->success($transaction, null, 201)
+                : redirect()->to($route, 201); // , $this->redirectStore == 'edit' ? ['resource_crud' => $result->uuid] : []
 
         } catch (ValidationException $validator) {
             $exception = [
@@ -138,56 +138,64 @@ trait ResourceCrudEasyApi
      */
     public function update(Request $request, $find)
     {
-        // pega somente os dados q foram alterados
-        $dados = $this->realUpdate($find, $request);
+        $route      = $this->getRouteRedirectUpdate();
+        $attributes = $request->all();
+        try {
+            $request->validate($this->rules()[ 'update' ]);
+            $transaction = DB::transaction(function () use ($find, $attributes) {
+                $modelFind = $this->modelFind($find);
+                $model     = $modelFind->fill($attributes);
+                $update = $this->updateRelations($model, $attributes);
+                if (!$update->exists) {
+                    $update->save();
+                }
+                $model->save();
 
-        // se n tiver nenhuma alteração
-        if (empty($dados)) {
-            return $this->error(__('messages.60'));
+                return $model;
+            });
+
+            return $this->isSPA
+                ? $this->success($transaction)
+                : redirect()->to($route);
+
+        } catch (ValidationException $validator) {
+            $exception = [
+                "error"   => $validator->errors(),
+                "code"    => 422,
+                "type"    => "ValidationException",
+                "message" => $validator->getMessage(),
+            ];
         }
-
-        // validação backend se for necessário
-        if (isset($this->model->rules[ "update" ])) {
-            $validator = Validator::make($dados, $this->model->rules[ "update" ] ?? []);
-            if ($validator->fails()) {
-                return $this->validateFails(__('messages.58'), $validator->messages()->toArray());
-            }
+        catch (Throwable $throwable) {
+            $exception = [
+                "error"   => $throwable->errors(),
+                "code"    => 500,
+                "type"    => "Throwable",
+                "message" => config('app.debug', true)
+                    ? $throwable->getMessage()
+                    : __("Ops... Erro Inesperado!"),
+            ];
         }
+        /*
+        |---------------------------------------------------
+        | Look up Tables Principles
+        |---------------------------------------------------
+        |
+        | 1- Caso seja view
+        |   1.1 - verificar se tem que retornar para a mesma tela
+        |
+        */
 
-        //////////////////////////////////////////////////////////////////////////////////
-        //        dd( $request->file('foto') );
-        if (!is_null($request->file('foto'))) {
-            try {
-                $dados[ "foto" ] = uploadFoto($request);
-            } catch (Exception $e) {
-                return $this->error($e->getMessage());
-            }
-        } else {
-            unset($dados[ "foto" ]);
-        }
-        //////////////////////////////////////////////////////////////////////////////////
-
-        //Inicia o Database Transaction
-        DB::beginTransaction();
-        $find   = $this->modelFind($find);
-        $result = $find->update($dados);
-        if (!$result) {
-            DB::rollBack();
-            logUpdate("Atualizar dados na model " . get_class($this->model), "F");
-            $this->codeError(400);
-            return $this->error(__('messages.46'));
-        }
-
-        DB::commit();
-        logUpdate("Atualizar dados na model " . get_class($this->model));
-        return $this->success($find, __('messages.42'));
+        return $this->isSPA
+            ? $this->error($exception, $attributes, $exception['code'])
+            : redirect()->route($this->getRouteName('index'))->withInput()->withErrors($exception['error']);
     }
 
     public function destroy($find)
     {
         // TODO implemented
     }
-    
+
     /*
     |---------------------------------------------------
     | Utils
@@ -200,7 +208,7 @@ trait ResourceCrudEasyApi
     {
         return $this->model::$rules;
     }
-    
+
     /**
      * Metodo para usar genericamente com uuid ou primary key da model
      *
@@ -213,7 +221,6 @@ trait ResourceCrudEasyApi
             ? $this->model->findByUuid($find)
             : $this->model->findOrFail($find);
     }
-
 
     /**
      * Verifica os dados que vieram do form com os dados do registro
@@ -257,7 +264,7 @@ trait ResourceCrudEasyApi
         // TODO revisar redirect
         return route($this->getRouteName('index')); //  ?? $this->redirectUpdate
     }
-    
+
     private function updateRelations(Model $model, $attributes): Model
     {
         foreach ($attributes as $key => $val) {

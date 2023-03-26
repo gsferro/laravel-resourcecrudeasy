@@ -1,4 +1,4 @@
-Route::group(['name' => '{{ class_route_slug }}.'], function () {
+Route::group([], function () {
     Route::apiResource('{{ class_route_slug_plural }}', App\Http\Controllers\{{ class }}Controller::class, [
          'names' => [
              'index'   => 'index',
@@ -7,5 +7,7 @@ Route::group(['name' => '{{ class_route_slug }}.'], function () {
              // 'show'    => 'show',
              // 'destroy' => 'delete',
          ]
-    ])->except(['show', 'destroy']);
+    ])
+    ->except(['show', 'destroy'])
+    ->names('{{ class_route_slug }}');
 });

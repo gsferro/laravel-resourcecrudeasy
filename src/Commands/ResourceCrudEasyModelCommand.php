@@ -3,6 +3,7 @@
 namespace Gsferro\ResourceCrudEasy\Commands;
 
 use Gsferro\DatabaseSchemaEasy\DatabaseSchemaEasy;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Gsferro\ResourceCrudEasy\Traits\Commands\{WithExistsTableCommand, UseModelCommand, UseControllerCommand, UtilCommand};
 use Illuminate\Support\Str;
 
@@ -82,38 +83,37 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         ];
         // TODO bar progress
         $this->info("Preper to Create [ {$entite} ]:");
-
-        /*
-        |---------------------------------------------------
-        | Questions
-        |---------------------------------------------------
-        |
-        | TODO by config
-        |
-        */
-        $this->verifyParams($entite, $table, $connection);
-
-        /*
-        |---------------------------------------------------
-        | v0.1
-        |---------------------------------------------------
-        |
-        | CRUD:
-        |
-        | - model
-        |    - factory
-        |    - seeder
-        |    - migrate
-        | - Pest
-        |    - Unit Model
-        | - todo:
-        |       - preenchimento model e migration with fields
-        |       - criar a pasta da entidade com o form pegando os fields
-        | -
-        |
-        */
-
         try {
+            /*
+            |---------------------------------------------------
+            | Questions
+            |---------------------------------------------------
+            |
+            | TODO by config
+            |
+            */
+            $this->verifyParams($entite, $table, $connection);
+    
+            /*
+            |---------------------------------------------------
+            | v0.1
+            |---------------------------------------------------
+            |
+            | CRUD:
+            |
+            | - model
+            |    - factory
+            |    - seeder
+            |    - migrate
+            | - Pest
+            |    - Unit Model
+            | - todo:
+            |       - preenchimento model e migration with fields
+            |       - criar a pasta da entidade com o form pegando os fields
+            | -
+            |
+            */
+
             /*
             |---------------------------------------------------
             | Criar Models
@@ -170,6 +170,9 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
                 $this->publishRoute($entite);
             }
 
+        } catch (ModelNotFoundException $e) {
+            $this->comment('Ops...');
+            $this->error($e->getMessage());
         } catch (\Exception $e) {
             dump('Ops...', $e->getMessage(), $e->getCode(), $e->getLine() );
         }

@@ -147,6 +147,10 @@ trait UtilCommand
      */
     private function replaceRules(string $columnType, string &$rules, string $str, bool $notNull): void
     {
+        if ($str == 'uuid') {
+            return;
+        }
+        
         // proteção contra type
         $rule = $this->replaceTypeColumnRules($columnType);
 

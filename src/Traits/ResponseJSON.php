@@ -68,18 +68,19 @@ trait ResponseJSON
      * @param string $message
      * @return array json
      */
-    protected function success($result, $message = null)
+    protected function success($result, string $message = null, int $code = 200)
     {
         $res = [
             'success' => true,
             'data'    => $result,
             'message' => $message ?? $this->msgTrue,
+            'code'    => $code
         ];
 
         // TODO analise de como enviar o feedback
         session()->flash('msgSucesso', $res["message"]);
 
-        return $res;
+        return response()->json($res, $code);
     }
     ///////////////////////////////////////////////// resposta
     /**
@@ -92,8 +93,8 @@ trait ResponseJSON
      */
     protected function verify($operation, $msgTrue = null, $msgFalse = null)
     {
-        return $operation 
-            ? $this->success($this->result, $msgTrue) 
+        return $operation
+            ? $this->success($this->result, $msgTrue)
             : $this->error($msgFalse, $this->result, $this->code);
     }
 }

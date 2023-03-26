@@ -30,7 +30,7 @@ trait WithExistsTableCommand
                 $pkString = $this->getStubModelPkString($column);
             }
             // não exibe
-            if ($schema->isPrimaryKey($column)) {
+            if ($schema->isPrimaryKey($column) || $column == 'uuid') {
                 continue;
             }
 
@@ -103,7 +103,7 @@ trait WithExistsTableCommand
         $thisFake         = '$this->faker->';
         $fake             = 'word';
         foreach ($entites['columnListing'] as $column) {
-            if ($schema->isPrimaryKey($column)) {
+            if ($schema->isPrimaryKey($column) || $column == 'uuid') {
                 continue;
             }
 
