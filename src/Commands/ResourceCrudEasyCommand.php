@@ -22,14 +22,14 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
      *
      * @var string
      */
-    protected $name = 'gsferro:resource-crud';
+    protected $name = 'gsferro:resource-crud-controller';
 
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'gsferro:resource-crud {entite : Entite name} {--table=} {--connection=} {--api} {--factory} {--seeder} {--migrate}';
+    protected $signature = 'gsferro:resource-crud-controller {entite : Entite name} {--table=} {--connection=} {--api} {--factory} {--seeder} {--migrate}';
 
     /**
      * The console command description.

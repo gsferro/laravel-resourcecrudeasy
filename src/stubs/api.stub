@@ -1,0 +1,11 @@
+Route::group(['name' => '{{ class_route_slug }}.'], function () {
+    Route::apiResource('{{ class_route_slug_plural }}', App\Http\Controllers\{{ class }}Controller::class, [
+         'names' => [
+             'index'   => 'index',
+             'store'   => 'store',
+             'update'  => 'update',
+             // 'show'    => 'show',
+             // 'destroy' => 'delete',
+         ]
+    ])->except(['show', 'destroy']);
+});

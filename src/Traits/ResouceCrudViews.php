@@ -59,7 +59,6 @@ trait ResouceCrudViews
         return $this->getPathView('form');
     }
 
-
     /**
      * retorna a caminho da view de acordo com a Entidade (model)
      *

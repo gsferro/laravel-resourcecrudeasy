@@ -1,0 +1,17 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Gsferro\ResourceCrudEasy\Traits\ResourceCrudEasyApi;
+use App\Models\{{{ class }}};
+
+class {{ class }}Controller extends Controller
+{
+    use ResourceCrudEasyApi;
+
+    public function __construct({{ class }} $model)
+    {
+        $this->model = $model;
+        $this->isSPA = true;
+    }
+}
