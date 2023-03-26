@@ -18,7 +18,7 @@ class {{ class }} extends AppBaseModel
     | Uses
     |---------------------------------------------------
     */
-    use HasUuid;
+    {{ has_uuid }}
     use HasFactory;
     // use SoftDeletes;
     // use Cachable;

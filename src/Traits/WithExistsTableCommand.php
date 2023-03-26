@@ -63,6 +63,14 @@ trait WithExistsTableCommand
             // belongTo
             $relations = $this->setBelongsTo($entite, $column, $relations);
         }
+        
+        // use HasUuid
+        $useHasUuid = [];
+        if (!$schema->hasColumn('uuid')){
+            $useHasUuid = [
+                '/\{{ has_uuid }}/' => ''
+            ];
+        }
 
         return [
             '/\{{ pk_string }}/'  => $pkString,
@@ -77,7 +85,7 @@ trait WithExistsTableCommand
             '/\{{ class_table }}/'  => $entites['table'],
             '/\{{ rules_store }}/'  => $rulesStore,
             '/\{{ rules_update }}/' => $rulesUpdate,
-        ];
+        ] + $useHasUuid;
     }
 
     private function factoryTable(string $entite): array
@@ -260,6 +268,8 @@ trait WithExistsTableCommand
         return [
             '/\{{ migrate_fillables }}/' => $migrateFillables,
             '/\{{ migrate_relation }}/'  => $migrateRelation,
+            // Nome tabela
+            '/\{{ class_table }}/'  => $entites['table'],
         ];
     }
 

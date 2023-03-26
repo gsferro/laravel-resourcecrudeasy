@@ -33,7 +33,7 @@ test('Attributes the model {{ class }}', function()
    }
 
     expect($this->model)->not()->toBeEmpty();
-    expect($this->model->id)->not()->toBeEmpty()->toBeInt();
+    expect($this->model->id)->not()->toBeEmpty(); // ->toBeInt();
     // TODO gerenate by table
 })->group( 'attributes');
 

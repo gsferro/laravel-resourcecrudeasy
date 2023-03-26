@@ -529,7 +529,8 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     {
         switch ($columnType) {
             case 'guid':
-                $columnType = "uuid";
+            case 'uuid':
+                $columnType = "string";
             break;
 //            case 'decimal':
 //                $columnType = "numeric";

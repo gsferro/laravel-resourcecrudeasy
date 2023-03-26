@@ -74,6 +74,9 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
             '/\{{ class_title }}/'  => $str->snake()->title()->replace('_', ' '),
             '/\{{ model }}/'        => $str,
 
+            // use uuid
+            '/\{{ has_uuid }}/' => 'use HasUuid;',
+
             // Nome tabela
             '/\{{ class_table }}/' => $str->snake()->plural(),
 
