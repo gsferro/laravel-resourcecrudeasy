@@ -7,11 +7,12 @@ use \OwenIt\Auditing\Auditable;
 
 trait ResouceCrudViews
 {
+    protected string $sessionName;
     // front
-    protected ?string $viewIndex              = null;
-    protected ?string $viewCreate             = null;
-    protected ?string $viewEdit               = null;
-    protected ?string $viewForm               = null;
+    protected ?string $viewIndex  = null;
+    protected ?string $viewCreate = null;
+    protected ?string $viewEdit   = null;
+    protected ?string $viewForm   = null;
 
     /**
      * Verifica se foi setado um caminho para a view index ou retorna via conveção

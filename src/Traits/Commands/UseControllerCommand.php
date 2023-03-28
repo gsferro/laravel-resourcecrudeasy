@@ -39,7 +39,8 @@ trait UseControllerCommand
             'form',
             'create',
             'edit',
-            // 'filter',
+            'filter',
+            'datatable_action',
             // 'table',
         ];
 

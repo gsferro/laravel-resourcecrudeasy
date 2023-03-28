@@ -1,0 +1,84 @@
+<?php
+
+namespace App\Models;
+
+use App\Datatables\{{ class }}Datatable;
+use Gsferro\ResourceCrudEasy\Models\AppBaseModel;
+use YourAppRocks\EloquentUuid\Traits\HasUuid;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use GeneaLabs\LaravelModelCaching\Traits\Cachable;
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasOne};
+
+class {{ class }} extends AppBaseModel
+{
+    /*
+    |---------------------------------------------------
+    | Uses
+    |---------------------------------------------------
+    */
+    {{ has_uuid }}
+    // use SoftDeletes;
+    // use Cachable;
+
+    /*
+    |---------------------------------------------------
+    | Configs Table
+    |---------------------------------------------------
+    */
+    public $table = '{{ class_table }}';
+    {{ pk_string }}
+    {{ timestamps }}
+    {{ connection }}
+    // protected $dates = ['deleted_at'];
+
+    /**
+     * Fillable utilizado para setar os campos que serão observados no audits
+     *
+     * @var array
+     */
+    public $fillable = [
+        {{ fillable }}
+    ];
+
+    /**
+     * @var array
+     */
+    protected $casts = [
+        {{ cast }}
+    ];
+
+    /*
+    |---------------------------------------------------
+    | Rules from Validate
+    |---------------------------------------------------
+    |
+    | TODO package autovalidate
+    |
+    */
+    /**
+     * Validation rules
+     */
+    public static array $rules = [
+        'store' => [
+        {{ rules_store }}
+        ],
+        'update' => [
+        {{ rules_update }}
+        ],
+    ];
+
+    /*
+    |---------------------------------------------------
+    | Relationships
+    |--------------------------------------------------
+    |
+    | BelongsTo
+    | HasMany
+    | HasOnes
+    |
+    */
+    # BelongsTo
+    {{ relations }}
+    # HasMany
+    # HasOnes
+}

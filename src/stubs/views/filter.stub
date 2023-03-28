@@ -1,0 +1,3 @@
+<form id="form-filter" class="" autocomplete="off" method="post" action="#">
+    {{-- fields filter --}}
+</form>

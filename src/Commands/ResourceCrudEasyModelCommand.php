@@ -38,6 +38,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     {entite : Entite name}
     {--table=}
     {--connection=}
+    {--datatable}
     {--factory}
     {--seeder}
     {--migrate}
@@ -102,6 +103,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             | CRUD:
             |
             | - model
+            |    - datatable
             |    - factory
             |    - seeder
             |    - migrate
@@ -120,6 +122,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             |---------------------------------------------------
             */
             $this->generateModel($entite);
+            $this->generateDatatable($entite);
             $this->generateFactory($entite);
             $this->generateSeeder($entite);
             $this->generateMigrate($entite);
@@ -188,14 +191,16 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         |---------------------------------------------------
         */
         if (is_null($table)) {
-            $factory = (bool)($this->option('factory') ?: $this->confirm('Create Factory?', true));
-            $seeder  = (bool)($this->option('seeder')  ?: $this->confirm('Create Seeder?', !$factory));
-            $migrate = (bool)($this->option('migrate') ?: $this->confirm('Create Migrate?', true));
+            $datatable = (bool)($this->option('datatable') ? : $this->confirm('Use Datatable?', true));
+            $factory   = (bool)($this->option('factory') ? : $this->confirm('Create Factory?', true));
+            $seeder    = (bool)($this->option('seeder') ? : $this->confirm('Create Seeder?', !$factory));
+            $migrate   = (bool)($this->option('migrate') ? : $this->confirm('Create Migrate?', true));
         }
 
-        $factory = $factory ?? $this->confirm('Create Factory?', true);
-        $seeder  = $seeder  ?? $this->confirm('Create Seeder?', !$factory);
-        $migrate = $migrate ?? $this->confirm('Create Migrate?', true);
+        $datatable = $datatable ?? $this->confirm('Use Datatable?', true);
+        $factory   = $factory ?? $this->confirm('Create Factory?', true);
+        $seeder    = $seeder ?? $this->confirm('Create Seeder?', !$factory);
+        $migrate   = $migrate ?? $this->confirm('Create Migrate?', true);
 
         /*
         |---------------------------------------------------
@@ -207,6 +212,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         $view       = (bool)($this->option('view') ? : $this->confirm('Create Views?', !$api));
 
         $this->entites[ $entite ] += [
+            'useDatatable'     => $datatable,
             'useFactory'       => $factory,
             'useSeeder'        => $seeder,
             'useMigrate'       => $migrate,

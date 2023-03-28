@@ -11,7 +11,8 @@ class {{ class }}Controller extends Controller
 
     public function __construct({{ class }} $model)
     {
-        $this->model = $model;
+        $this->model       = $model;
+        $this->sessionName = '{{ class }}.filter';
 
         // default true
         if ($this->hasBreadcrumb()) {
@@ -19,5 +20,7 @@ class {{ class }}Controller extends Controller
         }
 
         $this->addMergeData('model', $this->model);
+        $this->addMergeData('theads', $this->model->getDatatablesGrid()['theads']);
+        $this->addMergeData('columns', $this->model->getDatatablesGrid()['columns']);
     }
 }

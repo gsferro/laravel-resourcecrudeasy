@@ -1,0 +1,58 @@
+<?php
+
+namespace App\Datatables;
+
+trait {{ class }}Datatable
+{
+    public function getDatatablesGrid(): array
+    {
+        return [
+            /*
+            |---------------------------------------------------
+            | Nome das colunas na table
+            |---------------------------------------------------
+            |
+            | Exemplo:
+            |
+            */
+            'theads' => [
+                // "Nome",
+                // "Nível",
+                // "Ações",
+            ],
+             /*
+             |---------------------------------------------------
+             | Columns da tabela para exibir os dados
+             |---------------------------------------------------
+             |
+             | Relacionamentos não podem ser ordenados
+             | Coloque o action como sendo o uuid ou id da tabela
+             | Exemplo:
+             |
+             */
+            'columns' => [
+                // [ "name" => 'nome' ],
+                // [ "name" => 'nivel.descricao', "orderable" => false ],
+                // [ "name" => 'uuid' ],
+            ],
+        ];
+    }
+
+     /*
+     |---------------------------------------------------
+     | Columns action
+     |---------------------------------------------------
+     |
+     | Caso seja somente exibição, devolver array vazio
+     | Alterar front:
+     |
+     */
+    public function laratablesRowData(): array
+    {
+        return [
+            'actions' => view('{{ class_folder }}.datatable_action', [
+                $dados => $this
+            ])
+        ]
+    }
+}

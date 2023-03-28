@@ -1,0 +1,31 @@
+@extends('layouts.container')
+@section('content')
+    @include('{{ class }}.filter')
+
+    <x-datatable_process :theads=$theads />
+@endsection
+@section('js')
+	<script>
+		$( function() {
+			var datatable = $( '.datatable-process' ).DataTableProccess( {
+				"ajax"    : {
+					url    : "{{ route('datatables') }}",
+					method : 'post' ,
+					data   : function( d ) {
+						d.form     = $( '#form-filter' ).serializeArray();
+						d.hash     = \Illuminate\Support\Facades\Crypt::encryptString('{{ class }}');
+						return d;
+					}
+				} ,
+				// descomente caso não tenha actions
+				// "columnDefs" : {} ,
+				"columns" : @json($columns),
+			} );
+
+			$( "#form-filter" ).on( 'submit' , function( e ) {
+				e.preventDefault();
+				datatable.ajax.reload();
+			} );
+		} );
+	</script>
+@stop

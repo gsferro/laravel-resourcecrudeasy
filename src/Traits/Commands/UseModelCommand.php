@@ -9,6 +9,7 @@ trait UseModelCommand
     | Criar Models
     |---------------------------------------------------
     |
+    | Datatables
     | Factory
     | Seeder
     | Migration
@@ -19,7 +20,22 @@ trait UseModelCommand
     {
         $path = 'app\Models\\' . $entite . '.php';
         $stub = $this->entites[$entite]['useFactory'] ? 'model_factory' : 'model';
+
+        if ($this->entites[$entite]['useFactory'] ) {
+            $stub .= '_datatable';
+        }
+        
         $this->generate($entite, $path, $stub, 'Model');
+    }
+    
+    private function generateDatatable(string $entite): void
+    {
+        if (!$this->entites[$entite]['useDatatable'] ) {
+            return;
+        }
+        
+        $path = 'app\Datatables\\' . $entite . 'Datatable.php';
+        $this->generate($entite, $path, 'datatables', 'Model');
     }
 
     private function generateFactory(string $entite): void
