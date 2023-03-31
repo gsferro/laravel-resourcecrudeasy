@@ -2,6 +2,7 @@
 
 namespace Gsferro\ResourceCrudEasy\Controllers;
 
+use App\Http\Controllers\Controller;
 use Freshbitsweb\Laratables\Laratables;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
