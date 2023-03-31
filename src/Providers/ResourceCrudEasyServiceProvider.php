@@ -5,6 +5,7 @@ namespace Gsferro\ResourceCrudEasy\Providers;
 use Gsferro\ResourceCrudEasy\Commands\ResourceCrudEasyCommand;
 use Gsferro\ResourceCrudEasy\Commands\ResourceCrudEasyModelCommand;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Blade;
 
 class ResourceCrudEasyServiceProvider extends ServiceProvider
 {
@@ -43,17 +44,17 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
 
         $this->publishes([
             __DIR__ . '/../public/datatables' => public_path('vendor/datatables'),
-        ]);
+        ], 'plugins');
 
         // Alias blade
-        Blade::directive("datatables", function(){
+        Blade::directive("DatatablesPlugin", function(){
             return "
-                <script src=\"{{ asset('vendor/datatables/dataTables.min.js') }}\"></script>
-                <script src=\"{{ asset('vendor/datatables/dataTables.bootstrap.min.js') }}\"></script>
-                <script src=\"{{asset('vendor/datatables/responsive/dataTables.responsive.min.js')}}\"></script>
-                <link rel='stylesheet' href=\"{{asset('vendor/datatables/responsive/dataTables.responsive.min.css')}}\">
-                <script src=\"{{ asset('vendor/datatables/DataTableLangBR.js') }}\"></script>
-                <script src=\"{{ asset('vendor/datatables/DataTableProccessSS.js') }}\"></script>   
+                <link   href=". asset('vendor/datatables/responsive/dataTables.responsive.min.css') ." rel='stylesheet'/>
+                <script src=". asset('vendor/datatables/dataTables.min.js') ."></script>
+                <script src=". asset('vendor/datatables/dataTables.bootstrap.min.js') ."></script>
+                <script src=". asset('vendor/datatables/responsive/dataTables.responsive.min.js') ."></script>
+                <script src=". asset('vendor/datatables/DataTableLangBR.js') ."></script>
+                <script src=". asset('vendor/datatables/DataTableProccessSS.js') ."></script>       
             ";
         });
 
