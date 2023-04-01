@@ -19,7 +19,8 @@ trait UseModelCommand
     private function generateModel(string $entite): void
     {
         $path = 'app\Models\\' . $entite . '.php';
-        $stub = $this->entites[$entite]['useFactory'] ? 'model_factory' : 'model';
+        $stub = 'models/';
+        $stub .= $this->entites[ $entite ][ 'useFactory' ] ? 'model_factory' : 'model';
 
         if ($this->entites[$entite]['useFactory'] ) {
             $stub .= '_datatable';
@@ -65,7 +66,7 @@ trait UseModelCommand
         }
 
         // nome da table
-        $arquivo = $this->entites[$entite]['str']->snake() . '_table.php';
+        $arquivo = 'create_'.$this->entites[$entite]['str']->snake() . '_table.php';
         // sempre fazer override
         $override = true;
         // caso exista, pega o nome

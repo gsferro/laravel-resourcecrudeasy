@@ -46,7 +46,7 @@ trait UseControllerCommand
 
         foreach ($views as $view) {
             $index = $pathBase.$this->entites[$entite]['str']->snake() . "\\$view.blade.php";
-            $this->generate($entite, $index, "view_{$view}", 'View '. ucfirst($view));
+            $this->generate($entite, $index, "views/{$view}", 'View '. ucfirst($view));
         }
     }
 
