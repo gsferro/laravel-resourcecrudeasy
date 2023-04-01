@@ -3,7 +3,14 @@
 ### Instalação:
 
 ```composer 
-composer require gsferro/resource-crud-easy -W && php artisan vendor:publish --provider="Gsferro\ResourceCrudEasy\Providers\ResourceCrudEasyServiceProvider" --force
+composer require gsferro/resource-crud-easy -W
+```
+
+### Publish (TODO :install)
+```composer 
+php artisan vendor:publish --provider="Gsferro\ResourceCrudEasy\Providers\ResourceCrudEasyServiceProvider" --force
+php artisan vendor:publish --provider "OwenIt\Auditing\AuditingServiceProvider"
+genealabs/laravel-model-caching
 ```
 
 ### Dependências:
