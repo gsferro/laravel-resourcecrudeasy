@@ -26,7 +26,7 @@ class DatatablesController extends Controller
         // encrypt
         if (filled($hash)) {
             // pegando a model enviada e decodificando
-            $model = "App\\Model\\". Crypt::decryptString($hash);
+            $model = "App\\Models\\". Crypt::decryptString($hash);
         }
 
         // TODO tratar caso model não exista ou tente acessar onde não deveria

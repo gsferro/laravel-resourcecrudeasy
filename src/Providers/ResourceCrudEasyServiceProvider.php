@@ -46,10 +46,24 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
             __DIR__ . '/../public/datatables' => public_path('vendor/datatables'),
         ], 'plugins');
 
-        // Alias blade
+        $this->publishes([
+            __DIR__.'/../views/components' => resource_path('views/components/datatables'),
+        ], 'views');
+
+        $this->publishes([
+            __DIR__.'/../tests' => base_path('tests'),
+        ], 'tests');
+
+        /*
+        |---------------------------------------------------
+        | Alias blade
+        |---------------------------------------------------
+        */
+        Blade::component('components.datatables.datatable-process',  'datatable-process');
         Blade::directive("DatatablesPlugin", function(){
             return "
-                <link   href=". asset('vendor/datatables/responsive/dataTables.responsive.min.css') ." rel='stylesheet'/>
+                <link   href=". asset('vendor/datatables/dataTables.bootstrap.css') ." rel='stylesheet' type='text/css'/>
+                <link   href=". asset('vendor/datatables/responsive/dataTables.responsive.min.css') ." rel='stylesheet' type='text/css'/>
                 <script src=". asset('vendor/datatables/dataTables.min.js') ."></script>
                 <script src=". asset('vendor/datatables/dataTables.bootstrap.min.js') ."></script>
                 <script src=". asset('vendor/datatables/responsive/dataTables.responsive.min.js') ."></script>
@@ -57,9 +71,5 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
                 <script src=". asset('vendor/datatables/DataTableProccessSS.js') ."></script>       
             ";
         });
-
-        $this->publishes([
-            __DIR__.'/../tests' => base_path('tests'),
-        ]);
     }
 }

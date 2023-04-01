@@ -1,4 +1,4 @@
-<table class="datatable datatable-process responsive wrap {{ $tableExtraClass ?? "" }}">
+<table class="dataTable datatable-process responsive wrap {{ $tableExtraClass ?? "" }}">
     <thead>
         <tr>
             @foreach($theads as $thead)
