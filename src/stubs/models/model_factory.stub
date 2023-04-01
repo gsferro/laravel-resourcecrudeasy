@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Datatables\{{ class }}Datatable;
 use Gsferro\ResourceCrudEasy\Models\AppBaseModel;
 use YourAppRocks\EloquentUuid\Traits\HasUuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
