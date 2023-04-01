@@ -259,8 +259,10 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         $entitesTable = [];
         if (isset($this->entites[$entite]['table'])) {
             switch ($stubType) {
-                case 'model_factory':
-                case 'model':
+                case 'models/model':
+                case 'models/model_factory':
+                case 'models/model_datatable':
+                case 'models/model_factory_datatable':
                     $entitesTable = $this->modelTable($entite);
                 break;
                 case 'factory':

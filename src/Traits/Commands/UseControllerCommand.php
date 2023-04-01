@@ -30,10 +30,9 @@ trait UseControllerCommand
         if (!$this->entites[$entite]['useView']) {
             return;
         }
-        
-        // TODO by database
-        $pathBase = 'resources\views\\';
 
+        // TODO by database
+        $pathBase = 'resources\views\\' . $this->entites[$entite]['str']->snake();
         $views = [
             'index',
             'form',
@@ -45,9 +44,52 @@ trait UseControllerCommand
         ];
 
         foreach ($views as $view) {
-            $index = $pathBase.$this->entites[$entite]['str']->snake() . "\\$view.blade.php";
-            $this->generate($entite, $index, "views/{$view}", 'View '. ucfirst($view));
+            $pathView = $pathBase . "\\$view.blade.php";
+            $this->generate($entite, $pathView, "views/{$view}", 'View '. ucfirst($view));
         }
+
+        /*
+        |---------------------------------------------------
+        | WithTable
+        |---------------------------------------------------
+        */
+        $this->generateViewsTable($entite, $pathBase);
+    }
+
+    private function generateViewsTable(string $entite, string $pathBase): void
+    {
+        $entites       = $this->entites[ $entite ];
+        $columnListing = $entites[ 'columnListing' ] ?? null;
+        if (empty($columnListing)) {
+            return;
+        }
+
+        $schema = $entites[ 'schema' ];
+        $fields = "";
+        foreach ($columnListing as $column) {
+            // TODO aplicar por cada type
+            // $columnType = $schema->getColumnType($column);
+
+            // não exibe
+            if ($schema->isPrimaryKey($column) || $column == 'uuid') {
+                continue;
+            }
+
+            $this->interpolate($fields, $this->getStubField($column, empty($fields)));
+        }
+
+        $this->files->put("$pathBase\\form.blade.php", $fields);
+    }
+
+    private function getStubField(string $column, bool $first = false)
+    {
+        $params = [
+            '/\{{ column }}/'         => $column,
+            '/\{{ column_ucfirst }}/' => ucfirst($column),
+            '/\{{ mt-4 }}/'           => $first ? '' : 'mt-4',
+        ];
+        $stub   = $this->files->get($this->getStubEntite('views/field_form'));
+        return $this->replace($params, $stub);
     }
 
     /*

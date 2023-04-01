@@ -1,8 +1,16 @@
-@extends('layouts.container')
+@extends('layouts.app')
 @section('content')
     @include('{{ class }}.filter')
 
-    <x-datatable_process :theads=$theads />
+    {{-- TODO Components card --}}
+    <div class="card mb-4">
+        <div class="card-header">
+            {{ __('List Data') }}
+        </div>
+        <div class="card-body">
+            <x-datatable-process :theads=$theads />
+            </div>
+        </div>
 @endsection
 @section('js')
 	<script>

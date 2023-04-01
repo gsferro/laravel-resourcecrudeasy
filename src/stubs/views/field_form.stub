@@ -1,0 +1,6 @@
+
+{{-- TODO components div-form | label | input --}}
+<div class="form-floating {{ mt-4 }}">
+    <input id="{{ column }}" class="form-control" type="text" name='{{ column }}' value="{{old('{{ column }}', $model?->{{ column }})}}"/>
+    <label for="{{ column }}">{{ __('{{ column_ucfirst }}')}}</label>
+</div>
