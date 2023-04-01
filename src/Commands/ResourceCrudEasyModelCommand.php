@@ -53,7 +53,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
      */
     protected $description = 'Generate all files for new Model!';
 
-    public function handle(): ?bool
+    public function handle()
     {
         $this->entite = ucfirst($this->argument('entite'));
 
