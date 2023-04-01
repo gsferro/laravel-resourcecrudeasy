@@ -22,7 +22,7 @@ trait UseModelCommand
         $stub = 'models/';
         $stub .= $this->entites[ $entite ][ 'useFactory' ] ? 'model_factory' : 'model';
 
-        if ($this->entites[$entite]['useFactory'] ) {
+        if ($this->entites[$entite]['useDatatable'] ) {
             $stub .= '_datatable';
         }
         
