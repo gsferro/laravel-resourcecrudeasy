@@ -5,7 +5,9 @@
     </div>
     <form id="form-filter" class="" autocomplete="off" method="post" action="#">
         <div class="card-body">
-            {{-- fields filter --}}
+            <div class="row g-3">
+                {{-- fields filter --}}
+            </div>
         </div>
         <div class="card-footer">
             <button class="btn btn-primary" type="submit">
