@@ -1,0 +1,4 @@
+{{-- TODO Components link --}}
+<a href="{{ route('{{ class_route_slug }}.edit', [$model->uuid]) }}">
+    Edit
+</a>

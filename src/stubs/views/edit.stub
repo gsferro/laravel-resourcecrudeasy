@@ -1,0 +1,23 @@
+@extends('layouts.app')
+
+@section('content')
+    {{-- TODO Components card --}}
+    <div class="card mb-4">
+        <div class="card-header">
+            {{ __('{{ class }} Edit') }}
+        </div>
+        <form method="POST" action="{{ route('{{ class_route_slug }}.update', [$model->uuid]) }}">
+            <div class="card-body">
+                @method('PUT')
+                @csrf
+                @include('{{ class_folder }}.form')
+            </div>
+            <div class="card-footer">
+                {{-- TODO Components button --}}
+                <button class="btn btn-primary" type="submit">
+                    {{ __('Edit') }}
+                </button>
+            </div>
+        </form>
+    </div>
+@endsection

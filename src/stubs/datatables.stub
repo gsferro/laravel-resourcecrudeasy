@@ -13,12 +13,13 @@ trait {{ class }}Datatable
             |---------------------------------------------------
             |
             | Exemplo:
+            |   "Nome",
+            |   "Nível",
+            |   "Ações",
             |
             */
             'theads' => [
-                // "Nome",
-                // "Nível",
-                // "Ações",
+                '#',
             ],
              /*
              |---------------------------------------------------
@@ -28,12 +29,13 @@ trait {{ class }}Datatable
              | Relacionamentos não podem ser ordenados
              | Coloque o action como sendo o uuid ou id da tabela
              | Exemplo:
+             |  [ "name" => 'nome' ],
+             |  [ "name" => 'nivel.descricao', "orderable" => false ],
+             |  [ "name" => 'uuid' ],
              |
              */
             'columns' => [
-                // [ "name" => 'nome' ],
-                // [ "name" => 'nivel.descricao', "orderable" => false ],
-                // [ "name" => 'uuid' ],
+                [ "name" => 'uuid' ],
             ],
         ];
     }
@@ -47,12 +49,12 @@ trait {{ class }}Datatable
      | Alterar front:
      |
      */
-    public function laratablesRowData(): array
+    public static function laratablesRowData({{ class }} $model): array
     {
         return [
             'actions' => view('{{ class_folder }}.datatable_action', [
-                'dados' => $this
-            ]),
+                'model' => $model
+            ])->render(),
         ];
     }
 }

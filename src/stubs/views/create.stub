@@ -1,0 +1,22 @@
+@extends('layouts.app')
+
+@section('content')
+    {{-- TODO Components card --}}
+    <div class="card mb-4">
+        <div class="card-header">
+            {{ __('{{ class }} Create') }}
+        </div>
+        <form method="POST" action="{{ route('{{ class_route_slug }}.store') }}">
+            <div class="card-body">
+                @csrf
+                @include('{{ class_folder }}.form')
+            </div>
+            <div class="card-footer">
+                {{-- TODO Components button --}}
+                <button class="btn btn-primary" type="submit">
+                    {{ __('Register') }}
+                </button>
+            </div>
+        </form>
+    </div>
+@endsection

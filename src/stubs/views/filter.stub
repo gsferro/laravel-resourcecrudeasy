@@ -1,3 +1,27 @@
-<form id="form-filter" class="" autocomplete="off" method="post" action="#">
-    {{-- fields filter --}}
-</form>
+{{-- TODO Components card --}}
+<div class="card mb-4">
+    <div class="card-header">
+        {{ __('Filters') }}
+    </div>
+    <form id="form-filter" class="" autocomplete="off" method="post" action="#">
+        <div class="card-body">
+            {{-- fields filter --}}
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-primary" type="submit">
+                <span class="cil-contrast btn-icon mr-2"></span>
+                {{ __('Filter') }}
+            </button>
+            {{-- TODO Components button --}}
+            <button type="button" class="btn btn-light btn-flat"
+                    onclick="
+                $(this).closest('form').find('input[type!=\'hidden\'], select').val('').trigger('change') &&
+                $(this).closest('form').find('input[type=\'checkbox\'], input[type=\'radio\']').prop('checked',false).trigger('change')
+                $(this).closest('form').submit()
+            ">
+                <i class="fa fa-eraser fa-fw" aria-hidden="true"></i>
+                {{ __('Clear') }}
+            </button>
+        </div>
+    </form>
+</div>

@@ -17,6 +17,7 @@ class {{ class }}Controller extends Controller
         // default true
         if ($this->hasBreadcrumb()) {
             $this->addTitulo('{{ class_title }}');
+            $this->addBreadcrumb('{{ class_title }}', route('{{ class_route_slug }}.index'));
         }
 
         $this->addMergeData('model', $this->model);
