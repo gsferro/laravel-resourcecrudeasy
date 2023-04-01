@@ -51,8 +51,8 @@ trait {{ class }}Datatable
     {
         return [
             'actions' => view('{{ class_folder }}.datatable_action', [
-                $dados => $this
-            ])
-        ]
+                'dados' => $this
+            ]),
+        ];
     }
 }
