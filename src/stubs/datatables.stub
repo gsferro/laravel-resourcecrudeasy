@@ -2,6 +2,8 @@
 
 namespace App\Datatables;
 
+use App\Models\{{ class }};
+
 trait {{ class }}Datatable
 {
     public function getDatatablesGrid(): array
