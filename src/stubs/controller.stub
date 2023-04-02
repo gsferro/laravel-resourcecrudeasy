@@ -11,17 +11,38 @@ class {{ class }}Controller extends Controller
 
     public function __construct({{ class }} $model)
     {
-        $this->model       = $model;
+        /*
+        |---------------------------------------------------
+        | Atributo utilizado em todos os demais metodos
+        |---------------------------------------------------
+        |
+        | Disponível em todas as views atras pacote ResponseView
+        |
+        */
+        $this->model = $model;
+        $this->addMergeData('model', $this->model);
+
+        /*
+        |---------------------------------------------------
+        | Controla a filtragem da tela index
+        |---------------------------------------------------
+        |
+        | Caso não queira manter o filtro, comente
+        |
+        */
         $this->sessionName = '{{ class }}.filter';
 
-        // default true
+        /*
+        |---------------------------------------------------
+        | Exibe o breandcumb
+        |---------------------------------------------------
+        |
+        | Default true
+        |
+        */
         if ($this->hasBreadcrumb()) {
             $this->addTitulo('{{ class_title }}');
             $this->addBreadcrumb('{{ class_title }}', route('{{ class_route_slug }}.index'));
         }
-
-        $this->addMergeData('model', $this->model);
-        $this->addMergeData('theads', $this->model->getDatatablesGrid()['theads']);
-        $this->addMergeData('columns', $this->model->getDatatablesGrid()['columns']);
     }
 }

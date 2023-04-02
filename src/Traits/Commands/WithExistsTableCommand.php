@@ -132,7 +132,7 @@ trait WithExistsTableCommand
 
             // get type column
             $columnType = $schema->getColumnType($column);
-             switch ($columnType){
+            switch ($columnType) {
                 case 'string':
                     if ($this->contains($str, ['nome', 'name'])) {
                         $fake = "name";
@@ -146,6 +146,12 @@ trait WithExistsTableCommand
                 break;
                 case 'integer':
                     $fake = "numerify";
+                break;
+                case 'date':
+                    $fake = "date";
+                break;
+                default:
+                    $fake = 'word';
                 break;
             };
 

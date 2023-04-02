@@ -1,0 +1,39 @@
+@extends('layouts.app')
+@section('content')
+    @include('{{ class_folder }}.filter')
+
+    {{-- TODO Components card --}}
+    <div class="card mb-4">
+        <div class="card-header">
+            {{ __('List Data') }}
+        </div>
+        <div class="card-body">
+            <x-datatable-process :theads="$model->getDatatablesGrid('theads')" />
+        </div>
+    </div>
+@endsection
+@section('js')
+	<script type="text/javascript">
+		$( function() {
+			var datatable = $( '.datatable-process' ).DataTableProccess( {
+				"ajax"    : {
+					url    : "{{ route('datatables') }}",
+					method : 'post' ,
+					data   : function( d ) {
+						d.form     = $( '#form-filter' ).serializeArray();
+						d.hash     = '{{ \Illuminate\Support\Facades\Crypt::encryptString('{{ class }}') }}';
+						return d;
+					}
+				} ,
+				// descomente caso não tenha actions
+				// "columnDefs" : {} ,
+				"columns" : @json($model->getDatatablesGrid('columns')),
+			} );
+
+			$( "#form-filter" ).on( 'submit' , function( e ) {
+				e.preventDefault();
+				datatable.ajax.reload();
+			} );
+		} );
+	</script>
+@stop

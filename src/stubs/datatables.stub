@@ -6,51 +6,71 @@ use App\Models\{{ class }};
 
 trait {{ class }}Datatable
 {
-    public function getDatatablesGrid(): array
+    public function getDatatablesGrid(?string $index = null): array
     {
-        return [
-            /*
-            |---------------------------------------------------
-            | Nome das colunas na table
-            |---------------------------------------------------
-            |
-            | Exemplo:
-            |   "Nome",
-            |   "Nível",
-            |   "Ações",
-            |
-            */
-            'theads' => [
-                '#',
-            ],
-             /*
-             |---------------------------------------------------
-             | Columns da tabela para exibir os dados
-             |---------------------------------------------------
-             |
-             | Relacionamentos não podem ser ordenados
-             | Coloque o action como sendo o uuid ou id da tabela
-             | Exemplo:
-             |  [ "name" => 'nome' ],
-             |  [ "name" => 'nivel.descricao', "orderable" => false ],
-             |  [ "name" => 'uuid' ],
-             |
-             */
-            'columns' => [
-                [ "name" => 'uuid' ],
-            ],
-        ];
+        $theads  = $this->theads();
+        $columns = $this->columns();
+        if (!is_null($index)) {
+            switch ($index) {
+                case 'theads':
+                    return $theads[$index];
+                break;
+                case 'columns':
+                    return $columns[$index];
+                break;
+            }
+        }
+
+        return array_merge($theads, $columns);
     }
 
-     /*
-     |---------------------------------------------------
-     | Columns action
-     |---------------------------------------------------
-     |
-     | Caso seja somente exibição, devolver array vazio
-     | Alterar front:
-     |
-     */
+    private function theads(): array
+    {
+       /*
+       |---------------------------------------------------
+       | Nome das colunas na table
+       |---------------------------------------------------
+       |
+       | Exemplo:
+       |   "Nome",
+       |   "Nível",
+       |   "Ações",
+       |
+       */
+       'theads' => [
+           '#',
+       ],
+    }
+
+    private function columns(): array
+    {
+        /*
+        |---------------------------------------------------
+        | Columns da tabela para exibir os dados
+        |---------------------------------------------------
+        |
+        | Relacionamentos não podem ser ordenados
+        | Coloque o action como sendo o uuid ou id da tabela
+        | Exemplo:
+        |  [ "name" => 'nome' ],
+        |  [ "name" => 'nivel.descricao', "orderable" => false ],
+        |  [ "name" => 'uuid' ],
+        |
+        */
+        'columns' => [
+            [ "name" => 'uuid' ],
+        ],
+    }
+
+    /*
+    |---------------------------------------------------
+    | Columns action
+    |---------------------------------------------------
+    |
+    | Caso seja somente exibição, devolver array vazio
+    | Alterar front:
+    |
+    */
     public static function laratablesRowData({{ class }} $model): array
     {
         return [

@@ -21,24 +21,26 @@ class DatatablesController extends Controller
         // encapsulamento
         $dados = $request->all();
 
-        # Obrigação de enviar a model
+        // Obrigação de enviar a model
         $hash = $dados[ 'hash' ] ?? null;
+
         // encrypt
         if (filled($hash)) {
             // pegando a model enviada e decodificando
-            $model = "App\\Models\\". Crypt::decryptString($hash);
+            $model      = Crypt::decryptString($hash);
+            $modelClass = "App\\Models\\" . $model;
         }
 
         // TODO tratar caso model não exista ou tente acessar onde não deveria
-        if (!class_exists($model)) {
+        if (!class_exists($modelClass)) {
             return "Hash inválido!";
         }
-        
+
         // caso tenha sido informado o form dentro da chamada do DataTable
-        return Laratables::recordsOf($model, function ($q) use ($dados, $hash) {
+        return Laratables::recordsOf($modelClass, function ($q) use ($dados, $model) {
             $form               = $dados[ 'form' ] ?? null;
             $withoutGlobalScope = $dados[ 'withoutGlobalScope' ] ?? null;
-            $sessionName        = "{$hash}.filter";
+            $sessionName        = "{$model}.filter";
 
             /*
             |---------------------------------------------------
@@ -71,7 +73,7 @@ class DatatablesController extends Controller
                 }
 
                 // processo de datatable
-                session()->put($sessionName, $dados);
+                session()->put($sessionName, (object)$dados);
 
                 return $q->filterEasy($dados);
             }

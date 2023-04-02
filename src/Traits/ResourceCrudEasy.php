@@ -3,6 +3,7 @@
 namespace Gsferro\ResourceCrudEasy\Traits;
 
 use App\Models\ResourceCrud;
+use Gsferro\ResourceCrudEasy\Interfaces\DatatablesInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -72,6 +73,15 @@ trait ResourceCrudEasy
     {
         if ($this->hasBreadcrumb()) {
             $this->addBreadcrumb(__('Listagem'));
+        }
+
+        /*
+        |---------------------------------------------------
+        | Controla a filtragem da tela index
+        |---------------------------------------------------
+        */
+        if (!empty($this->sessionName)) {
+            $this->addData('form', session()->get($this->sessionName));
         }
 
         return $this->view($this->getViewIndex());

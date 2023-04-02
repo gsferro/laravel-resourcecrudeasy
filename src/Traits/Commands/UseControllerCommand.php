@@ -27,12 +27,13 @@ trait UseControllerCommand
     */
     private function generateViews(string $entite)
     {
-        if (!$this->entites[$entite]['useView']) {
+        $entites = $this->entites[ $entite ];
+        if (!$entites['useView']) {
             return;
         }
 
         // TODO by database
-        $pathBase = 'resources\views\\' . $this->entites[$entite]['str']->snake();
+        $pathBase = 'resources\views\\' . $entites['str']->snake();
         $views = [
             'index',
             'form',
@@ -44,6 +45,10 @@ trait UseControllerCommand
         ];
 
         foreach ($views as $view) {
+            if ($entites['useDatatable'] && $view == 'index') {
+                $view .= '_datatable';
+            }
+
             $pathView = $pathBase . "\\$view.blade.php";
             $this->generate($entite, $pathView, "views/{$view}", 'View '. ucfirst($view));
         }

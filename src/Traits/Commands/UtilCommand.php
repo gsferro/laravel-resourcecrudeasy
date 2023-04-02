@@ -171,6 +171,7 @@ trait UtilCommand
                 $columnType = "uuid";
             break;
             case 'decimal':
+            case 'float':
                 $columnType = "numeric";
             break;
             case 'datetime':
@@ -193,6 +194,7 @@ trait UtilCommand
         switch ($columnType) {
             case 'guid':
             case 'uuid':
+            case 'text':
                 $columnType = "string";
             break;
             //            case 'decimal':
