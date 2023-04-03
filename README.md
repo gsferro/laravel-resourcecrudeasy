@@ -6,18 +6,25 @@
 composer require gsferro/resource-crud-easy -W
 ```
 
+### Dependências:
+
+Package | Versão min
+--------|-----------
+PHP | 8
+
 ### Publish (TODO :install)
 ```composer 
 php artisan vendor:publish --provider="Gsferro\ResourceCrudEasy\Providers\ResourceCrudEasyServiceProvider" --force
 php artisan vendor:publish --provider "OwenIt\Auditing\AuditingServiceProvider"
 genealabs/laravel-model-caching
 ```
+### Config:
 
-### Dependências:
-
-Package | Versão min
---------|-----------
-PHP | 8
+- No html principal, add plugin Datatables:
+```text
+    @DatatablesPlugin()
+    @DatatablesExtraCss() {{-- style ui css --}}
+```
 
 ### Uso:
 
@@ -32,3 +39,5 @@ php artisan gsferro:resource-crud-model <Nome-Entidade> {--table=} {--connection
 ```
 
 ### Obs:
+
+###

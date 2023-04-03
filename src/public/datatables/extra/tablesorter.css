@@ -1,0 +1,55 @@
+table.tablesorter {
+    width: 100% !important;
+    background-color: #FFF;
+    margin-top: 20px;
+}
+table.tablesorter th,
+table.tablesorter thead td
+{
+    text-align: left;
+    background-color: #266EB8;
+    padding: 4px;
+    color: #FFF;
+    font-weight: bold;
+    font-size: 12px;
+    border-color: #fff;
+}
+table.tablesorter td {
+    padding: 4px;
+}
+table.tablesorter tr:nth-child(even) {
+    background-color: #E8F2FD;
+}
+table.tablesorter tr:nth-child(odd) {
+    background-color: #FFF;
+}
+
+table.runDataTable td.child{
+    text-align: left;
+}
+
+table.tablesorter .header {
+
+    background-repeat: no-repeat;
+    height: auto;
+}
+
+table.tablesorter thead tr th,
+table.tablesorter thead tr td,
+table.tablesorter .dataTables_empty
+,table.tablesorter tbody tr td
+{
+    cursor: default;
+    text-align:center;
+    vertical-align: middle;
+}
+
+table.tablesorter tbody tr td
+{
+    cursor: default;
+    vertical-align: middle;
+}
+
+table.tablesorter-hover tbody tr:hover {
+    background-color: #FFE8DD;
+}

@@ -62,6 +62,7 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
         Blade::component('components.datatables.datatable-process',  'datatable-process');
         Blade::directive("DatatablesPlugin", function(){
             return "
+                <link   href=". asset('vendor/datatables/extra/pagination.css') ." rel='stylesheet' type='text/css'/>
                 <link   href=". asset('vendor/datatables/dataTables.bootstrap.css') ." rel='stylesheet' type='text/css'/>
                 <link   href=". asset('vendor/datatables/responsive/dataTables.responsive.min.css') ." rel='stylesheet' type='text/css'/>
                 <script src=". asset('vendor/datatables/dataTables.min.js') ."></script>
@@ -69,6 +70,11 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
                 <script src=". asset('vendor/datatables/responsive/dataTables.responsive.min.js') ."></script>
                 <script src=". asset('vendor/datatables/DataTableLangBR.js') ."></script>
                 <script src=". asset('vendor/datatables/DataTableProccessSS.js') ."></script>       
+            ";
+        });
+        Blade::directive("DatatablesExtraCss", function(){
+            return "
+                <link href=". asset('vendor/datatables/extra/tablesorter.css') ." rel='stylesheet' type='text/css'/>
             ";
         });
     }
