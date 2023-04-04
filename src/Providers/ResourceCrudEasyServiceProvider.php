@@ -72,8 +72,8 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
 
         Blade::directive("Plugins", function () {
             return "
-                <script src=" . asset('vendor/resource-crud-easy/masks/jquery.mask.min.js') . " type=\"text/javascript\"></script>
-                <script src=" . asset('vendor/resource-crud-easy/masks/masks.js') . " type=\"text/javascript\"></script>
+                <script src=" . asset('vendor/resource-crud-easy/plugins/masks/jquery.mask.min.js') . " type=\"text/javascript\"></script>
+                <script src=" . asset('vendor/resource-crud-easy/plugins/masks/masks.js') . " type=\"text/javascript\"></script>
             ";
         });
     }

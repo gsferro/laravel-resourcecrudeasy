@@ -11,7 +11,7 @@ jQuery.fn.DataTableBR = function( param )
 		// "pagingType" : "full_numbers" ,
 		"lengthMenu": [[5,10, 25, 50, 100], [5,10, 25, 50, 100]],
 		"language"   : {
-			"url" : "/vendor/datatables/js/lang/Portuguese-Brasil.json"
+			"url" : "/vendor/resource-crud-easy/datatables/js/lang/Portuguese-Brasil.json"
 		} ,
 		"responsive" : true//,
 		// "iDisplayLength" : 25//,
