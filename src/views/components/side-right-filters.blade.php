@@ -10,7 +10,7 @@
                 title="{{ __('Filter App ') . count((array)$form) ?? 0 }}"
                 type="button"
         >
-            <i class="fa fa-filter fa-2x" aria-hidden="true" aria-label="icon"></i>
+            <i class="fa fa-filter {{ isset($outside) ? 'fa-4x' : 'fa-2x' }}" aria-hidden="true" aria-label="icon"></i>
             {{-- TODO odometter --}}
             <span id="filter-count" class="tag-count bg-danger text-white">
                 {{  count((array)$form) ?? 0 }}
