@@ -26,10 +26,12 @@
 					url    : "{{ route('datatables') }}",
 					method : 'post' ,
 					data   : function( d ) {
-					    let form = $( '#form-filter' ).serializeArray();
-					    $('#filter-count').text(form.length);
+					    let form   = $( '#form-filter' ).serializeArray();
+                        let length = 0;
+                        $.each(form, (i, field) => field.value.length && length++);
+                        $( '#filter-count' ).text( length );
 
-						d.form     = form
+                        d.form     = form
 						d.hash     = '{{ \Illuminate\Support\Facades\Crypt::encryptString('{{ class }}') }}';
 						return d;
 					}

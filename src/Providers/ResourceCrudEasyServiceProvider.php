@@ -29,45 +29,51 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
         |
         */
         # Components
-        Blade::component('components.vendor.datatables.datatables-process', 'datatables-process');
-        Blade::component('components.vendor.datatables.side-right-filters', 'side-right-filters');
+        Blade::component('components.vendor.resource-crud-easy.datatables.datatables-process', 'datatables-process');
+        Blade::component('components.vendor.resource-crud-easy.datatables.side-right-filters', 'side-right-filters');
 
         # Directives
-        Blade::directive("DatatablesPlugin", function () {
-            return "
-                <link   href=" . asset('vendor/datatables/extra/pagination.css') . " rel='stylesheet' type='text/css'/>
-                <link   href=" . asset('vendor/datatables/dataTables.bootstrap.css') . " rel='stylesheet' type='text/css'/>
-                <link   href=" . asset('vendor/datatables/responsive/dataTables.responsive.min.css') . " rel='stylesheet' type='text/css'/>
-                <script src=" . asset('vendor/datatables/dataTables.min.js') . " type=\"text/javascript\"></script>
-                <script src=" . asset('vendor/datatables/dataTables.bootstrap.min.js') . " type=\"text/javascript\"></script>
-                <script src=" . asset('vendor/datatables/responsive/dataTables.responsive.min.js') . " type=\"text/javascript\"></script>
-                <script src=" . asset('vendor/datatables/DataTableLangBR.js') . " type=\"text/javascript\"></script>
-                <script src=" . asset('vendor/datatables/DataTableProccessSS.js') . " type=\"text/javascript\"></script>       
-            ";
-        });
-
-        Blade::directive("DatatablesExtraCss", function () {
-            return "
-                <link href=" . asset('vendor/datatables/extra/tablesorter.css') . " rel='stylesheet' type='text/css'/>
-            ";
-        });
-
         Blade::directive("FontAwesomeV4", function () {
             return "
                 <link href=" . asset('vendor/font-awesome-v4.7.0/css/font-awesome.min.css') . " rel='stylesheet' type='text/css'/>
             ";
         });
 
+        /*
+        |---------------------------------------------------
+        | TODO virar package
+        |---------------------------------------------------
+        */
+        Blade::directive("DatatablesPlugin", function () {
+            return "
+                <link   href=" . asset('vendor/resource-crud-easy/datatables/extra/pagination.css') . " rel='stylesheet' type='text/css'/>
+                <link   href=" . asset('vendor/resource-crud-easy/datatables/extra/bootstrap-glyphicons.css') . " rel='stylesheet' type='text/css'/>
+                <link   href=" . asset('vendor/resource-crud-easy/datatables/dataTables.bootstrap.css') . " rel='stylesheet' type='text/css'/>
+                <link   href=" . asset('vendor/resource-crud-easy/datatables/responsive/dataTables.responsive.min.css') . " rel='stylesheet' type='text/css'/>
+                <script src=" . asset('vendor/resource-crud-easy/datatables/dataTables.min.js') . " type=\"text/javascript\"></script>
+                <script src=" . asset('vendor/resource-crud-easy/datatables/dataTables.bootstrap.min.js') . " type=\"text/javascript\"></script>
+                <script src=" . asset('vendor/resource-crud-easy/datatables/responsive/dataTables.responsive.min.js') . " type=\"text/javascript\"></script>
+                <script src=" . asset('vendor/resource-crud-easy/datatables/DataTableLangBR.js') . " type=\"text/javascript\"></script>
+                <script src=" . asset('vendor/resource-crud-easy/datatables/DataTableProccessSS.js') . " type=\"text/javascript\"></script>       
+            ";
+        });
+
+        Blade::directive("DatatablesExtraCss", function () {
+            return "
+                <link href=" . asset('vendor/resource-crud-easy/datatables/extra/tablesorter.css') . " rel='stylesheet' type='text/css'/>
+            ";
+        });
+
         Blade::directive("StylesCss", function () {
             return "
-                <link href=" . asset('vendor/font-awesome-v4.7.0/css/font-awesome.min.css') . " rel='stylesheet' type='text/css'/>
+                <link href=" . asset('vendor/resource-crud-easy/styles/tag-count.css') . " rel='stylesheet' type='text/css'/>
             ";
         });
 
         Blade::directive("Plugins", function () {
             return "
-                <script src=" . asset('vendor/masks/jquery.mask.min.js') . " type=\"text/javascript\"></script>
-                <script src=" . asset('vendor/masks/masks.js') . " type=\"text/javascript\"></script>
+                <script src=" . asset('vendor/resource-crud-easy/masks/jquery.mask.min.js') . " type=\"text/javascript\"></script>
+                <script src=" . asset('vendor/resource-crud-easy/masks/masks.js') . " type=\"text/javascript\"></script>
             ";
         });
     }
@@ -85,27 +91,36 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
             __DIR__.'/../resources/views' => resource_path('views/vendor/gsferro/responseview'),
         ]);
         */
-
-        $this->publishes([
-            __DIR__ . '/../public/styles' => public_path('vendor/styles'),
-        ], 'styles');
-
-        $this->publishes([
-            __DIR__ . '/../public/plugins' => public_path('vendor/plugins'),
-        ], 'plugins');
-
-        $this->publishes([
-            __DIR__ . '/../public/datatables' => public_path('vendor/datatables'),
-        ], 'plugins');
-
         $this->publishes([
             __DIR__ . '/../public/font-awesome-v4.7.0' => public_path('vendor/font-awesome-v4.7.0'),
         ], 'plugins');
 
+        /*
+        |---------------------------------------------------
+        | vendor/resource-crud-easy
+        |---------------------------------------------------
+        */
         $this->publishes([
-            __DIR__ . '/../views/components' => resource_path('views/components/vendor/datatables'),
+            __DIR__ . '/../public/styles' => public_path('vendor/resource-crud-easy/styles'),
+        ], 'styles');
+
+        $this->publishes([
+            __DIR__ . '/../public/plugins' => public_path('vendor/resource-crud-easy/plugins'),
+        ], 'plugins');
+
+        $this->publishes([
+            __DIR__ . '/../public/datatables' => public_path('vendor/resource-crud-easy/datatables'),
+        ], 'plugins');
+
+        $this->publishes([
+            __DIR__ . '/../views/components' => resource_path('views/components/vendor/resource-crud-easy/datatables'),
         ], 'views');
 
+        /*
+        |---------------------------------------------------
+        | Tests
+        |---------------------------------------------------
+        */
         $this->publishes([
             __DIR__ . '/../tests' => base_path('tests'),
         ], 'tests');
