@@ -4,7 +4,7 @@
             class="fixed overflow-hidden right-0 bottom-10 sm:bottom-1/2 z-3" style="z-index: 1030"
         @endif
         >
-        <button class="btn btn-outline-dark rounded-pill"
+        <button class="btn btn-outline-dark rounded-pill bg-white {{ isset($outside) ? 'mr-3' : '' }}"
                 @click="showFormFilters = true"
                 x-show="!showFormFilters"
                 title="{{ __('Filter App ') . count((array)$form) ?? 0 }}"
