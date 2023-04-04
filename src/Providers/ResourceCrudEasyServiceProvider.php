@@ -47,6 +47,10 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
         ], 'plugins');
 
         $this->publishes([
+            __DIR__ . '/../public/font-awesome-v4.7.0' => public_path('vendor/font-awesome-v4.7.0'),
+        ], 'plugins');
+
+        $this->publishes([
             __DIR__.'/../views/components' => resource_path('views/components/datatables'),
         ], 'views');
 
@@ -60,6 +64,7 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
         |---------------------------------------------------
         */
         Blade::component('components.datatables.datatable-process',  'datatable-process');
+        Blade::component('components.datatables.side-right-filters',  'side-right-filters');
         Blade::directive("DatatablesPlugin", function(){
             return "
                 <link   href=". asset('vendor/datatables/extra/pagination.css') ." rel='stylesheet' type='text/css'/>
@@ -75,6 +80,11 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
         Blade::directive("DatatablesExtraCss", function(){
             return "
                 <link href=". asset('vendor/datatables/extra/tablesorter.css') ." rel='stylesheet' type='text/css'/>
+            ";
+        });
+        Blade::directive("FontAwesomeV4.7.0", function(){
+            return "
+                <link href=". asset('vendor/font-awesome-v4.7.0/css/font-awesome.min.css') ." rel='stylesheet' type='text/css'/>
             ";
         });
     }
