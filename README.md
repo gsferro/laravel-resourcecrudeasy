@@ -18,15 +18,34 @@ php artisan vendor:publish --provider="Gsferro\ResourceCrudEasy\Providers\Resour
 php artisan vendor:publish --provider "OwenIt\Auditing\AuditingServiceProvider"
 genealabs/laravel-model-caching
 ```
-### Config:
+### Config front-end:
 
-- No html principal, add plugin Datatables:
+- No Header html principal:
 ```text
-    @DatatablesPlugin()
-    @DatatablesExtraCss() {{-- style ui css datatables --}}
-    @FontAwesomeV4()
-    @StylesCss() {{-- style ui css --}}
-    @Plugins() {{-- plugins js --}}
+    {{-- jquery v3.6.4 (2023-03-08) --}}
+    @ResourceCrudEasyJquery()
+    {{-- style ui css datatables --}}
+    @ResourceCrudEasyDatatablesExtraCss() 
+    {{-- style ui css --}}
+    @ResourceCrudEasyStylesCss() 
+```
+- No Final Body html principal:
+```text
+    {{-- plugin datatables js --}}
+    @ResourceCrudEasyDatatablesPlugin()
+    {{-- plugins js --}}
+    @ResourceCrudEasyPlugins()
+    {{-- para o datatables poder utilizar via post --}}
+    <script type="text/javascript">
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            async: true
+        });
+    </script>
+    {{-- index utiliza  --}}
+    @yield('js')
 ```
 
 ### Uso:

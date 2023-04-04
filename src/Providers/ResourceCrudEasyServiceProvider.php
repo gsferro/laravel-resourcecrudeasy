@@ -44,7 +44,7 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
         | TODO virar package
         |---------------------------------------------------
         */
-        Blade::directive("DatatablesPlugin", function () {
+        Blade::directive("ResourceCrudEasyDatatablesPlugin", function () {
             return "
                 <link   href=" . asset('vendor/resource-crud-easy/datatables/extra/pagination.css') . " rel='stylesheet' type='text/css'/>
                 <link   href=" . asset('vendor/resource-crud-easy/datatables/extra/bootstrap-glyphicons.css') . " rel='stylesheet' type='text/css'/>
@@ -58,22 +58,28 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
             ";
         });
 
-        Blade::directive("DatatablesExtraCss", function () {
+        Blade::directive("ResourceCrudEasyDatatablesExtraCss", function () {
             return "
                 <link href=" . asset('vendor/resource-crud-easy/datatables/extra/tablesorter.css') . " rel='stylesheet' type='text/css'/>
             ";
         });
 
-        Blade::directive("StylesCss", function () {
+        Blade::directive("ResourceCrudEasyStylesCss", function () {
             return "
                 <link href=" . asset('vendor/resource-crud-easy/styles/tag-count.css') . " rel='stylesheet' type='text/css'/>
             ";
         });
 
-        Blade::directive("Plugins", function () {
+        Blade::directive("ResourceCrudEasyPlugins", function () {
             return "
                 <script src=" . asset('vendor/resource-crud-easy/plugins/masks/jquery.mask.min.js') . " type=\"text/javascript\"></script>
                 <script src=" . asset('vendor/resource-crud-easy/plugins/masks/masks.js') . " type=\"text/javascript\"></script>
+            ";
+        });
+
+        Blade::directive("ResourceCrudEasyJquery", function () {
+            return "
+                <script src=" . asset('vendor/resource-crud-easy/plugins/jquery-3.6.4.min.js') . " type=\"text/javascript\"></script>
             ";
         });
     }
