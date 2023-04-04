@@ -6,17 +6,27 @@
 composer require gsferro/resource-crud-easy -W
 ```
 
-### Dependências:
+### Pacotes Dependências:
 
-Package | Versão min
+Package | Versão
 --------|-----------
-PHP | 8
+PHP | 8.*
+Laravel | ^8.*
+owen-it/laravel-auditing | ^12.0
+spatie/laravel-permission | ^5.8
+your-app-rocks/eloquent-uuid | ^2.5
+genealabs/laravel-model-caching | ^0.11.7
+freshbitsweb/laratables | ^2.5
+gsferro/database-schema-easy | ^1
+gsferro/filtereasy | ^1.1
+gsferro/responseview" | ^1.2
+gsferro/powermodel | ^1.3
 
 ### Publish (TODO :install)
 ```composer 
 php artisan vendor:publish --provider="Gsferro\ResourceCrudEasy\Providers\ResourceCrudEasyServiceProvider" --force
 php artisan vendor:publish --provider "OwenIt\Auditing\AuditingServiceProvider"
-genealabs/laravel-model-caching
+php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
 ```
 ### Config front-end:
 
