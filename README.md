@@ -23,7 +23,10 @@ genealabs/laravel-model-caching
 - No html principal, add plugin Datatables:
 ```text
     @DatatablesPlugin()
-    @DatatablesExtraCss() {{-- style ui css --}}
+    @DatatablesExtraCss() {{-- style ui css datatables --}}
+    @FontAwesomeV4.7.0()
+    @StylesCss() {{-- style ui css --}}
+    @Plugins() {{-- plugins js --}}
 ```
 
 ### Uso:
