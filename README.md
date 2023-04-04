@@ -24,6 +24,8 @@ genealabs/laravel-model-caching
 ```text
     {{-- jquery v3.6.4 (2023-03-08) --}}
     @ResourceCrudEasyJquery()
+    {{-- opcional fontawesome v4 --}}
+    @FontAwesomeV4()
     {{-- style ui css datatables --}}
     @ResourceCrudEasyDatatablesExtraCss() 
     {{-- style ui css --}}
