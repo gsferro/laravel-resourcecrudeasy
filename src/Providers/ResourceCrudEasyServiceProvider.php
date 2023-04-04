@@ -29,7 +29,7 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
         |
         */
         # Components
-        Blade::component('components.vendor.datatables.datatable-process', 'datatables-process');
+        Blade::component('components.vendor.datatables.datatables-process', 'datatables-process');
         Blade::component('components.vendor.datatables.side-right-filters', 'side-right-filters');
 
         # Directives
