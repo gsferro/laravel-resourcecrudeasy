@@ -6,7 +6,7 @@
     {{-- TODO Components card --}}
     <div class="card mb-4">
         <div class="card-header flex justify-content-between align-items-center">
-            <span class="h4 m-0">{{ __('List Data') }}</span>
+            <span class="h3 m-0">{{ __('List Data') }}</span>
             <div class="right">
                 <x-datatables.sider-right-filters :form="$form"> {{-- outside --}}
                     @include('companies.filter')
