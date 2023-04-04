@@ -19,9 +19,9 @@ trait {{ class }}Datatable
        |   "Ações",
        |
        */
-       'theads' => [
+       return [
            '#',
-       ],
+       ];
     }
 
     public function getDatatablesColumns(): array
@@ -39,9 +39,9 @@ trait {{ class }}Datatable
         |  [ "name" => 'uuid' ],
         |
         */
-        'columns' => [
+        return [
             [ "name" => 'uuid' ],
-        ],
+        ];
     }
 
     /*
