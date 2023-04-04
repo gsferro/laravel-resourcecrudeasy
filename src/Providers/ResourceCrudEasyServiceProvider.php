@@ -11,7 +11,7 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        $this->commands();
+        $this->command();
         $this->routes();
         $this->publishs();
         $this->blades();
@@ -75,10 +75,10 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
     private function publishs(): void
     {
         /*
-                |---------------------------------------------------
-                | Publish
-                |---------------------------------------------------
-                */
+        |---------------------------------------------------
+        | Publish
+        |---------------------------------------------------
+        */
         /*
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'responseview');
         $this->publishes([
@@ -111,13 +111,13 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
         ], 'tests');
     }
 
-    private function commands(): void
+    private function command(): void
     {
         /*
-                |---------------------------------------------------
-                | commands
-                |---------------------------------------------------
-                */
+        |---------------------------------------------------
+        | commands
+        |---------------------------------------------------
+        */
         if ($this->app->runningInConsole()) {
             $this->commands([
                 ResourceCrudEasyCommand::class,
@@ -129,10 +129,10 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
     private function routes(): void
     {
         /*
-                |---------------------------------------------------
-                | Route Datatable
-                |---------------------------------------------------
-                */
+        |---------------------------------------------------
+        | Route Datatable
+        |---------------------------------------------------
+        */
         $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
     }
 }
