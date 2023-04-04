@@ -24,7 +24,7 @@ genealabs/laravel-model-caching
 ```text
     @DatatablesPlugin()
     @DatatablesExtraCss() {{-- style ui css datatables --}}
-    @FontAwesomeV4.7.0()
+    @FontAwesomeV4()
     @StylesCss() {{-- style ui css --}}
     @Plugins() {{-- plugins js --}}
 ```
