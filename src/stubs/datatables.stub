@@ -6,25 +6,7 @@ use App\Models\{{ class }};
 
 trait {{ class }}Datatable
 {
-    public function getDatatablesGrid(?string $index = null): array
-    {
-        $theads  = $this->theads();
-        $columns = $this->columns();
-        if (!is_null($index)) {
-            switch ($index) {
-                case 'theads':
-                    return $theads[$index];
-                break;
-                case 'columns':
-                    return $columns[$index];
-                break;
-            }
-        }
-
-        return array_merge($theads, $columns);
-    }
-
-    private function theads(): array
+    public function getDatatablesGrid(): array
     {
        /*
        |---------------------------------------------------
@@ -42,7 +24,7 @@ trait {{ class }}Datatable
        ],
     }
 
-    private function columns(): array
+    public function getDatatablesColumns(): array
     {
         /*
         |---------------------------------------------------

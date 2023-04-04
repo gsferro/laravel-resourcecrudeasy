@@ -14,7 +14,7 @@
             </div>
         </div>
         <div class="card-body">
-            <x-datatable-process :theads="$model->getDatatablesGrid('theads')" />
+            <x-datatable-process :theads="$model->getDatatablesGrid()" />
         </div>
     </div>
 @endsection
@@ -36,7 +36,7 @@
 				} ,
 				// descomente caso não tenha actions
 				// "columnDefs" : {} ,
-				"columns" : @json($model->getDatatablesGrid('columns')),
+				"columns" : @json($model->getDatatablesColumns()),
 			} );
 
 			$( "#form-filter" ).on( 'submit' , function( e ) {

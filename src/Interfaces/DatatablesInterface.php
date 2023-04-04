@@ -4,5 +4,6 @@ namespace Gsferro\ResourceCrudEasy\Interfaces;
 
 interface DatatablesInterface
 {
-    public function getDatatablesGrid(?string $index = null): array;
+    public function getDatatablesGrid(): array;
+    public function getDatatablesColumns(): array;
 }
