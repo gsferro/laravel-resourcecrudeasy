@@ -7,10 +7,20 @@
     <div class="card mb-4">
         <div class="card-header flex justify-content-between align-items-center">
             <span class="h3 m-0">{{ __('List Data') }}</span>
-            <div class="right">
-                <x-datatables.sider-right-filters :form="$form"> {{-- outside --}}
-                    @include('companies.filter')
-                </x-datatables.sider-right-filters>
+            <div class="flex justify-content-between align-items-center">
+                @if (Route::has('{{ class_folder }}.create'))
+                    <div class="right">
+                        <a href="{{ route('companies.create') }}" class="btn btn-success text-white rounded-pill mr-3">
+                            <i class="fa fa-user-plus fa-2x" aria-hidden="true" aria-label="icon"></i>
+                            {{ __('New Register') }}
+                        </a>
+                    </div>
+                @endif
+                <div class="right">
+                    <x-datatables.sider-right-filters :form="$form"> {{-- outside --}}
+                        @include('{{ class_folder }}.filter')
+                    </x-datatables.sider-right-filters>
+                </div>
             </div>
         </div>
         <div class="card-body">
@@ -32,7 +42,7 @@
                         $( '#filter-count' ).text( length );
 
                         d.form     = form
-						d.hash     = '{{ \Illuminate\Support\Facades\Crypt::encryptString('{{ class }}') }}';
+						d.hash     = '{{ Crypt::encryptString('{{ class }}') }}';
 						return d;
 					}
 				} ,
