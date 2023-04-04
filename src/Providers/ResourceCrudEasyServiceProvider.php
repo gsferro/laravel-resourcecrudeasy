@@ -101,6 +101,10 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
             __DIR__ . '/../public/font-awesome-v4.7.0' => public_path('vendor/font-awesome-v4.7.0'),
         ], 'plugins');
 
+        $this->publishes([
+            __DIR__ . '/../config/resource-crud-easy.php' => config_path('resource-crud-easy.php'),
+        ], 'config');
+
         /*
         |---------------------------------------------------
         | vendor/resource-crud-easy

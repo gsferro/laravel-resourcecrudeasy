@@ -1,0 +1,29 @@
+@extends('layouts.app')
+
+@section('content')
+    {{-- TODO Components card --}}
+    <div class="card mb-4">
+        <div class="card-header">
+            {{ __('{{ class }} Create') }}
+        </div>
+        @if(Route::has('{{ class_route_slug }}.store') && auth()->user()->hasPermissionTo('{{ class_route_slug }}.store'))
+            <form method="POST" action="{{ route('{{ class_route_slug }}.store') }}">
+                @csrf
+                <div class="card-body">
+                    @include('{{ class_folder }}.form')
+                </div>
+                <div class="card-footer">
+                    {{-- TODO Components button --}}
+                    <button class="btn btn-primary rounded-pill" type="submit">
+                        <i class="fa fa-save fa-fw"></i>
+                        {{ __('Register') }}
+                    </button>
+                </div>
+            </form>
+        @else
+            <div class="card-body">
+                @include('{{ class_folder }}.form')
+            </div>
+        @endif
+    </div>
+@endsection

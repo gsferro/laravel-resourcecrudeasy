@@ -166,6 +166,13 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
                 |---------------------------------------------------
                 */
                 $this->publishRoute($entite);
+
+                /*
+                |---------------------------------------------------
+                | Permissions if config is true
+                |---------------------------------------------------
+                */
+                $this->generatePermissionsSeeder($entite);
             }
 
         } catch (ModelNotFoundException $e) {

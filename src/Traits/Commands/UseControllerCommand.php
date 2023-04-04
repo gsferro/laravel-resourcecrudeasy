@@ -44,13 +44,14 @@ trait UseControllerCommand
             // 'table',
         ];
 
+        $usePermission = config('resource-crud-easy.use_permissions', true) ? 'permissions/' : '';
         foreach ($views as $view) {
             if ($entites['useDatatable'] && $view == 'index') {
                 $view .= '_datatable';
             }
 
             $pathView = $pathBase . "\\$view.blade.php";
-            $this->generate($entite, $pathView, "views/{$view}", 'View '. ucfirst($view));
+            $this->generate($entite, $pathView, "{$usePermission}views/{$view}", 'View '. ucfirst($view));
         }
 
         /*
@@ -143,11 +144,35 @@ trait UseControllerCommand
             return ;
         }
 
-        $stub = $this->entites[$entite]['useControllerApi'] ? 'api' : 'web';
+        $stub = config('resource-crud-easy.use_permissions', true) ? 'permissions/' : '';
+        $stub .= $this->entites[ $entite ][ 'useControllerApi' ] ? 'api' : 'web';
         $contents = $this->buildClassEntite($entite, $stub);
 
+        // increment use controller
+        // TODO ta quebrando uma linha a mais, descobrir o pq
+        $this->replace([
+            '/\<\?php/' => '<?php'. PHP_EOL.PHP_EOL .'use App\Http\Controllers\\'.$entite.'Controller;'
+        ], $routeContents);
+
+        // write group route
         $routeContents .= "\n\n".$contents;
+
+        // re-write file route
         $this->put($path, $routeContents, 'Route Web Updated:');
     }
 
+    private function generatePermissionsSeeder(string $entite): void
+    {
+//        $entites = $this->entites[ $entite ];
+//        if (!$entites['useView']) {
+//            return;
+//        }
+
+        if (!config('resource-crud-easy.use_permissions', true)) {
+            return;
+        }
+
+        $path = 'database\seeders\\' . $entite . 'PermissionSeeder.php';
+        $this->generate($entite, $path, 'seeder', 'Permissions Seeder');
+    }
 }

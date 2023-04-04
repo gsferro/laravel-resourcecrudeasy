@@ -7,14 +7,15 @@
             {{ __('{{ class }} Edit') }}
         </div>
         <form method="POST" action="{{ route('{{ class_route_slug }}.update', [$model->uuid]) }}">
+            @method('PUT')
+            @csrf
             <div class="card-body">
-                @method('PUT')
-                @csrf
                 @include('{{ class_folder }}.form')
             </div>
             <div class="card-footer">
                 {{-- TODO Components button --}}
-                <button class="btn btn-primary" type="submit">
+                <button class="btn btn-primary rounded-pill" type="submit">
+                    <i class="fa fa-save fa-fw"></i>
                     {{ __('Edit') }}
                 </button>
             </div>

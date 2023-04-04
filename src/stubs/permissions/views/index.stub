@@ -1,0 +1,19 @@
+@extends('layouts.app')
+@section('content')
+    {{-- TODO Components card --}}
+    <div class="card mb-4">
+        <div class="card-header">
+            {{ __('{{ class }}') }}
+        </div>
+        <div class="card-body">
+            {{-- infos --}}
+        </div>
+    </div>
+@endsection
+@section('js')
+	<script type="text/javascript">
+		$( function() {
+
+		} );
+	</script>
+@stop

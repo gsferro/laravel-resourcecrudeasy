@@ -7,13 +7,14 @@
             {{ __('{{ class }} Create') }}
         </div>
         <form method="POST" action="{{ route('{{ class_route_slug }}.store') }}">
+            @csrf
             <div class="card-body">
-                @csrf
                 @include('{{ class_folder }}.form')
             </div>
             <div class="card-footer">
                 {{-- TODO Components button --}}
-                <button class="btn btn-primary" type="submit">
+                <button class="btn btn-primary rounded-pill" type="submit">
+                    <i class="fa fa-save fa-fw"></i>
                     {{ __('Register') }}
                 </button>
             </div>

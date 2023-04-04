@@ -1,12 +1,12 @@
 <div class="flex justify-content-center align-items-center">
-    @if (Route::has('{{ class_route_slug }}.edit'))
+    @if (Route::has('{{ class_route_slug }}.edit') && auth()->user()->hasPermissionTo('{{ class_route_slug }}.edit'))
         {{-- TODO Components link --}}
         <a class="btn btn-outline-primary rounded-pill" href="{{ route('{{ class_route_slug }}.edit', [$model->uuid]) }}" title="{{ __('Edit') }} {{ __('Register') }}">
             <i class="fa fa-edit fa-fw"></i>
             {{ __('Edit') }}
         </a>
     @endif
-    @if (Route::has('{{ class_route_slug }}.show'))
+    @if (Route::has('{{ class_route_slug }}.show') && auth()->user()->hasPermissionTo('{{ class_route_slug }}.show'))
         {{-- todo open model | side right --}}
         {{-- TODO Components link --}}
         <a href="{{ route('{{ class_route_slug }}.show', [$model->uuid]) }}" title="{{ __('Show') }} {{ __('Register') }}">
@@ -14,4 +14,11 @@
             {{ __('Show') }}
         </a>
     @endif
+
+    {{-- TODO implemente police register --}}
+    @cannot(['{{ class_route_slug }}.edit', '{{ class_route_slug }}.show'])
+        <i class="fa fa-ban text-danger fa-fw"></i>
+        {{--<p class="bg-danger">{{ __('Do you dont have permission in this register for action') }}</p>--}}
+        {{--<p class="bg-danger">{{ __('Not role or permission') }}</p>--}}
+    @endcannot
 </div>
