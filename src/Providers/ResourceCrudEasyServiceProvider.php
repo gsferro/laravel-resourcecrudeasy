@@ -29,8 +29,8 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
         |
         */
         # Components
-        Blade::component('components.datatables.datatable-process', 'datatable-process');
-        Blade::component('components.datatables.side-right-filters', 'side-right-filters');
+        Blade::component('components.vendor.datatables.datatable-process', 'datatables-process');
+        Blade::component('components.vendor.datatables.side-right-filters', 'side-right-filters');
 
         # Directives
         Blade::directive("DatatablesPlugin", function () {
@@ -103,7 +103,7 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
         ], 'plugins');
 
         $this->publishes([
-            __DIR__ . '/../views/components' => resource_path('views/components/datatables'),
+            __DIR__ . '/../views/components' => resource_path('views/components/vendor/datatables'),
         ], 'views');
 
         $this->publishes([
