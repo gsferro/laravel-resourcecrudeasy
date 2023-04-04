@@ -52,7 +52,7 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
             ";
         });
 
-        Blade::directive("FontAwesomeV4.7.0", function () {
+        Blade::directive("FontAwesomeV4", function () {
             return "
                 <link href=" . asset('vendor/font-awesome-v4.7.0/css/font-awesome.min.css') . " rel='stylesheet' type='text/css'/>
             ";
