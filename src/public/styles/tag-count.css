@@ -1,0 +1,11 @@
+.tag-count {
+    margin-left: unset;
+    margin-top: unset;
+    position: absolute;
+    padding: 2px 4px;
+    border-radius: 100em;
+    top: 3px;
+    height: 1.6em;
+    width: 1.5em;
+    line-height: 1.3;
+}

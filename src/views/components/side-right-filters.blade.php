@@ -4,21 +4,21 @@
             class="fixed overflow-hidden right-0 bottom-10 sm:bottom-1/2 z-3" style="z-index: 1030"
         @endif
         >
-        <button class="btn btn-light rounded-pill"
+        <button class="btn btn-outline-dark rounded-pill"
                 @click="showFormFilters = true"
                 x-show="!showFormFilters"
                 title="{{ __('Filter App ') . count((array)$form) ?? 0 }}"
                 type="button"
         >
             <i class="fa fa-filter fa-2x" aria-hidden="true" aria-label="icon"></i>
+            {{-- TODO odometter --}}
+            <span id="filter-count" class="tag-count bg-danger text-white">
+                {{  count((array)$form) ?? 0 }}
+            </span>
         </button>
-        {{-- TODO odometter
-        <div class="br-tag count danger -ml-5" style="font-size: 15px">
-            {{  count((array)$form) ?? 0 }}
-        </div>--}}
     </div>
 
-    <div id="sider-filter" class="fixed inset-0 overflow-hidden z-3" x-show="showFormFilters" style="display: none; z-index: 1030">
+    <div id="side-filter" class="fixed inset-0 overflow-hidden z-3" x-show="showFormFilters" style="display: none; z-index: 1030">
         <div class="absolute inset-0 overflow-hidden">
             <div class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
             <div class="fixed flex inset-y-0 pl-10 right-0 sm:duration-700 w-full md:w-2/4">
