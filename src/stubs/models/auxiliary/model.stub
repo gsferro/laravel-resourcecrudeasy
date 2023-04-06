@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Models;
+
+use Gsferro\ResourceCrudEasy\Models\AuxModel;
+use Illuminate\Database\Eloquent\Relations\{HasMany, HasOne};
+
+class {{ class }} extends AuxModel
+{
+    /*
+    |---------------------------------------------------
+    | Configs Table
+    |---------------------------------------------------
+    */
+    public $table = '{{ class_table }}';
+    {{ connection }}
+
+    /*
+    |---------------------------------------------------
+    | Relationships
+    |--------------------------------------------------
+    |
+    | HasMany
+    | HasOnes
+    |
+    */
+    # HasMany
+    # HasOnes
+}

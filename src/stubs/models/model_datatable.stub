@@ -3,24 +3,21 @@
 namespace App\Models;
 
 use App\Datatables\{{ class }}Datatable;
-use Gsferro\ResourceCrudEasy\Models\AppBaseModel;
+use Gsferro\ResourceCrudEasy\Models\BaseModel;
 use Gsferro\ResourceCrudEasy\Interfaces\DatatablesInterface;
 use YourAppRocks\EloquentUuid\Traits\HasUuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasOne};
 
-class {{ class }} extends AppBaseModel implements DatatablesInterface
+class {{ class }} extends BaseModel implements DatatablesInterface
 {
     /*
     |---------------------------------------------------
     | Uses
     |---------------------------------------------------
     */
-    {{ has_uuid }}
     use {{ class }}Datatable;
-    // use SoftDeletes;
-    // use Cachable;
 
     /*
     |---------------------------------------------------

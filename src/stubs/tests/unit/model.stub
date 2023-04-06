@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\{{ class }};
-use Gsferro\ResourceCrudEasy\Models\AppBaseModel;
+use Gsferro\ResourceCrudEasy\Models\BaseModel;
 use Illuminate\Database\Eloquent\Model;
 
 beforeEach(function() 
@@ -37,11 +37,11 @@ test('Attributes the model {{ class }}', function()
     // TODO gerenate by table
 })->group( 'attributes');
 
-test('Model is configured to use AppBaseModel', function()
+test('Model is configured to use BaseModel', function()
 {
-    // use AppBaseModel
+    // use BaseModel
     expect($this->model)
-        ->toBeInstanceOf(AppBaseModel::class);
+        ->toBeInstanceOf(BaseModel::class);
 
     // pacote FilterEasy
     expect($this->model->hasNamedScope('filterEasy'))

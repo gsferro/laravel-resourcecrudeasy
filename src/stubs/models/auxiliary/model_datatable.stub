@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Models;
+
+use App\Datatables\{{ class }}Datatable;
+use Gsferro\ResourceCrudEasy\Models\AuxModel;
+use Gsferro\ResourceCrudEasy\Interfaces\DatatablesInterface;
+use Illuminate\Database\Eloquent\Relations\{HasMany, HasOne};
+
+class {{ class }} extends BaseModel implements DatatablesInterface
+{
+    /*
+    |---------------------------------------------------
+    | Uses
+    |---------------------------------------------------
+    */
+    use {{ class }}Datatable;
+
+    /*
+    |---------------------------------------------------
+    | Configs Table
+    |---------------------------------------------------
+    */
+    public $table = '{{ class_table }}';
+    {{ connection }}
+
+    /*
+    |---------------------------------------------------
+    | Relationships
+    |--------------------------------------------------
+    |
+    | HasMany
+    | HasOnes
+    |
+    */
+    # BelongsTo
+    {{ relations }}
+    # HasMany
+    # HasOnes
+}

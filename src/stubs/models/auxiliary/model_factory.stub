@@ -1,0 +1,48 @@
+<?php
+
+namespace App\Models;
+
+use Gsferro\ResourceCrudEasy\Models\AuxModel;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Database\Factories\{{ class }}Factory;
+use Illuminate\Database\Eloquent\Relations\{ HasMany, HasOne};
+
+class {{ class }} extends AuxModel
+{
+    /*
+    |---------------------------------------------------
+    | Uses
+    |---------------------------------------------------
+    */
+    use HasFactory;
+
+    /*
+    |---------------------------------------------------
+    | Configs Table
+    |---------------------------------------------------
+    */
+    public $table = '{{ class_table }}';
+    {{ connection }}
+
+    /*
+    |---------------------------------------------------
+    | Relationships
+    |--------------------------------------------------
+    |
+    | HasMany
+    | HasOnes
+    |
+    */
+    # HasMany
+    # HasOnes
+
+    /*
+    |---------------------------------------------------
+    | Factory
+    |---------------------------------------------------
+    */
+    protected static function newFactory(): Factory
+    {
+        return {{ class }}Factory::new();
+    }
+}

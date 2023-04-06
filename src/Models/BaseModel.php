@@ -13,7 +13,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 | TODO entrara no pacote template-generate-easy
 |---------------------------------------------------
 */
-abstract class AppBaseModel extends Model implements Auditable
+abstract class BaseModel extends Model implements Auditable
 {
     use FilterEasy, AuditsFillables, PowerModel;
 }

@@ -38,6 +38,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     {entite : Entite name}
     {--table=}
     {--connection=}
+    {--model-aux}
     {--datatable}
     {--factory}
     {--seeder}
@@ -193,14 +194,15 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         |---------------------------------------------------
         */
         if (is_null($table)) {
+            $modelAux   = (bool)($this->option('model-aux') ? : $this->confirm('Is Auxiliary Model?', false));
             $datatable  = (bool)($this->option('datatable') ? : $this->confirm('Use Datatable?', true));
-            $factory    = (bool)($this->option('factory') ? : $this->confirm('Create Factory?', true));
+            $factory    = (bool)($this->option('factory') ? : $this->confirm('Create Factory?', !$modelAux));
             $seeder     = (bool)($this->option('seeder') ? : $this->confirm('Create Seeder?', !$factory));
             $migrate    = (bool)($this->option('migrate') ? : $this->confirm('Create Migrate?', true));
             $controller = (bool)($this->option('controller') ? : $this->confirm('Create Controller?', true));
-
         }
 
+        $modelAux   = $modelAux   ?? $this->confirm('Is Auxiliary Model?', false);
         $datatable  = $datatable  ?? $this->confirm('Use Datatable?', true);
         $factory    = $factory    ?? $this->confirm('Create Factory?', true);
         $seeder     = $seeder     ?? $this->confirm('Create Seeder?', !$factory);
@@ -217,6 +219,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
 //        $view = $controller ?? ((bool)($this->option('view') ? : $this->confirm('Create Views?', !$api)));
 
         $this->entites[ $entite ] += [
+            'isAuxModel'       => $modelAux,
             'useDatatable'     => $datatable,
             'useFactory'       => $factory,
             'useSeeder'        => $seeder,

@@ -20,6 +20,8 @@ trait UseModelCommand
     {
         $path = 'app\Models\\' . $entite . '.php';
         $stub = 'models/';
+
+        $stub .= $this->entites[ $entite ][ 'isAuxModel' ] ? 'auxiliary' : '';
         $stub .= $this->entites[ $entite ][ 'useFactory' ] ? 'model_factory' : 'model';
 
         if ($this->entites[$entite]['useDatatable'] ) {
@@ -95,7 +97,8 @@ trait UseModelCommand
         $path        = 'database\migrations\\' . $migrateName;
 
         // caso tenha criado o seeder, coloca para executar ao rodar a migrate
-        $stub = $this->entites[$entite]['useSeeder'] ? 'migrate_seeder' : 'migrate';
+        $stub  = $this->entites[ $entite ][ 'useSeeder' ] ? 'migrate_seeder' : 'migrate';
+        $stub .= $this->entites[ $entite ][ 'isAuxModel' ] ? '_aux' : '';
         $this->generate($entite, $path, $stub, 'Migration');
     }
 

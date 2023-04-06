@@ -1,0 +1,52 @@
+<?php
+
+namespace App\Models;
+
+use App\Datatables\{{ class }}Datatable;
+use Gsferro\ResourceCrudEasy\Models\AuxModel;
+use Gsferro\ResourceCrudEasy\Interfaces\DatatablesInterface;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Database\Factories\{{ class }}Factory;
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasOne};
+
+class {{ class }} extends AuxModel implements DatatablesInterface
+{
+    /*
+    |---------------------------------------------------
+    | Uses
+    |---------------------------------------------------
+    */
+    use {{ class }}Datatable;
+    use HasFactory;
+
+    /*
+    |---------------------------------------------------
+    | Configs Table
+    |---------------------------------------------------
+    */
+    public $table = '{{ class_table }}';
+    {{ connection }}
+
+    /*
+    |---------------------------------------------------
+    | Relationships
+    |--------------------------------------------------
+    |
+    | HasMany
+    | HasOnes
+    |
+    */
+    # HasMany
+    # HasOnes
+
+    /*
+    |---------------------------------------------------
+    | Factory
+    |---------------------------------------------------
+    */
+    protected static function newFactory(): Factory
+    {
+        return {{ class }}Factory::new();
+    }
+}
