@@ -277,6 +277,9 @@ trait ResourceCrudEasyApi
 
                 switch ($methodClass) {
                     case 'Illuminate\Database\Eloquent\Relations\BelongsToMany':
+                        // para qdo for create, precisa do id para fazer o sync
+                        $model->save();
+
                         $new_values = Arr::get($attributes, $key, []);
                         if (array_search('', $new_values) !== false) {
                             unset($new_values[array_search('', $new_values)]);

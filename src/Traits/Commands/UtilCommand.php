@@ -166,23 +166,13 @@ trait UtilCommand
      */
     private function replaceTypeColumnRules(string $columnType): string
     {
-        switch ($columnType) {
-            case 'guid':
-                $columnType = "uuid";
-            break;
-            case 'decimal':
-            case 'float':
-                $columnType = "numeric";
-            break;
-            case 'datetime':
-                $columnType = "date_format:Y-m-d H:i:s";
-            break;
-            case 'smallint':
-            case 'bigint':
-                $columnType = "integer";
-            break;
-        }
-        return $columnType;
+        return match ($columnType) {
+            'guid' => "uuid",
+            'decimal', 'float' => "numeric",
+            'datetime' => "date_format:Y-m-d H:i:s",
+            'smallint', 'bigint' => "integer",
+            'text' => "string",
+        };
     }
 
     /**
@@ -191,20 +181,9 @@ trait UtilCommand
      */
     private function replaceTypeColumnCast(string $columnType): string
     {
-        switch ($columnType) {
-            case 'guid':
-            case 'uuid':
-            case 'text':
-                $columnType = "string";
-            break;
-            //            case 'decimal':
-            //                $columnType = "numeric";
-            //            break;
-            case 'smallint':
-            case 'bigint':
-                $columnType = "integer";
-            break;
-        }
-        return $columnType;
+        return match ($columnType) {
+            'guid', 'uuid', 'text', 'date' => "string",
+            'smallint', 'bigint' => "integer",
+        };
     }
 }
