@@ -3,8 +3,7 @@
 namespace Gsferro\ResourceCrudEasy\Traits\Commands;
 
 use Gsferro\DatabaseSchemaEasy\DatabaseSchemaEasy;
-use Gsferro\ResourceCrudEasy\Commands\ResourceCrudEasyModelRecursiveCommand;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Str;
 
 trait WithExistsTableCommand
 {
@@ -88,6 +87,40 @@ trait WithExistsTableCommand
         ] + $useHasUuid;
     }
 
+    private function datatablesTable(string $entite): array
+    {
+        $entites = $this->entites[ $entite ];
+        if (!$entites['useDatatable'] ) {
+            return [];
+        }
+
+        // encapsulando
+        $schema = $entites[ 'schema' ];
+
+        // prepara variaveis
+        $grid   = "";
+        $columns = "";
+        foreach ($entites['columnListing'] as $column) {
+            if ($schema->isPrimaryKey($column) || $column == 'uuid') {
+                continue;
+            }
+
+            $columnType = $schema->getColumnType($column);
+            if (!in_array($columnType, ['string',])) {
+                continue;
+            }
+
+            $str = Str::of($column)->title()->replace('_', ' ');
+            $this->interpolate($grid, "'{$str}',");
+            $this->interpolate($columns, "['name' => '$column'],");
+        }
+
+        return [
+            '/\{{ datatable_grid }}/' => $grid,
+            '/\{{ datatable_columns }}/' => $grid,
+        ];
+    }
+
     private function factoryTable(string $entite): array
     {
         $entites = $this->entites[ $entite ];
@@ -168,7 +201,7 @@ trait WithExistsTableCommand
     {
         $entites = $this->entites[ $entite ];
         if (!$entites['useSeeder'] ) {
-            return array();
+            return [];
         }
 
         // prepara variaveis

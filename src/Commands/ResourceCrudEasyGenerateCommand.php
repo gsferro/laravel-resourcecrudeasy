@@ -97,6 +97,22 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
             '/\{{ seeder_fillables }}/'  => '//',
             '/\{{ migrate_fillables }}/' => '$table->uuid(\'uuid\');'.PHP_EOL.PHP_EOL.'$table->timestamps();',
             '/\{{ migrate_relation }}/'  => '',
+
+            /*
+            |---------------------------------------------------
+            | Datatables
+            |---------------------------------------------------
+            */
+            '/\{{ datatable_grid }}/'    => '',
+            '/\{{ datatable_columns }}/' => '',
+
+            /*
+            |---------------------------------------------------
+            | Views
+            |---------------------------------------------------
+            */
+            '/\{{ fields_filter }}/' => '',
+            '/\{{ field_form_var }}/' => '$model',
         ];
 
         return $this->replace($params, $localStub);

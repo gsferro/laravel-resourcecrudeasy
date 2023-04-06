@@ -43,8 +43,8 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     {--seeder}
     {--migrate}
     {--controller}
-    {--view}
     ';
+    // {--view}
 
     /**
      * The console command description.
@@ -193,25 +193,28 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         |---------------------------------------------------
         */
         if (is_null($table)) {
-            $datatable = (bool)($this->option('datatable') ? : $this->confirm('Use Datatable?', true));
-            $factory   = (bool)($this->option('factory') ? : $this->confirm('Create Factory?', true));
-            $seeder    = (bool)($this->option('seeder') ? : $this->confirm('Create Seeder?', !$factory));
-            $migrate   = (bool)($this->option('migrate') ? : $this->confirm('Create Migrate?', true));
+            $datatable  = (bool)($this->option('datatable') ? : $this->confirm('Use Datatable?', true));
+            $factory    = (bool)($this->option('factory') ? : $this->confirm('Create Factory?', true));
+            $seeder     = (bool)($this->option('seeder') ? : $this->confirm('Create Seeder?', !$factory));
+            $migrate    = (bool)($this->option('migrate') ? : $this->confirm('Create Migrate?', true));
+            $controller = (bool)($this->option('controller') ? : $this->confirm('Create Controller?', true));
+
         }
 
-        $datatable = $datatable ?? $this->confirm('Use Datatable?', true);
-        $factory   = $factory ?? $this->confirm('Create Factory?', true);
-        $seeder    = $seeder ?? $this->confirm('Create Seeder?', !$factory);
-        $migrate   = $migrate ?? $this->confirm('Create Migrate?', true);
+        $datatable  = $datatable  ?? $this->confirm('Use Datatable?', true);
+        $factory    = $factory    ?? $this->confirm('Create Factory?', true);
+        $seeder     = $seeder     ?? $this->confirm('Create Seeder?', !$factory);
+        $migrate    = $migrate    ?? $this->confirm('Create Migrate?', true);
+        $controller = $controller ?? $this->confirm('Create Controller?', true);
 
         /*
         |---------------------------------------------------
         | Controller
         |---------------------------------------------------
         */
-        $controller = (bool)($this->option('controller') ? : $this->confirm('Create Controller?', true));
-        $api        = $controller ? $this->confirm('The Controller is API?', false) : false;
-        $view       = (bool)($this->option('view') ? : $this->confirm('Create Views?', !$api));
+        $api  = $controller && $this->confirm('The Controller is API?', false);
+        $view = $controller && $this->confirm('Create Views?', !$api);
+//        $view = $controller ?? ((bool)($this->option('view') ? : $this->confirm('Create Views?', !$api)));
 
         $this->entites[ $entite ] += [
             'useDatatable'     => $datatable,
@@ -271,6 +274,9 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
                 case 'models/model_datatable':
                 case 'models/model_factory_datatable':
                     $entitesTable = $this->modelTable($entite);
+                break;
+                case 'datatables':
+                    $entitesTable = $this->datatablesTable($entite);
                 break;
                 case 'factory':
                     $entitesTable = $this->factoryTable($entite);

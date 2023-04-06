@@ -3,6 +3,7 @@
 namespace App\Datatables;
 
 use App\Models\{{ class }};
+use Illuminate\Database\Eloquent\Collection;
 
 trait {{ class }}Datatable
 {
@@ -20,7 +21,8 @@ trait {{ class }}Datatable
        |
        */
        return [
-           '#',
+           {{ datatable_grid }}
+           'Actions',
        ];
     }
 
@@ -40,8 +42,27 @@ trait {{ class }}Datatable
         |
         */
         return [
+            {{ datatable_columns }}
             [ "name" => 'uuid' ],
         ];
+    }
+
+    /*
+    |---------------------------------------------------
+    | Columns Changed
+    |---------------------------------------------------
+    |
+    | Caso precise alterar algum valor, accessor|mutate
+    |
+    */
+    public static function laratablesModifyCollection(Collection $model)
+    {
+        return $model->map(function ($row) {
+            // exemple
+            // $row->nome = ucfirst($row->nome);
+
+            return $row;
+        });
     }
 
     /*

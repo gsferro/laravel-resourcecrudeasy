@@ -2,6 +2,8 @@
 
 namespace Gsferro\ResourceCrudEasy\Traits\Commands;
 
+use Illuminate\Support\Str;
+
 trait UseControllerCommand
 {
     /*
@@ -32,21 +34,21 @@ trait UseControllerCommand
             return;
         }
 
-        // TODO by database
-        $pathBase = 'resources\views\\' . $entites['str']->snake();
-        $views = [
+        $useDatatable   = $entites[ 'useDatatable' ];
+        $viewsDatatable = $useDatatable ? ['datatable_action', 'filter',] : [];
+
+        $pathBase = 'resources\views\\' . $entites[ 'str' ]->snake();
+        $views    = [
             'index',
             'form',
             'create',
             'edit',
-            'filter',
-            'datatable_action',
             // 'table',
-        ];
+        ] + $viewsDatatable;
 
         $usePermission = config('resource-crud-easy.use_permissions', true) ? 'permissions/' : '';
         foreach ($views as $view) {
-            if ($entites['useDatatable'] && $view == 'index') {
+            if ($useDatatable && $view == 'index') {
                 $view .= '_datatable';
             }
 
@@ -56,13 +58,17 @@ trait UseControllerCommand
 
         /*
         |---------------------------------------------------
-        | WithTable
+        | Escreve as views
         |---------------------------------------------------
         */
-        $this->generateViewsTable($entite, $pathBase);
+        $this->generateViewFormTable($entite, $pathBase);
+
+        if ($useDatatable) {
+            $this->generateViewFilterTable($entite, $pathBase);
+        }
     }
 
-    private function generateViewsTable(string $entite, string $pathBase): void
+    private function generateViewFormTable(string $entite, string $pathBase): void
     {
         $entites       = $this->entites[ $entite ];
         $columnListing = $entites[ 'columnListing' ] ?? null;
@@ -73,28 +79,58 @@ trait UseControllerCommand
         $schema = $entites[ 'schema' ];
         $fields = "";
         foreach ($columnListing as $column) {
-            // TODO aplicar por cada type
-            // $columnType = $schema->getColumnType($column);
-
             // não exibe
             if ($schema->isPrimaryKey($column) || $column == 'uuid') {
                 continue;
             }
 
-            $this->interpolate($fields, $this->getStubField($column, empty($fields)));
+            // TODO aplicar input por cada type
+            // $columnType = $schema->getColumnType($column);
+
+            $this->interpolate($fields, $this->getStubFieldString($column, empty($fields)));
         }
 
         $this->files->put("$pathBase\\form.blade.php", $fields);
     }
-
-    private function getStubField(string $column, bool $first = false)
+    private function generateViewFilterTable(string $entite, string $pathBase): void
     {
-        $params = [
-            '/\{{ column }}/'         => $column,
-            '/\{{ column_ucfirst }}/' => ucfirst($column),
-            '/\{{ mt-4 }}/'           => $first ? '' : 'mt-4',
+        $entites       = $this->entites[ $entite ];
+        $columnListing = $entites[ 'columnListing' ] ?? null;
+        if (empty($columnListing)) {
+            return;
+        }
+
+        $schema = $entites[ 'schema' ];
+        $fields = "";
+        foreach ($columnListing as $column) {
+            // não exibe
+            if ($schema->isPrimaryKey($column) || $column == 'uuid') {
+                continue;
+            }
+
+            $columnType = $schema->getColumnType($column);
+            if (!in_array($columnType, ['string',])) {
+                continue;
+            }
+
+            $this->interpolate($fields, $this->getStubFieldString($column, empty($fields)));
+        }
+
+        $this->replace([
+            '/\{{ fields_filter }}/'  => $fields,
+            '/\{{ field_form_var }}/' => '$form',
+        ], "$pathBase\\filter.blade.php");
+    }
+
+    private function getStubFieldString(string $column, bool $first = false): string
+    {
+        $str = Str::of($column)->title()->replace('_', ' ');
+        $params  = [
+            '/\{{ column }}/'       => $column,
+            '/\{{ column_title }}/' => $str,
+            '/\{{ mt-4 }}/'         => $first ? '' : 'mt-4',
         ];
-        $stub   = $this->files->get($this->getStubEntite('views/field_form'));
+        $stub = $this->files->get($this->getStubEntite('views/field_form_string'));
         return $this->replace($params, $stub);
     }
 
@@ -119,12 +155,20 @@ trait UseControllerCommand
     */
     private function generatePestUnitController(string $entite): void
     {
+        if (!$this->entites[$entite]['useController']) {
+            return;
+        }
+
         $path = 'tests\Unit\Controllers\\' . $entite . 'ControllerTest.php';
         $this->generate($entite, $path, 'tests/unit/controller', 'PestTest Unit Controllers');
     }
 
     private function generatePestFeatureController(string $entite): void
     {
+        if (!$this->entites[$entite]['useController']) {
+            return;
+        }
+
         $path = 'tests\Feature\Controllers\\' . $entite . 'ControllerTest.php';
         $this->generate($entite, $path, 'tests/feature/controller', 'PestTest Feature Controllers');
     }
