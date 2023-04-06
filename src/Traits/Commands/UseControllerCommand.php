@@ -113,7 +113,7 @@ trait UseControllerCommand
                 continue;
             }
 
-            $this->interpolate($fields, $this->getStubFieldString($column, empty($fields)));
+            $this->interpolate($fields, $this->getStubFieldString($column, empty($fields), '$form'));
         }
 
         $this->replace([
@@ -122,14 +122,16 @@ trait UseControllerCommand
         ], "$pathBase\\filter.blade.php");
     }
 
-    private function getStubFieldString(string $column, bool $first = false): string
+    private function getStubFieldString(string $column, bool $first = false, string $var = '$model'): string
     {
-        $str = Str::of($column)->title()->replace('_', ' ');
+        $str     = Str::of($column)->title()->replace('_', ' ');
         $params  = [
-            '/\{{ column }}/'       => $column,
-            '/\{{ column_title }}/' => $str,
-            '/\{{ mt-4 }}/'         => $first ? '' : 'mt-4',
+            '/\{{ column }}/'         => $column,
+            '/\{{ column_title }}/'   => $str,
+            '/\{{ mt-4 }}/'           => $first ? '' : 'mt-4',
+            '/\{{ field_form_var }}/' => $var,
         ];
+
         $stub = $this->files->get($this->getStubEntite('views/field_form_string'));
         return $this->replace($params, $stub);
     }
