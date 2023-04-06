@@ -203,12 +203,12 @@ trait UseControllerCommand
 
         // increment use controller
         // TODO ta quebrando uma linha a mais, descobrir o pq
-        $this->replace([
-            '/\<\?php/' => '<?php'. PHP_EOL.PHP_EOL .'use App\Http\Controllers\\'.$entite.'Controller;'
+        $routeContents = $this->replace([
+            '/^<\?php\n/' => '<?php'. PHP_EOL.PHP_EOL.'use App\Http\Controllers\\'.$entite.'Controller;'
         ], $routeContents);
 
         // write group route
-        $routeContents .= "\n\n".$contents;
+        $routeContents .= "\n".$contents."\n";
 
         // re-write file route
         $this->put($path, $routeContents, 'Route Web Updated:');
