@@ -3,34 +3,46 @@
 namespace Gsferro\ResourceCrudEasy\Models;
 
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
+use Gsferro\Select2Easy\Http\Traits\Select2Easy;
+use Illuminate\Database\Eloquent\Builder;
 
 abstract class AuxModel extends BaseModel
 {
-    use Cachable;
+    use Cachable, Select2Easy;
 
+    /*
+    |---------------------------------------------------
+    | Configs Table
+    |---------------------------------------------------
+    */
     protected $primaryKey = "id";
     public    $timestamps = false;
-
-    public $fillable = [
-        'name'
-    ];
+    public $fillable      = ['name'];
 
     /*
     |---------------------------------------------------
     | FilterEasy
     |---------------------------------------------------
     */
-    public array $likeFilterFields = [
-        'name'
-    ];
+    public array $likeFilterFields = ['name'];
 
     /*
     |---------------------------------------------------
     | Scopes
     |---------------------------------------------------
     */
-    public function scopeName($q, string $name)
+    public function scopeName(Builder $query, string $name): Builder
     {
-        return $q->where('name', 'like', "%{$name}%");
+        return $query->where('name', 'like', "%{$name}%");
+    }
+
+    /*
+    |---------------------------------------------------
+    | Select2Easy
+    |---------------------------------------------------
+    */
+    public static function sl2Name($term, $page)
+    {
+        return self::select2easy($term, $page, ['name'], 'name');
     }
 }
