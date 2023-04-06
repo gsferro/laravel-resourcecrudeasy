@@ -281,7 +281,11 @@ trait ResourceCrudEasyApi
                         if (array_search('', $new_values) !== false) {
                             unset($new_values[array_search('', $new_values)]);
                         }
-                        $model->$key()->sync(array_values($new_values));
+                        $ids = array_map(function ($item) {
+                            return current(array_values($item));
+                        }, $new_values);
+
+                        $model->$key()->sync($ids);
                     break;
                     case 'Illuminate\Database\Eloquent\Relations\BelongsTo':
                         $attributesRelation = Arr::get($attributes, $key, null);
