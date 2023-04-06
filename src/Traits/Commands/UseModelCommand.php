@@ -21,7 +21,7 @@ trait UseModelCommand
         $path = 'app\Models\\' . $entite . '.php';
         $stub = 'models/';
 
-        $stub .= $this->entites[ $entite ][ 'isAuxModel' ] ? 'auxiliary' : '';
+        $stub .= $this->entites[ $entite ][ 'isAuxModel' ] ? 'auxiliary/' : '';
         $stub .= $this->entites[ $entite ][ 'useFactory' ] ? 'model_factory' : 'model';
 
         if ($this->entites[$entite]['useDatatable'] ) {
