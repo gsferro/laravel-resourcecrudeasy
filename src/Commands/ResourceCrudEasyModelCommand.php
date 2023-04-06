@@ -195,11 +195,11 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         */
         if (is_null($table)) {
             $modelAux   = (bool)($this->option('model-aux') ? : $this->confirm('Is Auxiliary Model?', false));
-            $datatable  = (bool)($this->option('datatable') ? : $this->confirm('Use Datatable?', true));
+            $datatable  = (bool)($this->option('datatable') ? : $this->confirm('Use Datatable?', !$modelAux));
             $factory    = (bool)($this->option('factory') ? : $this->confirm('Create Factory?', !$modelAux));
             $seeder     = (bool)($this->option('seeder') ? : $this->confirm('Create Seeder?', !$factory));
             $migrate    = (bool)($this->option('migrate') ? : $this->confirm('Create Migrate?', true));
-            $controller = (bool)($this->option('controller') ? : $this->confirm('Create Controller?', true));
+            $controller = (bool)($this->option('controller') ? : $this->confirm('Create Controller?', !$modelAux));
         }
 
         $modelAux   = $modelAux   ?? $this->confirm('Is Auxiliary Model?', false);
