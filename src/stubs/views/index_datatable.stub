@@ -8,7 +8,7 @@
         <div class="card-header flex justify-content-between align-items-center">
             <span class="h3 m-0">{{ __('List Data') }}</span>
             <div class="flex justify-content-between align-items-center">
-                @if (Route::has('{{ class_folder }}.create'))
+                @if (Route::has('{{ class_route_slug }}.create'))
                     <div class="right">
                         <a href="{{ route('{{ class_route_slug }}.create') }}" class="btn btn-success text-white rounded-pill mr-3">
                             <i class="fa fa-user-plus fa-2x" aria-hidden="true" aria-label="icon"></i>
