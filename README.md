@@ -21,12 +21,14 @@ gsferro/database-schema-easy | ^1
 gsferro/filtereasy | ^1.1
 gsferro/responseview" | ^1.2
 gsferro/powermodel | ^1.3
+gsferro/select2easy | ^1.2.1
 
 ### Publish (TODO :install)
 ```composer 
 php artisan vendor:publish --provider="Gsferro\ResourceCrudEasy\Providers\ResourceCrudEasyServiceProvider" --force
 php artisan vendor:publish --provider "OwenIt\Auditing\AuditingServiceProvider"
 php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
+php artisan vendor:publish --provider="Gsferro\Select2Easy\Providers\Select2EasyServiceProvider" --force
 ```
 ### Config front-end:
 
@@ -40,6 +42,9 @@ php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvid
     @ResourceCrudEasyDatatablesExtraCss() 
     {{-- style ui css --}}
     @ResourceCrudEasyStylesCss() 
+    
+    {{-- select2easy --}}
+    @select2easyCss()
 ```
 - No Final Body html principal:
 ```text
@@ -47,6 +52,8 @@ php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvid
     @ResourceCrudEasyDatatablesPlugin()
     {{-- plugins js --}}
     @ResourceCrudEasyPlugins()
+    {{-- select2easy --}}
+    @select2easyJs()
     {{-- para o datatables poder utilizar via post --}}
     <script type="text/javascript">
         $.ajaxSetup({
@@ -55,6 +62,9 @@ php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvid
             },
             async: true
         });
+        
+        {{-- select2easy run --}}
+        $('.select2easy:not(".select2-hidden-accessible")').select2easy();
     </script>
     {{-- index utiliza  --}}
     @yield('js')
