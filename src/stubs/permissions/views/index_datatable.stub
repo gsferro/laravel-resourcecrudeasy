@@ -17,9 +17,9 @@
                     </div>
                 @endif
                 <div class="right">
-                    <x-datatables.sider-right-filters :form="$form"> {{-- outside --}}
+                    <x-side-right-filters :form="$form"> {{-- outside --}}
                         @include('{{ class_folder }}.filter')
-                    </x-datatables.sider-right-filters>
+                    </x-side-right-filters>
                 </div>
             </div>
         </div>

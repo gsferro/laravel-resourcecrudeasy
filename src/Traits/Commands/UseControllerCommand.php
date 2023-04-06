@@ -36,8 +36,6 @@ trait UseControllerCommand
 
         $useDatatable   = $entites[ 'useDatatable' ];
         $viewsDatatable = $useDatatable ? ['datatable_action', 'filter',] : [];
-
-        $pathBase = 'resources\views\\' . $entites[ 'str' ]->snake();
         $views    = [
             'index',
             'form',
@@ -47,13 +45,15 @@ trait UseControllerCommand
         ] + $viewsDatatable;
 
         $usePermission = config('resource-crud-easy.use_permissions', true) ? 'permissions/' : '';
+        $pathBase      = 'resources\views\\' . $entites[ 'str' ]->snake();
         foreach ($views as $view) {
+            $pathView = $pathBase . "\\$view.blade.php";
+            $stub     = "{$usePermission}views/{$view}";
             if ($useDatatable && $view == 'index') {
-                $view .= '_datatable';
+                $stub .= '_datatable';
             }
 
-            $pathView = $pathBase . "\\$view.blade.php";
-            $this->generate($entite, $pathView, "{$usePermission}views/{$view}", 'View '. ucfirst($view));
+            $this->generate($entite, $pathView, $stub, 'View '. ucfirst($view));
         }
 
         /*
@@ -132,7 +132,8 @@ trait UseControllerCommand
             '/\{{ field_form_var }}/' => $var,
         ];
 
-        $stub = $this->files->get($this->getStubEntite('views/field_form_string'));
+        $usePermission = config('resource-crud-easy.use_permissions', true) ? 'permissions/' : '';
+        $stub = $this->files->get($this->getStubEntite("{$usePermission}views/field_form_string"));
         return $this->replace($params, $stub);
     }
 

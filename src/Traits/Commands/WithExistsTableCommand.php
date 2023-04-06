@@ -116,8 +116,8 @@ trait WithExistsTableCommand
         }
 
         return [
-            '/\{{ datatable_grid }}/' => $grid,
-            '/\{{ datatable_columns }}/' => $grid,
+            '/\{{ datatable_grid }}/'    => $grid,
+            '/\{{ datatable_columns }}/' => $columns,
         ];
     }
 
