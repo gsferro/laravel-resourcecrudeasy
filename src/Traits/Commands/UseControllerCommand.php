@@ -161,18 +161,23 @@ trait UseControllerCommand
         $this->put($path, $routeContents, 'Route Web Updated:');
     }
 
-    private function generatePermissionsSeeder(string $entite): void
+    private function generatePermissions(string $entite): void
     {
-//        $entites = $this->entites[ $entite ];
-//        if (!$entites['useView']) {
-//            return;
-//        }
-
         if (!config('resource-crud-easy.use_permissions', true)) {
             return;
         }
 
-        $path = 'database\seeders\\' . $entite . 'PermissionSeeder.php';
-        $this->generate($entite, $path, 'seeder', 'Permissions Seeder');
+        $pathStubBase = 'permissions/';
+        // SEEDER
+        $path         = 'database\seeders\\' . $entite . 'PermissionSeeder.php';
+        $stubSeeder   = $pathStubBase . 'seeder';
+        $this->generate($entite, $path, $stubSeeder, 'Permissions Seeder');
+
+        // MIGRATE
+        $arquivo     = 'seeder_' . $this->entites[ $entite ][ 'str' ]->snake() . '_permissions.php';
+        $migrateName = now()->format('Y_m_d_his') . '_' . $arquivo;
+        $path        = 'database\migrations\\' . $migrateName;
+        $stubMigrate = $pathStubBase . 'migrate_seeder';
+        $this->generate($entite, $path, $stubMigrate, 'Permissions Migration');
     }
 }

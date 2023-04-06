@@ -3,56 +3,41 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use App\Models\{{ class }};
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class {{ class }}PermissionSeeder extends Seeder
 {
-    /**
-     * Use the seeder from test the Entite {{ class }}
-     *
-     * @return array
-     */
-    public static function rows(): array
-    {
-        return [
-            [
-                {{ seeder_fillables }}
-            ],
-        ];
-    }
-
-
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run(): void
     {
-        // protection if use Sql Server
-        if (config('database.connections') == "sqlsrv") {
-            DB::unprepared('SET IDENTITY_INSERT {{ class_table }} ON');
-        }
+        // Reset cached roles and permissions
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        DB::transaction(function () {
-            /*
-            |---------------------------------------------------
-            | Case use caclabe in model
-            |---------------------------------------------------
-            */
-            $new   = new {{ class }}();
-            $model = ($new->hasNamedScope('disableCache'))
-                ? $new::disableCache()
-                : $new;
-            foreach (self::rows() as $row) {
-                $model->updateOrCreate(["id" => $row["id"]], $row);
-            }
+        // create permissions
+        $arrayOfPermissionNames = [
+            '{{ class_route_slug }}.index',
+            '{{ class_route_slug }}.create',
+            '{{ class_route_slug }}.store',
+            '{{ class_route_slug }}.edit',
+            '{{ class_route_slug }}.update',
+            '{{ class_route_slug }}.show',
+            '{{ class_route_slug }}.destroy',
+            '{{ class_route_slug }}.publish',
+            '{{ class_route_slug }}.unpublish',
+        ];
+        $permissions = collect($arrayOfPermissionNames)->map(function ($permission) {
+            return ['name' => $permission, 'guard_name' => 'web'];
         });
 
-        // protection if use Sql Server
-        if (config('database.connections') == "sqlsrv") {
-            DB::unprepared('SET IDENTITY_INSERT {{ class_table }} OFF');
-        }
+        Permission::insert($permissions->toArray());
+
+        // create roles and assign created permissions
+
+        // this can be done as separate statements
+        $role = Role::create(['name' => '{{ class_route_slug }}']);
+        $role->givePermissionTo(Permission::where('name', 'like', '{{ class_route_slug }}.%')->get());
+
+        $role = Role::firstOrCreate(['name' => 'super-admin']);
+        $role->givePermissionTo(Permission::all());
     }
 }

@@ -1,0 +1,16 @@
+.dataTables_wrapper .dataTables_processing {
+    position: fixed;
+    top: 90% !important;
+    left: 0 !important;
+    width: 100% !important;
+    bottom: 0 !important;
+    height: 50px;
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+    padding: 4px;
+    text-align: center;
+    font-size: 2.2em;
+    background: none;
+    background-color: rgba(38, 110, 184, 0.6) !important;
+    color: white !important;
+}

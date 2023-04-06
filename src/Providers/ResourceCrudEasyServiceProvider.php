@@ -50,6 +50,7 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
                 <link   href=" . asset('vendor/resource-crud-easy/datatables/extra/bootstrap-glyphicons.css') . " rel='stylesheet' type='text/css'/>
                 <link   href=" . asset('vendor/resource-crud-easy/datatables/dataTables.bootstrap.css') . " rel='stylesheet' type='text/css'/>
                 <link   href=" . asset('vendor/resource-crud-easy/datatables/responsive/dataTables.responsive.min.css') . " rel='stylesheet' type='text/css'/>
+                <link   href=" . asset('vendor/resource-crud-easy/datatables/extra/datatables-processing.css') . " rel='stylesheet' type='text/css'/>
                 <script src=" . asset('vendor/resource-crud-easy/datatables/dataTables.min.js') . " type=\"text/javascript\"></script>
                 <script src=" . asset('vendor/resource-crud-easy/datatables/dataTables.bootstrap.min.js') . " type=\"text/javascript\"></script>
                 <script src=" . asset('vendor/resource-crud-easy/datatables/responsive/dataTables.responsive.min.js') . " type=\"text/javascript\"></script>

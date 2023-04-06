@@ -372,7 +372,7 @@ table.dataTable td {
 .dataTables_wrapper .dataTables_paginate .ellipsis {
   padding: 0 1em;
 }
-.dataTables_wrapper .dataTables_processing {
+/*.dataTables_wrapper .dataTables_processing {
   position: absolute;
   top: 100px;
   left: 50%;
@@ -384,9 +384,9 @@ table.dataTable td {
   text-align: center;
   font-size: 1.2em;
   background: none;
-  background-color: rgba(38, 110, 184, 0.6) !important; /* #266EB8 */
+  background-color: rgba(38, 110, 184, 0.6) !important; !* #266EB8 *!
   color: white !important;
-}
+}*/
 .dataTables_wrapper .dataTables_length,
 .dataTables_wrapper .dataTables_filter,
 .dataTables_wrapper .dataTables_info,

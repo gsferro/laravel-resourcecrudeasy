@@ -172,7 +172,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
                 | Permissions if config is true
                 |---------------------------------------------------
                 */
-                $this->generatePermissionsSeeder($entite);
+                $this->generatePermissions($entite);
             }
 
         } catch (ModelNotFoundException $e) {
