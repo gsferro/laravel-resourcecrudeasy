@@ -26,11 +26,11 @@ class {{ class }}PermissionSeeder extends Seeder
             '{{ class_route_slug }}.publish',
             '{{ class_route_slug }}.unpublish',
         ];
-        $permissions = collect($arrayOfPermissionNames)->map(function ($permission) {
-            return ['name' => $permission, 'guard_name' => 'web'];
-        });
 
-        Permission::insert($permissions->toArray());
+        // protect for run often
+        foreach ($arrayOfPermissionNames as $arrayOfPermissionName) {
+            Permission::firstOrCreate(['name' => $arrayOfPermissionName, 'guard_name' => 'web']);
+        }
 
         // create roles and assign created permissions
 
