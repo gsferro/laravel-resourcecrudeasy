@@ -62,9 +62,10 @@ php artisan vendor:publish --provider="Gsferro\Select2Easy\Providers\Select2Easy
             },
             async: true
         });
-        
-        {{-- select2easy run --}}
-        $('.select2easy:not(".select2-hidden-accessible")').select2easy();
+        $(function(){
+            {{-- select2easy run --}}
+            $('.select2easy:not(".select2-hidden-accessible")').select2easy();
+        });
     </script>
     {{-- index utiliza  --}}
     @yield('js')

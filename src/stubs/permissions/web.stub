@@ -3,7 +3,7 @@ Route::group([], function () {
         Route::get('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'index'])->name('{{ class_route_slug }}.index');
     });
     Route::group(['middleware' => ['permission:{{ class_route_slug }}.create']], function () {
-        Route::get('/{{ class_route_slug_plural }}/create', [{{ class }}Controller::class, 'create'])->name('{{ class_route_slug }}.index');
+        Route::get('/{{ class_route_slug_plural }}/create', [{{ class }}Controller::class, 'create'])->name('{{ class_route_slug }}.create');
     });
     Route::group(['middleware' => ['permission:{{ class_route_slug }}.store']], function () {
         Route::POST('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'store'])->name('{{ class_route_slug }}.store');

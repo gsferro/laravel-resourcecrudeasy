@@ -94,10 +94,12 @@ trait ResourceCrudEasy
      */
     private function getEntidade(): string
     {
-        if ($this->model == "App\User")
-            return "User";
+        $class = get_class($this->model);
+        if ($class == "App\Models\User") {
+            return "Users";
+        }
 
-        return str_replace("App\Models\\", "", get_class($this->model));
+        return str_replace("App\Models\\", "", $class);
     }
 
     /*
