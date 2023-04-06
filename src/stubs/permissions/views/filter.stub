@@ -11,7 +11,7 @@
         </div>
         <div class="card-footer">
             {{-- TODO Components button --}}
-            <button class="btn btn-primary rounded-pill" type="submit">
+            <button class="btn btn-ghost-primary rounded-pill" type="submit">
                 <i class="fa fa-filter fa-fw"></i>
                 {{ __('Filter') }}
             </button>

@@ -13,10 +13,15 @@
             </div>
             <div class="card-footer">
                 {{-- TODO Components button --}}
-                <button class="btn btn-primary rounded-pill" type="submit">
+                <button class="btn btn-ghost-primary rounded-pill" type="submit">
                     <i class="fa fa-save fa-fw"></i>
                     {{ __('Register') }}
                 </button>
+                {{-- TODO Components links --}}
+                <a href="{{ url()->previous(true) }}" class="btn btn-light rounded-pill">
+                    <i class="fa fa-close fa-fw"></i>
+                    {{ __('Cancel') }}
+                </a>
             </div>
         </form>
     </div>
