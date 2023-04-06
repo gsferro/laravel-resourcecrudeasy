@@ -7,7 +7,6 @@
         <div class="card-body">
             <div class="column g-3">
                 {{-- fields filter --}}
-                {{ fields_filter }}
             </div>
         </div>
         <div class="card-footer">

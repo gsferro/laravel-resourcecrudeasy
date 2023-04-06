@@ -105,14 +105,6 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
             */
             '/\{{ datatable_grid }}/'    => '',
             '/\{{ datatable_columns }}/' => '',
-
-            /*
-            |---------------------------------------------------
-            | Views
-            |---------------------------------------------------
-            */
-            '/\{{ fields_filter }}/' => '',
-            '/\{{ field_form_var }}/' => '$model',
         ];
 
         return $this->replace($params, $localStub);

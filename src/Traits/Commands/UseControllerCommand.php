@@ -36,13 +36,13 @@ trait UseControllerCommand
 
         $useDatatable   = $entites[ 'useDatatable' ];
         $viewsDatatable = $useDatatable ? ['datatable_action', 'filter',] : [];
-        $views    = [
+        $views = array_merge([
             'index',
             'form',
             'create',
             'edit',
             // 'table',
-        ] + $viewsDatatable;
+        ], $viewsDatatable);
 
         $usePermission = config('resource-crud-easy.use_permissions', true) ? 'permissions/' : '';
         $pathBase      = 'resources\views\\' . $entites[ 'str' ]->snake();
@@ -64,7 +64,7 @@ trait UseControllerCommand
         $this->generateViewFormTable($entite, $pathBase);
 
         if ($useDatatable) {
-            $this->generateViewFilterTable($entite, $pathBase);
+            $this->generateViewFilterTable($entite);
         }
     }
 
@@ -92,7 +92,8 @@ trait UseControllerCommand
 
         $this->files->put("$pathBase\\form.blade.php", $fields);
     }
-    private function generateViewFilterTable(string $entite, string $pathBase): void
+
+    private function generateViewFilterTable(string $entite): void
     {
         $entites       = $this->entites[ $entite ];
         $columnListing = $entites[ 'columnListing' ] ?? null;
@@ -116,10 +117,15 @@ trait UseControllerCommand
             $this->interpolate($fields, $this->getStubFieldString($column, empty($fields), '$form'));
         }
 
-        $this->replace([
-            '/\{{ fields_filter }}/'  => $fields,
-            '/\{{ field_form_var }}/' => '$form',
-        ], "$pathBase\\filter.blade.php");
+        $path     = 'resources/views/' . $entites[ 'str' ]->snake() . '/filter.blade.php';
+        $base     = base_path($path);
+        $contents = file_get_contents($base);
+
+        $contents = $this->replace([
+            '/\{\{-- fields filter --\}\}/' => $fields,
+        ], $contents);
+
+        $this->files->put($path, $contents);
     }
 
     private function getStubFieldString(string $column, bool $first = false, string $var = '$model'): string

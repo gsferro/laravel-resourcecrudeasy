@@ -24,14 +24,14 @@
             </div>
         </div>
         <div class="card-body">
-            <x-datatable-process :theads="$model->getDatatablesGrid()" />
+            <x-datatables-process :theads="$model->getDatatablesGrid()" />
         </div>
     </div>
 @endsection
 @section('js')
 	<script type="text/javascript">
 		$(() => {
-			const datatable = $('.datatable-process').DataTableProccess({
+			const datatable = $('.datatables-process').DataTableProccess({
 				"ajax" : {
 					url    : "{{ route('datatables') }}",
 					method : 'post' ,

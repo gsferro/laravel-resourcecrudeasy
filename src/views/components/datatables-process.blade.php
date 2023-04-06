@@ -1,4 +1,4 @@
-<table class="table table-bordered table-condensed tablesorter tablesorter-hover dataTable datatable-process responsive wrap {{ $tableExtraClass ?? "" }}" style="width: 100%">
+<table class="table table-bordered table-condensed tablesorter tablesorter-hover dataTable datatables-process responsive wrap {{ $tableExtraClass ?? "" }}" style="width: 100%">
     <thead>
         <tr>
             @foreach($theads as $thead)
