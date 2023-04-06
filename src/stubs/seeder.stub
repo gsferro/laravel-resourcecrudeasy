@@ -22,7 +22,6 @@ class {{ class }}Seeder extends Seeder
         ];
     }
 
-
     /**
      * Run the database seeds.
      *
