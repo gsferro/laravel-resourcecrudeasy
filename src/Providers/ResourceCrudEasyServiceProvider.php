@@ -6,6 +6,7 @@ namespace Gsferro\ResourceCrudEasy\Providers;
 use Gsferro\ResourceCrudEasy\Commands\ResourceCrudEasyModelCommand;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Filesystem\Filesystem;
 
 class ResourceCrudEasyServiceProvider extends ServiceProvider
 {
@@ -105,6 +106,8 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../config/resource-crud-easy.php' => config_path('resource-crud-easy.php'),
         ], 'config');
+
+        (new Filesystem)->copyDirectory(__DIR__ . '/../lang', resource_path('lang'));
 
         /*
         |---------------------------------------------------
