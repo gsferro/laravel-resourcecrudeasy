@@ -68,7 +68,7 @@ trait ResourceCrudEasy
     public function index(): Factory|View
     {
         if ($this->hasBreadcrumb()) {
-            $this->addBreadcrumb(__('Listagem'));
+            $this->addBreadcrumb(__('resource-crud.list'));
         }
 
         /*
@@ -112,7 +112,7 @@ trait ResourceCrudEasy
     public function create(): Factory|View
     {
         if ($this->hasBreadcrumb()) {
-            $this->addBreadcrumb(__('Novo registro'));
+            $this->addBreadcrumb(__('resource-crud.new'));
         }
         return $this->view($this->getViewCreate());
     }
@@ -128,7 +128,7 @@ trait ResourceCrudEasy
         $this->addData('model', $this->modelFind($find));
 
         if ($this->hasBreadcrumb()) {
-            $this->addBreadcrumb(__('Editar'));
+            $this->addBreadcrumb(__('resource-crud.edit'));
         }
         return $this->view($this->getViewEdit());
     }

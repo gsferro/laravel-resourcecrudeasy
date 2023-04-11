@@ -7,7 +7,7 @@
         <button class="btn btn-outline-dark rounded-pill bg-white {{ isset($outside) ? 'mr-3' : '' }}"
                 @click="showFormFilters = true"
                 x-show="!showFormFilters"
-                title="{{ __('Filter App ') . count((array)$form) ?? 0 }}"
+                title="{{ __('resource-crud.filter') . count((array)$form) ?? 0 }}"
                 type="button"
         >
             <i class="fa fa-filter {{ isset($outside) ? 'fa-4x' : 'fa-2x' }}" aria-hidden="true" aria-label="icon"></i>

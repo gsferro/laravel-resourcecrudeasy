@@ -79,7 +79,7 @@ trait ResourceCrudEasyApi
                 "type"    => "Throwable",
                 "message" => config('app.debug', true)
                     ? $throwable->getMessage()
-                    : __("Ops... Erro Inesperado!"),
+                    : __('resource-crud.throwable'),
             ];
         }
 
@@ -176,7 +176,7 @@ trait ResourceCrudEasyApi
                 "type"    => "Throwable",
                 "message" => config('app.debug', true)
                     ? $throwable->getMessage()
-                    : __("Ops... Erro Inesperado!"),
+                    : __('resource-crud.throwable'),
             ];
         }
         /*

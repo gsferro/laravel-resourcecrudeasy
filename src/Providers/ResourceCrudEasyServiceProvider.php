@@ -2,7 +2,7 @@
 
 namespace Gsferro\ResourceCrudEasy\Providers;
 
-use Gsferro\ResourceCrudEasy\Commands\ResourceCrudEasyCommand;
+//use Gsferro\ResourceCrudEasy\Commands\ResourceCrudEasyCommand;
 use Gsferro\ResourceCrudEasy\Commands\ResourceCrudEasyModelCommand;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
@@ -13,7 +13,7 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
     {
         $this->command();
         $this->routes();
-        $this->publishs();
+        $this->publisher();
         $this->blades();
     }
 
@@ -85,7 +85,7 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
         });
     }
 
-    private function publishs(): void
+    private function publisher(): void
     {
         /*
         |---------------------------------------------------
