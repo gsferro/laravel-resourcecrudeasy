@@ -209,7 +209,7 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
             return ;
         }
 
-        $contents = $this->buildClassEntite($this->entite, 'web');
+        $contents = $this->buildClassEntity($this->entite, 'web');
 
         $routeContents .= "\n\n".$contents;
         $this->put($path, $routeContents, 'Route Web Updated:');
@@ -223,7 +223,7 @@ class ResourceCrudEasyCommand extends ResourceCrudEasyGenerateCommand
     | Todo melhorar o replace de stub dentro de stub
     |
     */
-    protected function applyReplace($stub, string $entite, string $stubType)
+    protected function applyReplace($stub, string $entite, string $stubType): string
     {
         return parent::applyReplace($stub, $entite, $stubType);
     }

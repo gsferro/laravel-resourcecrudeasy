@@ -2,13 +2,9 @@
 
 namespace Gsferro\ResourceCrudEasy\Traits;
 
-use App\Models\ResourceCrud;
-use Gsferro\ResourceCrudEasy\Interfaces\DatatablesInterface;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use DatatablesEasy\Helpers\DatatablesEasy;
+use Illuminate\Contracts\View\Factory;
 use Gsferro\ResponseView\Traits\ResponseView;
+use Illuminate\View\View;
 
 /**
  * Reuso generico as operações de crud e response ajax
@@ -67,9 +63,9 @@ trait ResourceCrudEasy
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
-    public function index()
+    public function index(): Factory|View
     {
         if ($this->hasBreadcrumb()) {
             $this->addBreadcrumb(__('Listagem'));
@@ -111,9 +107,9 @@ trait ResourceCrudEasy
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
-    public function create()
+    public function create(): Factory|View
     {
         if ($this->hasBreadcrumb()) {
             $this->addBreadcrumb(__('Novo registro'));
@@ -124,11 +120,10 @@ trait ResourceCrudEasy
     /**
      * Show the form for editing the specified resource.
      *
-     * @param $find
-     * @param string $descricao
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @param string|int $find
+     * @return Factory|View
      */
-    public function edit($find)
+    public function edit(string|int $find): Factory|View
     {
         $this->addData('model', $this->modelFind($find));
 
@@ -148,40 +143,4 @@ trait ResourceCrudEasy
     {
         return $this->useBreadcrumb;
     }
-
-    /*
-    |---------------------------------------------------
-    | Analisar
-    |---------------------------------------------------
-    */
-    /*public function filtro($request)
-    {
-        $dados = $request->except('_token');
-        // limpa os nulos
-        foreach ($dados as $index => $dado) {
-            if (is_null($dado)) {
-                unset($dados[ $index ]);
-            }
-        }
-
-        // processo de datatable
-        session()->put($this->sessionName, $dados);
-
-        $this->addData('form', $dados);
-        return $this->view($this->getViewIndex());
-    }
-
-    public function grid()
-    {
-        // se tiver filtro repassa
-        if (!empty(session($this->sessionName))) {
-            return Laratables::recordsOf($this->model, function ($q) {
-                return $q->where(session($this->sessionName));
-            });
-        }
-
-        // se não, chama direto
-        return Laratables::recordsOf($this->model);
-    }*/
-    
 }

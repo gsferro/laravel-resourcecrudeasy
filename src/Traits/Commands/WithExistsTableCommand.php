@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 trait WithExistsTableCommand
 {
-    private function modelTable(string $entite): array
+    private function modelTable(string $entity): array
     {
         // prepara variaveis
         $pkString    = "";
@@ -17,10 +17,10 @@ trait WithExistsTableCommand
         $casts       = "";
         $relations   = "";
 
-        $entites = $this->entites[ $entite ];
-        $schema  = $entites[ 'schema' ];
+        $entitys = $this->entitys[ $entity ];
+        $schema  = $entitys[ 'schema' ];
         // para colocar elegantemente no arquivo
-        foreach ($entites['columnListing'] as $column) {
+        foreach ($entitys['columnListing'] as $column) {
             $str        = "'{$column}'";
             $columnType = $schema->getColumnType($column);
 
@@ -53,13 +53,13 @@ trait WithExistsTableCommand
                 continue;
             }
 
-            // new entite
+            // new entity
             if (!$schema->hasModelWithTableName($foreinsKey['table'])) {
-                $this->newEntiteFromRelation($entites['table'], $foreinsKey);
+                $this->newEntityFromRelation($entitys['table'], $foreinsKey);
             }
 
             // belongTo
-            $relations = $this->setBelongsTo($entite, $column, $relations);
+            $relations = $this->setBelongsTo($entity, $column, $relations);
         }
 
         // use HasUuid
@@ -73,7 +73,7 @@ trait WithExistsTableCommand
         return [
             '/\{{ pk_string }}/'  => $pkString,
             '/\{{ timestamps }}/' => !$schema->hasColumnsTimestamps() ? 'public $timestamps = false;' : '',
-            '/\{{ connection }}/' => !is_null($entites[ 'connection' ]) ? 'protected $connection = \'' . $entites[ 'connection' ] . '\';' : '',
+            '/\{{ connection }}/' => !is_null($entitys[ 'connection' ]) ? 'protected $connection = \'' . $entitys[ 'connection' ] . '\';' : '',
             '/\{{ fillable }}/'   => $fillable,
             '/\{{ cast }}/'       => $casts,
             '/\{{ relations }}/'  => $relations,
@@ -81,26 +81,26 @@ trait WithExistsTableCommand
             //            '/\{{ has_many_relation }}/'    => 'use Illuminate\Database\Eloquent\Relations\HasMany;',
 
             // Nome tabela
-            '/\{{ class_table }}/'  => $entites['table'],
+            '/\{{ class_table }}/'  => $entitys['table'],
             '/\{{ rules_store }}/'  => $rulesStore,
             '/\{{ rules_update }}/' => $rulesUpdate,
         ] + $useHasUuid;
     }
 
-    private function datatablesTable(string $entite): array
+    private function datatablesTable(string $entity): array
     {
-        $entites = $this->entites[ $entite ];
-        if (!$entites['useDatatable'] ) {
+        $entitys = $this->entitys[ $entity ];
+        if (!$entitys['useDatatable'] ) {
             return [];
         }
 
         // encapsulando
-        $schema = $entites[ 'schema' ];
+        $schema = $entitys[ 'schema' ];
 
         // prepara variaveis
         $grid   = "";
         $columns = "";
-        foreach ($entites['columnListing'] as $column) {
+        foreach ($entitys['columnListing'] as $column) {
             if ($schema->isPrimaryKey($column) || $column == 'uuid') {
                 continue;
             }
@@ -121,21 +121,21 @@ trait WithExistsTableCommand
         ];
     }
 
-    private function factoryTable(string $entite): array
+    private function factoryTable(string $entity): array
     {
-        $entites = $this->entites[ $entite ];
-        if (!$entites['useFactory'] ) {
+        $entitys = $this->entitys[ $entity ];
+        if (!$entitys['useFactory'] ) {
             return [];
         }
 
         // encapsulando
-        $schema = $entites[ 'schema' ];
+        $schema = $entitys[ 'schema' ];
 
         // prepara variaveis
         $factoryFillables = "";
         $thisFake         = '$this->faker->';
         $fake             = 'word';
-        foreach ($entites['columnListing'] as $column) {
+        foreach ($entitys['columnListing'] as $column) {
             if ($schema->isPrimaryKey($column) || $column == 'uuid') {
                 continue;
             }
@@ -197,16 +197,16 @@ trait WithExistsTableCommand
         ];
     }
 
-    private function seederTable(string $entite): array
+    private function seederTable(string $entity): array
     {
-        $entites = $this->entites[ $entite ];
-        if (!$entites['useSeeder'] ) {
+        $entitys = $this->entitys[ $entity ];
+        if (!$entitys['useSeeder'] ) {
             return [];
         }
 
         // prepara variaveis
         $seederFillables = "";
-        foreach ($entites['columnListing'] as $column) {
+        foreach ($entitys['columnListing'] as $column) {
             $this->interpolate($seederFillables, "'{$column}' => '', ");
         }
 
@@ -215,10 +215,10 @@ trait WithExistsTableCommand
         ];
     }
 
-    private function migrateTable(string $entite): array
+    private function migrateTable(string $entity): array
     {
-        $entites = $this->entites[ $entite ];
-        if (!$entites['useMigrate'] ) {
+        $entitys = $this->entitys[ $entity ];
+        if (!$entitys['useMigrate'] ) {
             return [];
         }
 
@@ -226,13 +226,13 @@ trait WithExistsTableCommand
         /**
          * @var DatabaseSchemaEasy
         */
-        $schema = $entites[ 'schema' ];
+        $schema = $entitys[ 'schema' ];
 
         // prepara variaveis
         $migrateFillables = "";
         $migrateRelation  = "";
         $base             = '$table->';
-        foreach ($entites['columnListing'] as $column) {
+        foreach ($entitys['columnListing'] as $column) {
             if ($schema->isPrimaryKey($column)) {
                 continue;
             }
@@ -312,7 +312,7 @@ trait WithExistsTableCommand
             '/\{{ migrate_fillables }}/' => $migrateFillables,
             '/\{{ migrate_relation }}/'  => $migrateRelation,
             // Nome tabela
-            '/\{{ class_table }}/'  => $entites['table'],
+            '/\{{ class_table }}/'  => $entitys['table'],
         ];
     }
 
@@ -325,11 +325,7 @@ trait WithExistsTableCommand
         return false;
     }
 
-    /**
-     * @param array $foreinsKey
-     * @return int|void
-     */
-    private function newEntiteFromRelation(string $tableCurrent, array $foreinsKey)
+    private function newEntityFromRelation(string $tableCurrent, array $foreinsKey)
     {
         $table = $foreinsKey[ 'table' ];
         $this->comment("Your new model, based on table [ {$tableCurrent} ], has a foreign key [ {$foreinsKey['foreignKey']} ] of table [ {$table} ] and this model has not yet been created.");
@@ -338,17 +334,17 @@ trait WithExistsTableCommand
             return;
         }
 
-        $this->exec($foreinsKey[ 'tableCamel' ]->ucfirst(), $table, current($this->entites)[ 'connection' ]);
+        $this->exec($foreinsKey[ 'tableCamel' ]->ucfirst(), $table, current($this->entitys)[ 'connection' ]);
     }
 
-    private function setBelongsTo(string $entite, string $column, string $relations): string
+    private function setBelongsTo(string $entity, string $column, string $relations): string
     {
-        $foreinsKey = $this->entites[$entite]['schema']->hasForeinsKey($column, true);
+        $foreinsKey = $this->entitys[$entity]['schema']->hasForeinsKey($column, true);
         $belongto   = $this->getStubRelatios('belongto', $foreinsKey);
         $this->interpolate($relations, $belongto);
 
         // TODO Set hasone Or hasMany in Model
-        $this->applyRelationHasInTableForeingKey($entite, $foreinsKey);
+        $this->applyRelationHasInTableForeingKey($entity, $foreinsKey);
         return $relations;
     }
 

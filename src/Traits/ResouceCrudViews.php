@@ -3,7 +3,6 @@
 namespace Gsferro\ResourceCrudEasy\Traits;
 
 use Illuminate\Support\Str;
-use \OwenIt\Auditing\Auditable;
 
 trait ResouceCrudViews
 {
@@ -19,7 +18,7 @@ trait ResouceCrudViews
      *
      * @return string
      */
-    public function getViewIndex()
+    public function getViewIndex(): string
     {
         if (!empty($this->viewIndex)) {
             return $this->viewIndex;
@@ -28,7 +27,7 @@ trait ResouceCrudViews
         return $this->getPathView('index');
     }
 
-    public function getViewCreate()
+    public function getViewCreate(): string
     {
         if (!empty($this->viewCreate)) {
             return $this->viewCreate;
@@ -37,7 +36,7 @@ trait ResouceCrudViews
         return $this->getPathView('create');
     }
 
-    public function getViewEdit()
+    public function getViewEdit(): string
     {
         if (!empty($this->viewEdit)) {
             return $this->viewEdit;
@@ -47,11 +46,11 @@ trait ResouceCrudViews
     }
 
     /**
-     * Verifica se foi setado um caminho para a view form ou retorna via conveção
+     * Verifica se foi setado um caminho para a view form ou retorna via convenção
      *
      * @return string
      */
-    public function getViewForm()
+    public function getViewForm(): string
     {
         if (!empty($this->viewForm)) {
             return $this->viewForm;
@@ -66,7 +65,7 @@ trait ResouceCrudViews
      * @param $view
      * @return string
      */
-    protected function getPathView($view)
+    protected function getPathView($view): string
     {
         return Str::of($this->getEntidade())->snake() . ".{$view}";
     }

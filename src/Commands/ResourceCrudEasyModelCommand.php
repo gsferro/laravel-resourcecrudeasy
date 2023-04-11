@@ -35,7 +35,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
      * @var string
      */
     protected $signature = 'gsferro:resource-crud
-    {entite : Entite name}
+    {entity : Entity name}
     {--table=}
     {--connection=}
     {--model-aux}
@@ -56,30 +56,30 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
 
     public function handle()
     {
-        $this->entite = ucfirst($this->argument('entite'));
+        $this->entity = ucfirst($this->argument('entity'));
 
         /*
         |---------------------------------------------------
         | Wellcome package
         |---------------------------------------------------
         */
-        $this->messageWellcome();
+        $this->messageWelcome();
 
         /*
         |---------------------------------------------------
         | Execute generate
         |---------------------------------------------------
         */
-        $this->exec($this->entite);
+        $this->exec($this->entity);
     }
 
-    private function exec(string $entite, ?string $table = null, ?string $connection = null)
+    private function exec(string $entity, ?string $table = null, ?string $connection = null)
     {
-        $this->entites[ $entite ] = [
-            'str' => Str::of($entite)
+        $this->entitys[ $entity ] = [
+            'str' => Str::of($entity)
         ];
         // TODO bar progress
-        $this->info("Preper to Create [ {$entite} ]:");
+        $this->info("Preper to Create [ {$entity} ]:");
         try {
             /*
             |---------------------------------------------------
@@ -89,7 +89,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             | TODO by config
             |
             */
-            $this->verifyParams($entite, $table, $connection);
+            $this->verifyParams($entity, $table, $connection);
     
             /*
             |---------------------------------------------------
@@ -117,11 +117,11 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             | Criar Models
             |---------------------------------------------------
             */
-            $this->generateModel($entite);
-            $this->generateDatatable($entite);
-            $this->generateFactory($entite);
-            $this->generateSeeder($entite);
-            $this->generateMigrate($entite);
+            $this->generateModel($entity);
+            $this->generateDatatable($entity);
+            $this->generateFactory($entity);
+            $this->generateSeeder($entity);
+            $this->generateMigrate($entity);
 
             /*
             |---------------------------------------------------
@@ -134,46 +134,46 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             |   - Seeder
             |
             */
-            $this->generatePestUnitModel($entite);
-            $this->generatePestUnitFactory($entite);
-            $this->generatePestUnitSeeder($entite);
+            $this->generatePestUnitModel($entity);
+            $this->generatePestUnitFactory($entity);
+            $this->generatePestUnitSeeder($entity);
 
-            if ($this->entites[ $entite ][ 'useController' ]) {
+            if ($this->entitys[ $entity ][ 'useController' ]) {
                 /*
                 |---------------------------------------------------
                 | Criar controller
                 |---------------------------------------------------
                 */
-                $this->generateController($entite);
+                $this->generateController($entity);
 
                 /*
                 |---------------------------------------------------
                 | Gerar Views
                 |---------------------------------------------------
                 */
-                $this->generateViews($entite);
+                $this->generateViews($entity);
 
                 /*
                 |---------------------------------------------------
                 | Criar Tests
                 |---------------------------------------------------
                 */
-                $this->generatePestUnitController($entite);
-                $this->generatePestFeatureController($entite);
+                $this->generatePestUnitController($entity);
+                $this->generatePestFeatureController($entity);
 
                 /*
                 |---------------------------------------------------
                 | Publish Route
                 |---------------------------------------------------
                 */
-                $this->publishRoute($entite);
+                $this->publishRoute($entity);
 
                 /*
                 |---------------------------------------------------
                 | Permissions if config is true
                 |---------------------------------------------------
                 */
-                $this->generatePermissions($entite);
+                $this->generatePermissions($entity);
             }
 
         } catch (ModelNotFoundException $e) {
@@ -184,9 +184,9 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         }
     }
 
-    private function verifyParams(string $entite, ?string $table = null, ?string $connection = null)
+    private function verifyParams(string $entity, ?string $table = null, ?string $connection = null)
     {
-        $this->verifyDatabase($entite, $table, $connection);
+        $this->verifyDatabase($entity, $table, $connection);
 
         /*
         |---------------------------------------------------
@@ -218,7 +218,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         $view = $controller && $this->confirm('Create Views?', !$api);
 //        $view = $controller ?? ((bool)($this->option('view') ? : $this->confirm('Create Views?', !$api)));
 
-        $this->entites[ $entite ] += [
+        $this->entitys[ $entity ] += [
             'isAuxModel'       => $modelAux,
             'useDatatable'     => $datatable,
             'useFactory'       => $factory,
@@ -238,7 +238,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
     | Todo melhorar o replace de stub dentro de stub
     |
     */
-    protected function applyReplace($stub, string $entite, string $stubType)
+    protected function applyReplace($stub, string $entity, string $stubType): string
     {
         $params = [
             /*
@@ -246,7 +246,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
             | Blocos
             |---------------------------------------------------
             */
-            '/\{{ bloco_pest_model_use_factory }}/' => $this->applyReplaceBlocoFactory($entite),
+            '/\{{ bloco_pest_model_use_factory }}/' => $this->applyReplaceBlocoFactory($entity),
 
             /*
             |---------------------------------------------------
@@ -269,33 +269,19 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
         | if exists table
         |---------------------------------------------------
         */
-        $entitesTable = [];
-        if (isset($this->entites[$entite]['table'])) {
-            switch ($stubType) {
-                case 'models/model':
-                case 'models/model_factory':
-                case 'models/model_datatable':
-                case 'models/model_factory_datatable':
-                    $entitesTable = $this->modelTable($entite);
-                break;
-                case 'datatables':
-                    $entitesTable = $this->datatablesTable($entite);
-                break;
-                case 'factory':
-                    $entitesTable = $this->factoryTable($entite);
-                break;
-                case 'seeder':
-                    $entitesTable = $this->seederTable($entite);
-                break;
-                case 'migrate_seeder':
-                case 'migrate':
-                    $entitesTable = $this->migrateTable($entite);
-                break;
-            }
+        $entitysTable = [];
+        if (isset($this->entitys[$entity]['table'])) {
+            $entitysTable = match ($stubType) {
+                'models/model', 'models/model_factory', 'models/model_datatable', 'models/model_factory_datatable' => $this->modelTable($entity),
+                'datatables' => $this->datatablesTable($entity),
+                'factory' => $this->factoryTable($entity),
+                'seeder' => $this->seederTable($entity),
+                'migrate_seeder', 'migrate' => $this->migrateTable($entity),
+            };
         }
 
-        $replaceStub = $this->replace($entitesTable + $params, $stub);
-        return parent::applyReplace($replaceStub, $entite, $stubType);
+        $replaceStub = $this->replace($entitysTable + $params, $stub);
+        return parent::applyReplace($replaceStub, $entity, $stubType);
     }
 
 }

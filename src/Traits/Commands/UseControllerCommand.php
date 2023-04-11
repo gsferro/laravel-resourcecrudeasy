@@ -11,15 +11,15 @@ trait UseControllerCommand
     | Controller
     |---------------------------------------------------
     */
-    private function generateController(string $entite): void
+    private function generateController(string $entity): void
     {
-        if (!$this->entites[$entite]['useController']) {
+        if (!$this->entitys[$entity]['useController']) {
             return;
         }
 
-        $stub = $this->entites[ $entite ][ 'useControllerApi' ] ? 'controller_api' : 'controller';
-        $path = 'app\Http\Controllers\\' . $entite . 'Controller.php';
-        $this->generate($entite, $path, $stub, 'Controllers');
+        $stub = $this->entitys[ $entity ][ 'useControllerApi' ] ? 'controller_api' : 'controller';
+        $path = 'app\Http\Controllers\\' . $entity . 'Controller.php';
+        $this->generate($entity, $path, $stub, 'Controllers');
     }
 
     /*
@@ -27,14 +27,14 @@ trait UseControllerCommand
     | Gerar Views
     |---------------------------------------------------
     */
-    private function generateViews(string $entite)
+    private function generateViews(string $entity)
     {
-        $entites = $this->entites[ $entite ];
-        if (!$entites['useView']) {
+        $entitys = $this->entitys[ $entity ];
+        if (!$entitys['useView']) {
             return;
         }
 
-        $useDatatable   = $entites[ 'useDatatable' ];
+        $useDatatable   = $entitys[ 'useDatatable' ];
         $viewsDatatable = $useDatatable ? ['datatable_action', 'filter',] : [];
         $views = array_merge([
             'index',
@@ -45,7 +45,7 @@ trait UseControllerCommand
         ], $viewsDatatable);
 
         $usePermission = config('resource-crud-easy.use_permissions', true) ? 'permissions/' : '';
-        $pathBase      = 'resources\views\\' . $entites[ 'str' ]->snake();
+        $pathBase      = 'resources\views\\' . $entitys[ 'str' ]->snake();
         foreach ($views as $view) {
             $pathView = $pathBase . "\\$view.blade.php";
             $stub     = "{$usePermission}views/{$view}";
@@ -53,7 +53,7 @@ trait UseControllerCommand
                 $stub .= '_datatable';
             }
 
-            $this->generate($entite, $pathView, $stub, 'View '. ucfirst($view));
+            $this->generate($entity, $pathView, $stub, 'View '. ucfirst($view));
         }
 
         /*
@@ -61,22 +61,22 @@ trait UseControllerCommand
         | Escreve as views
         |---------------------------------------------------
         */
-        $this->generateViewFormTable($entite, $pathBase);
+        $this->generateViewFormTable($entity, $pathBase);
 
         if ($useDatatable) {
-            $this->generateViewFilterTable($entite);
+            $this->generateViewFilterTable($entity);
         }
     }
 
-    private function generateViewFormTable(string $entite, string $pathBase): void
+    private function generateViewFormTable(string $entity, string $pathBase): void
     {
-        $entites       = $this->entites[ $entite ];
-        $columnListing = $entites[ 'columnListing' ] ?? null;
+        $entitys       = $this->entitys[ $entity ];
+        $columnListing = $entitys[ 'columnListing' ] ?? null;
         if (empty($columnListing)) {
             return;
         }
 
-        $schema = $entites[ 'schema' ];
+        $schema = $entitys[ 'schema' ];
         $fields = "";
         foreach ($columnListing as $column) {
             // não exibe
@@ -93,15 +93,15 @@ trait UseControllerCommand
         $this->files->put("$pathBase\\form.blade.php", $fields);
     }
 
-    private function generateViewFilterTable(string $entite): void
+    private function generateViewFilterTable(string $entity): void
     {
-        $entites       = $this->entites[ $entite ];
-        $columnListing = $entites[ 'columnListing' ] ?? null;
+        $entitys       = $this->entitys[ $entity ];
+        $columnListing = $entitys[ 'columnListing' ] ?? null;
         if (empty($columnListing)) {
             return;
         }
 
-        $schema = $entites[ 'schema' ];
+        $schema = $entitys[ 'schema' ];
         $fields = "";
         foreach ($columnListing as $column) {
             // não exibe
@@ -117,7 +117,7 @@ trait UseControllerCommand
             $this->interpolate($fields, $this->getStubFieldString($column, empty($fields), '$form'));
         }
 
-        $path     = 'resources/views/' . $entites[ 'str' ]->snake() . '/filter.blade.php';
+        $path     = 'resources/views/' . $entitys[ 'str' ]->snake() . '/filter.blade.php';
         $base     = base_path($path);
         $contents = file_get_contents($base);
 
@@ -139,7 +139,7 @@ trait UseControllerCommand
         ];
 
         $usePermission = config('resource-crud-easy.use_permissions', true) ? 'permissions/' : '';
-        $stub = $this->files->get($this->getStubEntite("{$usePermission}views/field_form_string"));
+        $stub = $this->files->get($this->getStubEntity("{$usePermission}views/field_form_string"));
         return $this->replace($params, $stub);
     }
 
@@ -162,24 +162,24 @@ trait UseControllerCommand
     |   - Feature
     |
     */
-    private function generatePestUnitController(string $entite): void
+    private function generatePestUnitController(string $entity): void
     {
-        if (!$this->entites[$entite]['useController']) {
+        if (!$this->entitys[$entity]['useController']) {
             return;
         }
 
-        $path = 'tests\Unit\Controllers\\' . $entite . 'ControllerTest.php';
-        $this->generate($entite, $path, 'tests/unit/controller', 'PestTest Unit Controllers');
+        $path = 'tests\Unit\Controllers\\' . $entity . 'ControllerTest.php';
+        $this->generate($entity, $path, 'tests/unit/controller', 'PestTest Unit Controllers');
     }
 
-    private function generatePestFeatureController(string $entite): void
+    private function generatePestFeatureController(string $entity): void
     {
-        if (!$this->entites[$entite]['useController']) {
+        if (!$this->entitys[$entity]['useController']) {
             return;
         }
 
-        $path = 'tests\Feature\Controllers\\' . $entite . 'ControllerTest.php';
-        $this->generate($entite, $path, 'tests/feature/controller', 'PestTest Feature Controllers');
+        $path = 'tests\Feature\Controllers\\' . $entity . 'ControllerTest.php';
+        $this->generate($entity, $path, 'tests/feature/controller', 'PestTest Feature Controllers');
     }
 
     /*
@@ -187,24 +187,24 @@ trait UseControllerCommand
     | Publish Route
     |---------------------------------------------------
     */
-    private function publishRoute(string $entite): void
+    private function publishRoute(string $entity): void
     {
         $path         = 'routes/web.php';
         $base          = base_path($path);
         $routeContents = file_get_contents($base);
 
-        if (str_contains($routeContents, $this->entites[$entite]['str']->snake()->slug()->plural())) {
+        if (str_contains($routeContents, $this->entitys[$entity]['str']->snake()->slug()->plural())) {
             return ;
         }
 
         $stub = config('resource-crud-easy.use_permissions', true) ? 'permissions/' : '';
-        $stub .= $this->entites[ $entite ][ 'useControllerApi' ] ? 'api' : 'web';
-        $contents = $this->buildClassEntite($entite, $stub);
+        $stub .= $this->entitys[ $entity ][ 'useControllerApi' ] ? 'api' : 'web';
+        $contents = $this->buildClassEntity($entity, $stub);
 
         // increment use controller
         // TODO ta quebrando uma linha a mais, descobrir o pq
         $routeContents = $this->replace([
-            '/^<\?php\n/' => '<?php'. PHP_EOL.PHP_EOL.'use App\Http\Controllers\\'.$entite.'Controller;'
+            '/^<\?php\n/' => '<?php'. PHP_EOL.PHP_EOL.'use App\Http\Controllers\\'.$entity.'Controller;'
         ], $routeContents);
 
         // write group route
@@ -214,7 +214,7 @@ trait UseControllerCommand
         $this->put($path, $routeContents, 'Route Web Updated:');
     }
 
-    private function generatePermissions(string $entite): void
+    private function generatePermissions(string $entity): void
     {
         if (!config('resource-crud-easy.use_permissions', true)) {
             return;
@@ -222,15 +222,15 @@ trait UseControllerCommand
 
         $pathStubBase = 'permissions/';
         // SEEDER
-        $path         = 'database\seeders\\' . $entite . 'PermissionSeeder.php';
+        $path         = 'database\seeders\\' . $entity . 'PermissionSeeder.php';
         $stubSeeder   = $pathStubBase . 'seeder';
-        $this->generate($entite, $path, $stubSeeder, 'Permissions Seeder');
+        $this->generate($entity, $path, $stubSeeder, 'Permissions Seeder');
 
         // MIGRATE
-        $arquivo     = 'seeder_' . $this->entites[ $entite ][ 'str' ]->snake() . '_permissions.php';
+        $arquivo     = 'seeder_' . $this->entitys[ $entity ][ 'str' ]->snake() . '_permissions.php';
         $migrateName = now()->format('Y_m_d_his') . '_' . $arquivo;
         $path        = 'database\migrations\\' . $migrateName;
         $stubMigrate = $pathStubBase . 'migrate_seeder';
-        $this->generate($entite, $path, $stubMigrate, 'Permissions Migration');
+        $this->generate($entity, $path, $stubMigrate, 'Permissions Migration');
     }
 }

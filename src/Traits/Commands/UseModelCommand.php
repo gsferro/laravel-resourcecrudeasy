@@ -16,59 +16,59 @@ trait UseModelCommand
     | Police (?)
     |
     */
-    private function generateModel(string $entite): void
+    private function generateModel(string $entity): void
     {
-        $path = 'app\Models\\' . $entite . '.php';
+        $path = 'app\Models\\' . $entity . '.php';
         $stub = 'models/';
 
-        $stub .= $this->entites[ $entite ][ 'isAuxModel' ] ? 'auxiliary/' : '';
-        $stub .= $this->entites[ $entite ][ 'useFactory' ] ? 'model_factory' : 'model';
+        $stub .= $this->entitys[ $entity ][ 'isAuxModel' ] ? 'auxiliary/' : '';
+        $stub .= $this->entitys[ $entity ][ 'useFactory' ] ? 'model_factory' : 'model';
 
-        if ($this->entites[$entite]['useDatatable'] ) {
+        if ($this->entitys[$entity]['useDatatable'] ) {
             $stub .= '_datatable';
         }
         
-        $this->generate($entite, $path, $stub, 'Model');
+        $this->generate($entity, $path, $stub, 'Model');
     }
     
-    private function generateDatatable(string $entite): void
+    private function generateDatatable(string $entity): void
     {
-        if (!$this->entites[$entite]['useDatatable'] ) {
+        if (!$this->entitys[$entity]['useDatatable'] ) {
             return;
         }
         
-        $path = 'app\Datatables\\' . $entite . 'Datatable.php';
-        $this->generate($entite, $path, 'datatables', 'Model');
+        $path = 'app\Datatables\\' . $entity . 'Datatable.php';
+        $this->generate($entity, $path, 'datatables', 'Model');
     }
 
-    private function generateFactory(string $entite): void
+    private function generateFactory(string $entity): void
     {
-        if (!$this->entites[$entite]['useFactory'] ) {
+        if (!$this->entitys[$entity]['useFactory'] ) {
             return;
         }
 
-        $path = 'database\factories\\' . $entite . 'Factory.php';
-        $this->generate($entite, $path, 'factory', 'Factory');
+        $path = 'database\factories\\' . $entity . 'Factory.php';
+        $this->generate($entity, $path, 'factory', 'Factory');
     }
 
-    private function generateSeeder(string $entite): void
+    private function generateSeeder(string $entity): void
     {
-        if (!$this->entites[$entite]['useSeeder'] ) {
+        if (!$this->entitys[$entity]['useSeeder'] ) {
             return;
         }
 
-        $path = 'database\seeders\\' . $entite . 'Seeder.php';
-        $this->generate($entite, $path, 'seeder', 'Seeder');
+        $path = 'database\seeders\\' . $entity . 'Seeder.php';
+        $this->generate($entity, $path, 'seeder', 'Seeder');
     }
 
-    private function generateMigrate(string $entite): void
+    private function generateMigrate(string $entity): void
     {
-        if (!$this->entites[$entite]['useMigrate']) {
+        if (!$this->entitys[$entity]['useMigrate']) {
             return;
         }
 
         // nome da table
-        $arquivo = 'create_'.$this->entites[$entite]['str']->snake() . '_table.php';
+        $arquivo = 'create_'.$this->entitys[$entity]['str']->snake() . '_table.php';
         // sempre fazer override
         $override = true;
         // caso exista, pega o nome
@@ -97,9 +97,9 @@ trait UseModelCommand
         $path        = 'database\migrations\\' . $migrateName;
 
         // caso tenha criado o seeder, coloca para executar ao rodar a migrate
-        $stub  = $this->entites[ $entite ][ 'useSeeder' ] ? 'migrate_seeder' : 'migrate';
-        $stub .= $this->entites[ $entite ][ 'isAuxModel' ] ? '_aux' : '';
-        $this->generate($entite, $path, $stub, 'Migration');
+        $stub  = $this->entitys[ $entity ][ 'useSeeder' ] ? 'migrate_seeder' : 'migrate';
+        $stub .= $this->entitys[ $entity ][ 'isAuxModel' ] ? '_aux' : '';
+        $this->generate($entity, $path, $stub, 'Migration');
     }
 
     /*
@@ -110,29 +110,29 @@ trait UseModelCommand
     | Unit from Models
     |
     */
-    private function generatePestUnitModel(string $entite): void
+    private function generatePestUnitModel(string $entity): void
     {
-        $path = 'tests\Unit\\' . $entite . '\Model\\' . $entite . 'Test.php';
-        $this->generate($entite, $path, 'tests/unit/model', 'PestTest Unit Models');
+        $path = 'tests\Unit\\' . $entity . '\Model\\' . $entity . 'Test.php';
+        $this->generate($entity, $path, 'tests/unit/model', 'PestTest Unit Models');
     }
 
-    private function generatePestUnitFactory(string $entite): void
+    private function generatePestUnitFactory(string $entity): void
     {
-        if (!$this->entites[$entite]['useFactory'] ) {
+        if (!$this->entitys[$entity]['useFactory'] ) {
             return;
         }
 
-        $path = 'tests\Unit\\' . $entite . '\Factory\\' . $entite . 'FactoryTest.php';
-        $this->generate($entite, $path, 'tests/unit/factory', 'PestTest Unit Factory');
+        $path = 'tests\Unit\\' . $entity . '\Factory\\' . $entity . 'FactoryTest.php';
+        $this->generate($entity, $path, 'tests/unit/factory', 'PestTest Unit Factory');
     }
 
-    private function generatePestUnitSeeder(string $entite): void
+    private function generatePestUnitSeeder(string $entity): void
     {
-        if (!$this->entites[$entite]['useSeeder'] ) {
+        if (!$this->entitys[$entity]['useSeeder'] ) {
             return;
         }
 
-        $path = 'tests\Unit\\' . $entite . '\Seeder\\' . $entite . 'SeederTest.php';
-        $this->generate($entite, $path, 'tests/unit/seeder', 'PestTest Unit Seeder');
+        $path = 'tests\Unit\\' . $entity . '\Seeder\\' . $entity . 'SeederTest.php';
+        $this->generate($entity, $path, 'tests/unit/seeder', 'PestTest Unit Seeder');
     }
 }

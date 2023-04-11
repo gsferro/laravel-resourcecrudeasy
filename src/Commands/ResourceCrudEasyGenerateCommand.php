@@ -12,23 +12,18 @@ use Illuminate\Support\Str;
 
 abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
 {
-    protected string     $entite;
+    protected string     $entity;
     protected Stringable $str;
-    protected array      $entites = [];
+    protected array      $entitys = [];
 
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
-            ['entite', InputArgument::REQUIRED, 'The name of the Entite'],
+            ['entity', InputArgument::REQUIRED, 'The name of the Entity'],
         ];
     }
 
-    protected function messageWellcome(): void
+    protected function messageWelcome(): void
     {
         $this->br();
         $this->info("  _____                                                         _____                      _
@@ -49,12 +44,7 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
                                                                                                                         |___/ ");*/
     }
 
-    /**
-     * Get the stub file for the generator.
-     *
-     * @return string
-     */
-    protected function getStubEntite(string $type)
+    protected function getStubEntity(string $type): string
     {
         $relativePath = "/../stubs/{$type}.stub";
 
@@ -63,10 +53,10 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
             : __DIR__.$relativePath;
     }
 
-    protected function applyReplace($stub, string $entite, string $stubType)
+    protected function applyReplace($stub, string $entity, string $stubType): string
     {
-        $localStub = $this->applyReplaceAfter($stub, $entite);
-        $str       = $this->entites[ $entite ][ 'str' ];
+        $localStub = $this->applyReplaceAfter($stub, $entity);
+        $str       = $this->entitys[ $entity ][ 'str' ];
         $params    = [
             '/\{{ class }}/'        => $str,
             '/\{{ class_camel }}/'  => $str->camel(),
@@ -110,9 +100,9 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
         return $this->replace($params, $localStub);
     }
 
-    protected function applyReplaceAfter($stub, ?string $entite = null)
+    protected function applyReplaceAfter($stub, ?string $entity = null): string
     {
-        if (is_null($entite)) {
+        if (is_null($entity)) {
             return $stub;
         }
 
@@ -122,8 +112,8 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
             | Use Exists
             |---------------------------------------------------
             */
-            '/\{{ use_factory_exists }}/' => $this->useFactoryExists($entite),
-            '/\{{ use_seeder_exists }}/'  => $this->useSeederExists($entite),
+            '/\{{ use_factory_exists }}/' => $this->useFactoryExists($entity),
+            '/\{{ use_seeder_exists }}/'  => $this->useSeederExists($entity),
         ];
 
         return $this->replace($params, $stub);
@@ -134,28 +124,19 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
     | Reuso
     |---------------------------------------------------
     */
-    // TODO passar o type para o generate > buildClassEntite >
-    protected function generate(string $entite, string $path, string $stub, string $message)
+    protected function generate(string $entity, string $path, string $stub, string $message)
     {
-        $contents = $this->buildClassEntite($entite, $stub);
+        $contents = $this->buildClassEntity($entity, $stub);
 
         $this->makeDirectory($path);
         $this->put($path, $contents, $message);
     }
 
-    protected function buildClassEntite($name, string $stubType)
+    protected function buildClassEntity($name, string $stubType): string
     {
-        $stub = $this->files->get($this->getStubEntite($stubType));
-
+        $stub = $this->files->get($this->getStubEntity($stubType));
         return $this->applyReplace($stub, $name, $stubType);
-//        return $this->replaceClass($stub, $name);
     }
-
-    // OLD talvez não seja necessário fazer overread
-//    protected function replaceClass($stub, $name)
-//    {
-//        return $this->applyReplace($stub, $name);
-//    }
 
     protected function put($path, $contents, string $message)
     {
@@ -176,22 +157,22 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
         $this->line('');
     }
 
-    private function useFactoryExists(string $entite): string
+    private function useFactoryExists(string $entity): string
     {
-        $class = database_path('factories/' . $entite . 'Factory.php');
+        $class = database_path('factories/' . $entity . 'Factory.php');
         return $this->useExists($class, 'ifs/use_factory_exists');
     }
 
-    private function useSeederExists(string $entite): string
+    private function useSeederExists(string $entity): string
     {
-        $class = database_path('seeders/' . $entite . 'Seeder.php');
+        $class = database_path('seeders/' . $entity . 'Seeder.php');
         return $this->useExists($class, 'ifs/use_seeder_exists');
     }
 
     private function useExists(string $class, string $stubType): string
     {
         return $this->classExists($class)
-            ? $this->files->get($this->getStubEntite($stubType))
+            ? $this->files->get($this->getStubEntity($stubType))
             : '';
     }
 
@@ -200,7 +181,7 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
         return file_exists($class);
     }
 
-    protected function replace(array $params, string $stub)
+    protected function replace(array $params, string $stub): string
     {
         return preg_replace(
             array_keys($params),

@@ -9,10 +9,10 @@ trait UtilCommand
     | Blocos
     |---------------------------------------------------
     */
-    private function applyReplaceBlocoFactory(string $entite)
+    private function applyReplaceBlocoFactory(string $entity)
     {
-        return $this->entites[$entite]['useFactory']
-            ? $this->files->get($this->getStubEntite('ifs/pest_model_use_factory'))
+        return $this->entitys[$entity]['useFactory']
+            ? $this->files->get($this->getStubEntity('ifs/pest_model_use_factory'))
             : '';
     }
 
@@ -24,7 +24,7 @@ trait UtilCommand
      */
     private function getStubRelatios(string $type, array $params)
     {
-        $stub = $this->files->get($this->getStubEntite('relations/' . $type));
+        $stub = $this->files->get($this->getStubEntity('relations/' . $type));
         return $this->replace($params, $stub);
     }
 
@@ -39,17 +39,17 @@ trait UtilCommand
         $params = [
             '/\{{ primaryKey }}/' => $column
         ];
-        $stub = $this->files->get($this->getStubEntite('ifs/model_pk_string'));
+        $stub = $this->files->get($this->getStubEntity('ifs/model_pk_string'));
         return $this->replace($params, $stub);
     }
 
     /**
-     * @param string $entite
+     * @param string $entity
      * @param string|null $table
      * @param string|null $connection
      * @throws \Throwable
      */
-    private function verifyDatabase(string $entite, ?string $table = null, ?string $connection = null): void
+    private function verifyDatabase(string $entity, ?string $table = null, ?string $connection = null): void
     {
         /*
         |---------------------------------------------------
@@ -78,7 +78,7 @@ trait UtilCommand
             $schema        = dbSchemaEasy($table, $connection);
             $columnListing = $schema->getColumnListing();
 
-            $this->entites[ $entite ] += [
+            $this->entitys[ $entity ] += [
                 'table'         => $table,
                 'connection'    => $connection,
                 'schema'        => $schema,
@@ -103,11 +103,11 @@ trait UtilCommand
      * @param array $foreinsKey
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    private function applyRelationHasInTableForeingKey(string $entite, array $foreinsKey, string $type = 'has_many')
+    private function applyRelationHasInTableForeingKey(string $entity, array $foreinsKey, string $type = 'has_many')
     {
         // TODO criar qdo não houver?
-        $entites = $this->entites[$entite];
-        if (!$entites['schema']->hasModelWithTableName($foreinsKey['/\{{ table }}/'])) {
+        $entitys = $this->entitys[$entity];
+        if (!$entitys['schema']->hasModelWithTableName($foreinsKey['/\{{ table }}/'])) {
             return;
         }
 
@@ -119,7 +119,7 @@ trait UtilCommand
         $fileContents = file_get_contents($base);
 
         // caso já tenha sido configurado
-        $stringable = $entites['str'];
+        $stringable = $entitys['str'];
         if (str_contains($fileContents, $stringable->camel().'()')){
             return;
         }

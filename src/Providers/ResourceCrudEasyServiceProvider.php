@@ -146,7 +146,7 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
         */
         if ($this->app->runningInConsole()) {
             $this->commands([
-                ResourceCrudEasyCommand::class,
+//                ResourceCrudEasyCommand::class,
                 ResourceCrudEasyModelCommand::class,
             ]);
         }

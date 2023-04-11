@@ -2,6 +2,7 @@
 
 namespace Gsferro\ResourceCrudEasy\Traits;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 trait ResourceCrudEasyApi
 {
@@ -102,7 +104,7 @@ trait ResourceCrudEasyApi
      * @param $uuid
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show($uuid)
+    public function show(string|int $uuid)
     {
         /*
          * model->viewShow() : array
@@ -192,7 +194,7 @@ trait ResourceCrudEasyApi
             : redirect()->route($this->getRouteName('index'))->withInput()->withErrors($exception['error']);
     }
 
-    public function destroy($find)
+    public function destroy(string|int $find)
     {
         // TODO implemented
     }
@@ -207,46 +209,22 @@ trait ResourceCrudEasyApi
      */
     public function rules(): array
     {
-        return $this->model::$rules;
+        return (property_exists($this->model, 'rules'))
+            ? $this->model::$rules
+            : [];
     }
 
     /**
      * Metodo para usar genericamente com uuid ou primary key da model
      *
      * @param $find
-     * @return colection
+     * @return Collection
      */
-    private function modelFind($find)
+    private function modelFind(string|int $find): Collection
     {
-        return (method_exists($this->model, 'getUuidColumnName') != null)
+        return (method_exists($this->model, 'getUuidColumnName'))
             ? $this->model->findByUuid($find)
             : $this->model->findOrFail($find);
-    }
-
-    /**
-     * Verifica os dados que vieram do form com os dados do registro
-     * retorna os valores que foram alterados
-     *
-     * @param $find
-     * @param $request
-     * @return array
-     */
-    private function realUpdate($find, $request)
-    {
-        // encapsulamento do request com sanitize
-        $dados = $request->all();
-        $atual = $this->modelFind($find)->toArray();
-
-        $alterados = [];
-        // verifica qis foram os reais campos alterados
-        foreach ($dados as $campo => $dado) {
-            if (array_key_exists($campo, $atual) && $dado != $atual[ $campo ]) {
-                // caso o valor tenha sido apagado coloca null
-                $alterados[ $campo ] = (empty($dado) ? null : $dado);
-            }
-        }
-
-        return sanitize($alterados);
     }
 
     private function getRouteName(string $method): string

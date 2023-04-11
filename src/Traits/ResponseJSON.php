@@ -2,6 +2,8 @@
 
 namespace Gsferro\ResourceCrudEasy\Traits;
 
+use Illuminate\Http\JsonResponse;
+
 /**
  * Trait ResponseJSON
  *
@@ -11,18 +13,17 @@ namespace Gsferro\ResourceCrudEasy\Traits;
  */
 trait ResponseJSON
 {
-    protected $code    = 404;
-    protected $msgTrue = "Realizado com sucesso";
-    protected $msgFalse  = "Falhou ao realizar";
-    protected $result    = [];
+    protected int    $code     = 404;
+    protected string $msgTrue  = "Realizado com sucesso";
+    protected string $msgFalse = "Falhou ao realizar";
+    protected array  $result   = [];
 
-    // herdando de ResponseJSON caso queira mudar o code response
-    protected function codeError($code)
+    protected function codeError(int $code)
     {
         $this->code = $code;
     }
-    // herdando de ResponseJSON caso queira mudar o code response
-    protected function addResult($result)
+
+    protected function addResult(array $result)
     {
         $this->result = $result;
     }
@@ -30,12 +31,12 @@ trait ResponseJSON
     /**
      * Retorna um array em formato json com status code
      *
-     * @param $error
+     * @param array $error
      * @param array $data
-     * @param int $code
-     * @return \Illuminate\Http\JsonResponse
+     * @param int|null $code
+     * @return JsonResponse
      */
-    protected function error($error = [], array $data = [], $code = null)
+    protected function error(array $error = [], array $data = [], int $code = null): JsonResponse
     {
         // caso queira passar direto ou pegar default
         $code = $code ?? $this->code;
@@ -56,7 +57,7 @@ trait ResponseJSON
         return response()->json($res, $code);
     }
 
-    protected function validateFails($error = null, $data = [])
+    protected function validateFails($error = null, $data = []): JsonResponse
     {
         return $this->error($error, $data, 422);
     }
@@ -65,10 +66,11 @@ trait ResponseJSON
      * Retorna um array com os dados que é convertido a json como sucesso
      *
      * @param $result
-     * @param string $message
-     * @return array json
+     * @param string|null $message
+     * @param int $code
+     * @return JsonResponse
      */
-    protected function success($result, string $message = null, int $code = 200)
+    protected function success($result, string $message = null, int $code = 200): JsonResponse
     {
         $res = [
             'success' => true,
@@ -82,16 +84,16 @@ trait ResponseJSON
 
         return response()->json($res, $code);
     }
-    ///////////////////////////////////////////////// resposta
+
     /**
      * verifica a operação e devolve a resposta
      *
      * @param $operation
      * @param null $msgTrue
      * @param null $msgFalse
-     * @return array|\Illuminate\Http\JsonResponse
+     * @return array|JsonResponse
      */
-    protected function verify($operation, $msgTrue = null, $msgFalse = null)
+    protected function verify($operation, $msgTrue = null, $msgFalse = null): JsonResponse|array
     {
         return $operation
             ? $this->success($this->result, $msgTrue)
