@@ -95,7 +95,7 @@ trait ResourceCrudEasyApi
 
         return $this->isSPA
             ? $this->error($exception, $attributes, $exception['code'])
-            : redirect()->route($this->getRouteName('index'))->withInput()->withErrors($exception['error']);
+            : redirect()->back()->withInput()->withErrors($exception['error']);
     }
 
     /**
@@ -191,7 +191,7 @@ trait ResourceCrudEasyApi
 
         return $this->isSPA
             ? $this->error($exception, $attributes, $exception['code'])
-            : redirect()->route($this->getRouteName('index'))->withInput()->withErrors($exception['error']);
+            : redirect()->back()->withInput()->withErrors($exception['error']);
     }
 
     public function destroy(string|int $find)
