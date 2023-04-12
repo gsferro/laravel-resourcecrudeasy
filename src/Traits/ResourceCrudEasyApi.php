@@ -218,9 +218,9 @@ trait ResourceCrudEasyApi
      * Metodo para usar genericamente com uuid ou primary key da model
      *
      * @param $find
-     * @return Collection
+     * @return Model
      */
-    private function modelFind(string|int $find): Collection
+    private function modelFind(string|int $find): Model
     {
         return (method_exists($this->model, 'getUuidColumnName'))
             ? $this->model->findByUuid($find)
