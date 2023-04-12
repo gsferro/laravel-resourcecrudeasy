@@ -36,12 +36,12 @@ trait WithExistsTableCommand
             // fillable
             $this->interpolate($fillable, "{$str}, ");
 
-            // regras para colocar no rules['store']
+            // verifica se esta setando como null no banco
             $notNull = $schema->getDoctrineColumn($column)[ "notnull" ];
+            // regras para colocar no rules['store']
             $this->replaceRules($columnType, $rulesStore, $str, $notNull);
-
             // regras para colocar no rules['update']
-            $this->replaceRules($columnType, $rulesUpdate, $str, false);
+            $this->replaceRules($columnType, $rulesUpdate, $str, $notNull);
 
             // casts
             $this->setCasts($columnType, $casts, $str);

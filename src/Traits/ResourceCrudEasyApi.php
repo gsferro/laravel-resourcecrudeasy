@@ -53,6 +53,9 @@ trait ResourceCrudEasyApi
                 return $model;
             });
 
+            // TODO melhorar feedback
+            session()->flash('success');
+
             return $this->isSPA
                 ? $this->success($transaction, null, 201)
                 : redirect()->to($route, 201); // , $this->redirectStore == 'edit' ? ['resource_crud' => $result->uuid] : []
@@ -156,6 +159,9 @@ trait ResourceCrudEasyApi
 
                 return $model;
             });
+
+            // TODO melhorar feedback
+            session()->flash('success');
 
             return $this->isSPA
                 ? $this->success($transaction)

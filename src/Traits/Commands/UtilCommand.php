@@ -154,9 +154,8 @@ trait UtilCommand
         // proteção contra type
         $rule = $this->replaceTypeColumnRules($columnType);
 
-        if ($notNull) {
-            $rule .= "|required";
-        }
+        $rule .= $notNull ? "|required" : "|nullable";
+
         $this->interpolate($rules, "{$str} => '{$rule}', ");
     }
 
