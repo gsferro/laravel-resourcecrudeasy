@@ -1,0 +1,10 @@
+import base from 'src/configs/base'
+
+export default {
+  listEndpoint: base.baseUrl + '{{ table_name }}/',
+  createEndpoint: base.baseUrl + '{{ table_name }}/',
+  updateEndpoint: base.baseUrl + '{{ table_name }}/',
+  deleteEndpoint: base.baseUrl + '{{ table_name }}/',
+  getProviderEndPoint: base.baseUrl + '{{ table_name }}/',
+  exportEndpoint: base.baseUrl + '{{ table_name }}/export'
+}

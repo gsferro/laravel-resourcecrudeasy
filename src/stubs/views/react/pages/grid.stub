@@ -1,0 +1,11 @@
+<Grid item sm={4} xs={12}>
+    <FormControl fullWidth>
+        <TextField
+            value={{{ column_camel }}}
+            type='{{ column_type }}'
+            label='{{ column_title }}'
+            onChange={e => set{{ column_camel_ucfirst }}(e.target.value)}
+            placeholder='{{ column_title }}'
+        />
+    </FormControl>
+</Grid>

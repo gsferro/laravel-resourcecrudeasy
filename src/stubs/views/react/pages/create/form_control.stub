@@ -1,0 +1,17 @@
+<FormControl fullWidth sx={{ mb: 6 }}>
+  <Controller
+    name='{{ column }}'
+    control={control}
+    {{ column_is_required }}
+    render={({ field: { value, onChange } }) => (
+      <TextField
+        value={value}
+        label='{{ column_title }}'
+        onChange={onChange}
+        placeholder='{{ column_title }}'
+        error={Boolean(errors.{{ column }})}
+      />
+    )}
+  />
+  {errors.{{ column }} && <FormHelperText sx={{ color: 'error.main' }}>{errors.{{ column }}.message}</FormHelperText>}
+</FormControl>

@@ -1,0 +1,88 @@
+// ** Redux Imports
+import { Dispatch } from 'redux'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+
+
+// ** Config
+import providersConfig from 'src/configs/{{ class_folder }}/providers'
+import authConfig from 'src/configs/auth'
+
+// ** Axios Imports
+import axios from 'axios'
+
+// ** Third Party Components
+import toast from 'react-hot-toast'
+
+interface DataParams {
+  page: number
+  pageSize: number
+  code: string
+  name: string
+  status: string
+  orderBy: string | any
+  sortedBy: string | any
+}
+
+interface Redux {
+  getState: any
+  dispatch: Dispatch<any>
+}
+
+// ** Fetch PROVIDERS
+export const fetchData = createAsyncThunk('appProviders/fetchData', async (params: DataParams) => {
+  console.log(providersConfig.listEndpoint)
+  const response = await axios.get(providersConfig.listEndpoint,{
+    headers: {
+      Authorization: window.localStorage.getItem(authConfig.storageTokenKeyName)!
+    },
+    params
+  })
+
+  return response.data
+})
+
+// ** Delete PROVIDERS
+export const deleteProvider = createAsyncThunk(
+  'appProviders/deleteProvider',
+  async (uuid: string | string, { getState, dispatch }: Redux) => {
+    await axios.delete(providersConfig.deleteEndpoint + uuid,{
+      headers: {
+        Authorization: window.localStorage.getItem(authConfig.storageTokenKeyName)!
+      }
+    })
+    .then(async () => {
+      toast.success('Fornecedor deletado com sucesso!')
+      dispatch(fetchData(getState().provider.params))
+    })
+    .catch(() => {
+      toast.error("Não foi possivel deletar o {{ class_title }}.")
+    })
+  }
+)
+
+export const appProvidersSlice = createSlice({
+  name: 'appProviders',
+  initialState: {
+    data: [],
+    total: 1,
+    loading: false,
+    params: {},
+    allData: []
+  },
+  reducers: {},
+  extraReducers: builder => {
+    builder.addCase(fetchData.fulfilled, (state, action) => {
+      state.data = action?.payload?.data ?? []
+      state.total = action?.payload?.meta?.total ?? 0
+      state.params = action?.payload?.params
+      state.allData = action?.payload?.data ?? []
+      state.loading = false
+    })
+
+    builder.addCase(fetchData.pending, (state) => {
+      state.loading = true
+    })
+  }
+})
+
+export default appProvidersSlice.reducer

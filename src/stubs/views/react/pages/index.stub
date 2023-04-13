@@ -1,0 +1,317 @@
+// ** React Imports
+import { useState, useEffect, MouseEvent, useCallback } from 'react'
+
+// ** Next Import
+import Link from 'next/link'
+
+import { useRouter } from 'next/router'
+
+// ** MUI Imports
+import Card from '@mui/material/Card'
+import Menu from '@mui/material/Menu'
+import Grid from '@mui/material/Grid'
+import { DataGrid, ptBR, GridSortModel } from '@mui/x-data-grid'
+import MenuItem from '@mui/material/MenuItem'
+import { styled } from '@mui/material/styles'
+import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
+import CardHeader from '@mui/material/CardHeader'
+import CardContent from '@mui/material/CardContent'
+import Collapse from '@mui/material/Collapse'
+
+// ** Icons Imports
+import DotsVertical from 'mdi-material-ui/DotsVertical'
+import PencilOutline from 'mdi-material-ui/PencilOutline'
+import DeleteOutline from 'mdi-material-ui/DeleteOutline'
+import ChevronUp from 'mdi-material-ui/ChevronUp'
+import ChevronDown from 'mdi-material-ui/ChevronDown'
+
+// ** Store Imports
+import { useDispatch, useSelector } from 'react-redux'
+
+// ** Actions Imports
+import { fetchData, delete{{ table_name_camel_ucfirst }} } from 'src/store/{{ modulo }}/{{ table_name }}'
+
+// ** Types Imports
+import { RootState, AppDispatch } from 'src/store'
+import { {{ table_name_camel_ucfirst }}Types } from 'src/types/{{ modulo }}/{{ table_name }}/{{ table_name_camel_ucfirst }}Types'
+
+// ** Custom Components Imports
+import TableHeader from 'src/views/pages/TableHeader'
+
+import axios from 'axios'
+import {{ table_name_camel }}Config from 'src/configs/{{ modulo }}/{{ table_name }}'
+import authConfig from 'src/configs/auth'
+import { Select, FormControl, InputLabel, TextField, Box, Button } from '@mui/material'
+import DialogWait from 'src/components/DialogWait'
+import toast from 'react-hot-toast'
+
+interface CellType {
+  row: {{ table_name_camel_ucfirst }}Types
+}
+
+// ** Styled component for the link inside menu
+const MenuItemLink = styled('a')(({ theme }) => ({
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  textDecoration: 'none',
+  padding: theme.spacing(1.5, 4),
+  color: theme.palette.text.primary
+}))
+
+const RowOptions = ({ uuid }: { uuid: string | string }) => {
+  // ** Hooks
+  const dispatch = useDispatch<AppDispatch>()
+
+  // ** State
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+
+  const rowOptionsOpen = Boolean(anchorEl)
+
+  const handleRowOptionsClick = (event: MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+  const handleRowOptionsClose = () => {
+    setAnchorEl(null)
+  }
+
+  const handleDelete = () => {
+    dispatch(delete{{ table_name_camel_ucfirst }}(uuid))
+    handleRowOptionsClose()
+  }
+
+  return (
+    <>
+      <IconButton size='small' onClick={handleRowOptionsClick}>
+        <DotsVertical />
+      </IconButton>
+      <Menu
+        keepMounted
+        anchorEl={anchorEl}
+        open={rowOptionsOpen}
+        onClose={handleRowOptionsClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        PaperProps={{ style: { minWidth: '8rem' } }}
+      >
+        {/* <MenuItem sx={{ p: 0 }}>
+          <Link href={`/users/view/${uuid}`} passHref>
+            <MenuItemLink>
+              <EyeOutline fontSize='small' sx={{ mr: 2 }} />
+              Visualizar
+            </MenuItemLink>
+          </Link>
+        </MenuItem> */}
+        <MenuItem sx={{ p: 0 }}>
+          <Link href={`/{{ modulo }}/{{ table_name }}/edit/${uuid}`} passHref>
+            <MenuItemLink>
+              <PencilOutline fontSize='small' sx={{ mr: 2 }} />
+              Editar
+            </MenuItemLink>
+          </Link>
+        </MenuItem>
+        <MenuItem onClick={handleDelete}>
+          <DeleteOutline fontSize='small' sx={{ mr: 2 }} />
+          Deletar
+        </MenuItem>
+      </Menu>
+    </>
+  )
+}
+
+const columns = [
+  {
+    flex: 0.1,
+    disableColumnMenu: true,
+    sortable: false,
+    minWidth: 90,
+    field: 'actions',
+    headerName: 'Ações',
+    renderCell: ({ row }: CellType) => <RowOptions uuid={row.uuid} />
+  },
+  {{ block_column }}
+]
+
+const {{ table_name_camel_ucfirst }}List = () => {
+  // ** State
+  const [value, setValue] = useState<string>('')
+  const [pageSize, setPageSize] = useState<number>(10)
+  const [page, setPage] = useState<number>(1)
+  {{ columns_const }}
+  const [openDialog, setOpenDialog] = useState<boolean>(false)
+  const [titleDialog, setTitleDialog] = useState<string>('')
+  const [descriptionDialog, setDescriptionDialog] = useState<string>('')
+
+  const [orderBy, setOrderBy] = useState<any>('')
+  const [sortedBy, setSortedBy] = useState<any>('')
+
+  // ** Hooks
+  const dispatch = useDispatch<AppDispatch>()
+  const store = useSelector((state: RootState) => state.{{ table_singular }})
+  const router = useRouter()
+
+  useEffect(() => {
+    dispatch(
+      fetchData({
+        page,
+        pageSize,
+        {{ columns_fetch_data }}
+        orderBy,
+        sortedBy
+      })
+    )
+  }, [dispatch, page, pageSize, orderBy, sortedBy])
+
+  const handleExport = async () => {
+    handleDialogOpen('Exportando dados', 'Aguarde enquanto processamos os dados da exportação')
+
+    try {
+      const res = await axios.get({{ table_name_camel }}Config.exportEndpoint, {
+        headers: {
+          Authorization: window.localStorage.getItem(authConfig.storageTokenKeyName)!
+        },
+        responseType: 'blob'
+      })
+
+      if (res.status == 200) {
+        const url = window.URL.createObjectURL(new Blob([res.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', 'Prime {{ modulo }}.xlsx')
+        link.click()
+      } else if (res.status == 204) {
+        toast.error('Não há dados a serem exportados com os perimetros informados.')
+      } else {
+        toast.error('Erro não informado, entre em contato com o administrador do sistema.')
+      }
+
+      setOpenDialog(false)
+    } catch (err) {
+      toast.error('Erro não informado, entre em contato com o administrador do sistema.')
+      setOpenDialog(false)
+    }
+  }
+
+  const handleDialogOpen = (title: string, description: string) => {
+    setTitleDialog(title)
+    setDescriptionDialog(description)
+    setOpenDialog(true)
+  }
+
+  const handleClearFilter = () => {
+    {{ columns_clear_filter }}
+  }
+
+  const handleFilterBtn = () => {
+    setOrderBy('')
+    setSortedBy('')
+
+    dispatch(
+      fetchData({
+        page,
+        pageSize,
+        {{ columns_fetch_data }}
+        orderBy,
+        sortedBy
+      })
+    )
+  }
+
+  const handleFilter = useCallback((val: string) => {
+    setValue(val)
+  }, [])
+
+  const handleCreateProvider = () => {
+    router.push('/{{ modulo }}/{{ table_name }}/create')
+  }
+
+  const handleSortModelChange = (sortModel: GridSortModel) => {
+    if (sortModel.length > 0) {
+      setOrderBy(sortModel[0].field)
+      setSortedBy(sortModel[0].sort)
+    } else {
+      setOrderBy('')
+      setSortedBy('')
+    }
+  }
+
+  const [collapsed, setCollapsed] = useState<boolean>(false)
+
+  return (
+    <>
+      <Grid container spacing={6}>
+        <Grid item xs={12}>
+          <Card>
+            <CardHeader
+              title='Filtros'
+              sx={{ pb: 4, '& .MuiCardHeader-title': { letterSpacing: '.15px' } }}
+              action={
+                <IconButton
+                  size='small'
+                  aria-label='collapse'
+                  sx={{ color: 'text.secondary' }}
+                  onClick={() => setCollapsed(!collapsed)}
+                >
+                  {!collapsed ? <ChevronDown fontSize='small' /> : <ChevronUp fontSize='small' />}
+                </IconButton>
+              }
+            />
+            <Collapse in={collapsed}>
+              <CardContent>
+                <Grid container spacing={6}>
+                  {{ columns_grid }}
+                </Grid>
+
+                <Box sx={{ marginTop: 5, display: 'flex', alignItems: 'center' }}>
+                  <Button size='large' type='submit' variant='contained' sx={{ mr: 3 }} onClick={handleFilterBtn}>
+                    Pesquisar
+                  </Button>
+                  <Button size='large' variant='outlined' color='secondary' onClick={handleClearFilter}>
+                    Limpar Filtros
+                  </Button>
+                </Box>
+              </CardContent>
+            </Collapse>
+          </Card>
+        </Grid>
+        <Grid item xs={12}>
+          <Card>
+            <TableHeader
+              value={value}
+              handleExport={handleExport}
+              handleFilter={handleFilter}
+              create={handleCreateProvider}
+            />
+            <DataGrid
+              autoHeight
+              pagination
+              rows={store.data}
+              rowCount={store.total}
+              columns={columns}
+              sortingMode='server'
+              onSortModelChange={handleSortModelChange}
+              pageSize={pageSize}
+              paginationMode='server'
+              loading={store.loading}
+              rowsPerPageOptions={[10, 25, 50]}
+              sx={{ '& .MuiDataGrid-columnHeaders': { borderRadius: 0 } }}
+              onPageSizeChange={(newPageSize: number) => setPageSize(newPageSize)}
+              onPageChange={(newPage: number) => setPage(newPage + 1)}
+              localeText={ptBR.components.MuiDataGrid.defaultProps.localeText}
+            />
+          </Card>
+        </Grid>
+      </Grid>
+      <DialogWait open={openDialog} title={titleDialog} description={descriptionDialog} />
+    </>
+  )
+}
+
+export default {{ table_name_camel_ucfirst }}List

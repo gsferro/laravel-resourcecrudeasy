@@ -1,0 +1,4 @@
+// ** Types
+export type ProviderTypes = {
+ {{ provider_types_json }}
+}
