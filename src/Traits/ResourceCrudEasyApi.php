@@ -177,7 +177,7 @@ trait ResourceCrudEasyApi
         }
         catch (Throwable $throwable) {
             $exception = [
-                "error"   => $throwable->errors(),
+                "error"   => $throwable->getMessage(),
                 "code"    => 500,
                 "type"    => "Throwable",
                 "message" => config('app.debug', true)
