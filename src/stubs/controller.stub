@@ -34,7 +34,7 @@ class {{ class }}Controller extends Controller
 
         /*
         |---------------------------------------------------
-        | Exibe o breandcumb
+        | Exibe o breadcrumb
         |---------------------------------------------------
         |
         | Default true
