@@ -4,6 +4,8 @@ namespace Gsferro\ResourceCrudEasy\Traits;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -33,10 +35,10 @@ trait ResourceCrudEasyApi
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return array|\Illuminate\Http\JsonResponse
+     * @param Request $request
+     * @return array|JsonResponse|RedirectResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse|array|RedirectResponse
     {
         $route      = $this->getRouteRedirectStore();
         $attributes = $request->all();
@@ -77,7 +79,7 @@ trait ResourceCrudEasyApi
             }*/
         catch (Throwable $throwable) {
             $exception = [
-                "error"   => $throwable->errors(),
+                "error"   => $throwable->getMessage(),
                 "code"    => 500,
                 "type"    => "Throwable",
                 "message" => config('app.debug', true)
@@ -139,10 +141,10 @@ trait ResourceCrudEasyApi
      * Update a newly update resource in storage.
      *
      * @param $find
-     * @param \Illuminate\Http\Request $request
-     * @return array|\Illuminate\Http\JsonResponse
+     * @param Request $request
+     * @return array|JsonResponse|RedirectResponse
      */
-    public function update(Request $request, $find)
+    public function update(Request $request, $find): JsonResponse|array|RedirectResponse
     {
         $route      = $this->getRouteRedirectUpdate();
         $attributes = $request->all();
@@ -177,7 +179,7 @@ trait ResourceCrudEasyApi
         }
         catch (Throwable $throwable) {
             $exception = [
-                "error"   => $throwable->errors(),
+                "error"   => $throwable->getMessage(),
                 "code"    => 500,
                 "type"    => "Throwable",
                 "message" => config('app.debug', true)
