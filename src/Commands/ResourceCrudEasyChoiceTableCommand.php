@@ -238,16 +238,33 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
         }
         ///////////////////////////////////////////////////////////////// exec
         $arches = [
+            //pages
             'index.tsx'        => 'index',
             'create/index.tsx' => 'create/index',
-            'edit/[uuid].tsx'   => 'edit/[uuid]',
+            'edit/[uuid].tsx'  => 'edit/[uuid]',
+
+            // store
+            'store' => 'store/index',
+
+            // types
+            'types' => 'types/index',
         ];
 
         foreach ($arches as $arch => $stubPage) {
-            // criando pasta
-            $path = $this->makeDirectory($this->pathBase . "/pages/" . $modulo . "/" . $table . "/" . $arch);
+
             // change values
             $tableOf = Str::of($table);
+
+            // criando pasta
+            $path = match($arch) {
+                'index.tsx', 'create/index.tsx', 'edit/[uuid].tsx'  =>
+                $this->makeDirectory($this->getpathModulo('pages', $modulo, $table) . "/" . $arch),
+                'store' =>
+                $this->makeDirectory($this->getpathModulo('store', $modulo, $table) . "/index.tsx"),
+                'types' =>
+                $this->makeDirectory($this->getpathModulo('types', $modulo, $table) . "/". $tableOf->camel()->ucfirst() ."Types.ts"),
+            };
+//            $path = $this->makeDirectory($this->pathBase . "/pages/" . $modulo . "/" . $table . "/" . $arch);
 
             $params = [
                 // base
@@ -282,5 +299,10 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
             // cria o arquivo
             $filesystem->put("{$path}", "{$contents}");
         }
+    }
+
+    private function getpathModulo(string $page, string $modulo, string $table): string
+    {
+        return "{$this->pathBase}/{$page}/{$modulo}/{$table}";
     }
 }
