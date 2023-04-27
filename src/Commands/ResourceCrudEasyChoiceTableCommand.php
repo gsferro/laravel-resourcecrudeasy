@@ -289,7 +289,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
                 '/\{{ columns_clear_filter }}/' => trim($indexClearFilter),
 
                 // create/index
-                '/\{{ columns_json }}/'                => Str::of(json_encode($getColumnType))->replace('"', ''),
+                '/\{{ columns_json }}/'                => Str::of(json_encode($getColumnType))->replace('"', '')->replace(',', '\n'),
                 '/\{{ columns_default_values_json }}/' => json_encode($columnsDefaultValues),
                 '/\{{ columns_required }}/'            => trim($columnsRequired),
                 '/\{{ columns_form_control }}/'        => trim($createIndexFormControl),
