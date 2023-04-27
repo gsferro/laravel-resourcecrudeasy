@@ -4,7 +4,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 
 // ** Config
-import providersConfig from 'src/configs/{{ class_folder }}/providers'
+import {{ table_name_camel }}Config from 'src/configs/{{ modulo }}/{{ table_name }}'
 import authConfig from 'src/configs/auth'
 
 // ** Axios Imports
@@ -16,9 +16,7 @@ import toast from 'react-hot-toast'
 interface DataParams {
   page: number
   pageSize: number
-  code: string
-  name: string
-  status: string
+  {{ columns_fetch_data }}
   orderBy: string | any
   sortedBy: string | any
 }
@@ -28,8 +26,8 @@ interface Redux {
   dispatch: Dispatch<any>
 }
 
-// ** Fetch PROVIDERS
-export const fetchData = createAsyncThunk('appProviders/fetchData', async (params: DataParams) => {
+// ** Fetch
+export const fetchData = createAsyncThunk('app{{ table_name_camel_ucfirst }}/fetchData', async (params: DataParams) => {
   console.log(providersConfig.listEndpoint)
   const response = await axios.get(providersConfig.listEndpoint,{
     headers: {
@@ -42,8 +40,8 @@ export const fetchData = createAsyncThunk('appProviders/fetchData', async (param
 })
 
 // ** Delete PROVIDERS
-export const deleteProvider = createAsyncThunk(
-  'appProviders/deleteProvider',
+export const delete{{ table_name_camel_ucfirst }} = createAsyncThunk(
+  'app{{ table_name_camel_ucfirst }}/delete{{ table_name_camel_ucfirst }}',
   async (uuid: string | string, { getState, dispatch }: Redux) => {
     await axios.delete(providersConfig.deleteEndpoint + uuid,{
       headers: {
@@ -51,17 +49,17 @@ export const deleteProvider = createAsyncThunk(
       }
     })
     .then(async () => {
-      toast.success('Fornecedor deletado com sucesso!')
-      dispatch(fetchData(getState().provider.params))
+      toast.success('{{ class_title }} deletado com sucesso!')
+      dispatch(fetchData(getState().{{ table_name_camel }}.params))
     })
     .catch(() => {
-      toast.error("Não foi possivel deletar o {{ class_title }}.")
+      toast.error("Não foi possível deletar o {{ class_title }}.")
     })
   }
 )
 
-export const appProvidersSlice = createSlice({
-  name: 'appProviders',
+export const app{{ table_name_camel_ucfirst }}Slice = createSlice({
+  name: 'app{{ table_name_camel_ucfirst }}',
   initialState: {
     data: [],
     total: 1,
@@ -85,4 +83,4 @@ export const appProvidersSlice = createSlice({
   }
 })
 
-export default appProvidersSlice.reducer
+export default app{{ table_name_camel_ucfirst }}Slice.reducer
