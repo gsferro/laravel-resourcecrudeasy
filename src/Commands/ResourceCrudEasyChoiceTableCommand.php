@@ -28,7 +28,11 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
      *
      * @var string
      */
-    protected $signature = 'gsferro:resource-choice-table {--connection=} ';
+    protected $signature = 'gsferro:resource-choice-table 
+    {--connection=} 
+    {--table=}
+    {--modulo=}
+    ';
 
     /**
      * The console command description.
@@ -65,7 +69,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
         try {
             $getTables = $this->getTables();
             $choices   = array_merge(['Todos'], $getTables);
-            $modulo    = $this->ask('Qual o nome do Modulo?');
+            $modulo    = $this->option('modulo') ?: $this->ask('Qual o nome do Modulo?');
             $tables    = $this->choice('Qual tabela voce quer executar?', $choices, null, true, true);
 
             // caso seja todos, pega as tabelas
@@ -142,7 +146,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
           '/\{{ table_name }}/' => $table
         ];
         // busca o stub
-        $stub = $this->files->get($this->getStubEntite('views/react/configs/config'));
+        $stub = $this->files->get($this->getStubEntity('views/react/configs/config'));
         // aplica as alterações
         $contents = $this->replace($params, $stub);
         // cria o arquivo
@@ -203,11 +207,11 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
             ];
             
             // index
-            $columns        .= $this->replace($paramsBase, $filesystem->get($this->getStubEntite('views/react/pages/column')));
-            $indexGrid      .= $this->replace($paramsBase, $filesystem->get($this->getStubEntite('views/react/pages/grid')));
-            $indexConst     .= $this->replace($paramsBase, $filesystem->get($this->getStubEntite('views/react/pages/const')));
-            $indexFetchData .= $this->replace($paramsBase, $filesystem->get($this->getStubEntite('views/react/pages/fetch_data')));
-            $indexClearFilter .= $this->replace($paramsBase, $filesystem->get($this->getStubEntite('views/react/pages/clear_filter')));
+            $columns        .= $this->replace($paramsBase, $filesystem->get($this->getStubEntity('views/react/pages/column')));
+            $indexGrid      .= $this->replace($paramsBase, $filesystem->get($this->getStubEntity('views/react/pages/grid')));
+            $indexConst     .= $this->replace($paramsBase, $filesystem->get($this->getStubEntity('views/react/pages/const')));
+            $indexFetchData .= $this->replace($paramsBase, $filesystem->get($this->getStubEntity('views/react/pages/fetch_data')));
+            $indexClearFilter .= $this->replace($paramsBase, $filesystem->get($this->getStubEntity('views/react/pages/clear_filter')));
             
             /*
             |---------------------------------------------------
@@ -219,7 +223,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
                 continue;
             }
             
-            $createIndexFormControl .= $this->replace($paramsBase, $filesystem->get($this->getStubEntite('views/react/pages/create/form_control')));
+            $createIndexFormControl .= $this->replace($paramsBase, $filesystem->get($this->getStubEntity('views/react/pages/create/form_control')));
 
             // create/index
             $columnsDefaultValues[$column] = '';
@@ -234,7 +238,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
             | edit/[uuid]
             |---------------------------------------------------
             */
-            $setValue .= $this->replace($paramsBase, $filesystem->get($this->getStubEntite('views/react/pages/edit/set_value')));
+            $setValue .= $this->replace($paramsBase, $filesystem->get($this->getStubEntity('views/react/pages/edit/set_value')));
         }
         ///////////////////////////////////////////////////////////////// exec
         $arches = [
@@ -257,12 +261,14 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
 
             // criando pasta
             $path = match($arch) {
-                'index.tsx', 'create/index.tsx', 'edit/[uuid].tsx'  =>
-                $this->makeDirectory($this->getpathModulo('pages', $modulo, $table) . "/" . $arch),
-                'store' =>
-                $this->makeDirectory($this->getpathModulo('store', $modulo, $table) . "/index.tsx"),
-                'types' =>
-                $this->makeDirectory($this->getpathModulo('types', $modulo, $table) . "/". $tableOf->camel()->ucfirst() ."Types.ts"),
+                'index.tsx',
+                'create/index.tsx',
+                'edit/[uuid].tsx'
+                    => $this->makeDirectory($this->getpathModulo('pages', $modulo, $table) . "/" . $arch),
+                'store'
+                    => $this->makeDirectory($this->getpathModulo('store', $modulo, $table) . "/index.tsx"),
+                'types'
+                    => $this->makeDirectory($this->getpathModulo('types', $modulo, $table) . "/". $tableOf->camel()->ucfirst() ."Types.ts"),
             };
 //            $path = $this->makeDirectory($this->pathBase . "/pages/" . $modulo . "/" . $table . "/" . $arch);
 
@@ -293,7 +299,17 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
             ];
 
             // busca o stub
-            $stub = $filesystem->get($this->getStubEntite('views/react/pages/' . $stubPage));
+//            $stub = $filesystem->get($this->getStubEntity('views/react/pages/' . $stubPage));
+            $stub = match($stubPage) {
+                'index',
+                'create/index',
+                'edit/[uuid]',
+                    => $filesystem->get($this->getStubEntity('views/react/pages/' . $stubPage)),
+                'store/index',
+                'types/index',
+                    => $filesystem->get($this->getStubEntity('views/react/' . $stubPage)),
+            };
+
             // aplica as alterações
             $contents = $this->replace($params, $stub);
             // cria o arquivo
