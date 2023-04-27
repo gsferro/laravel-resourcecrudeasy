@@ -133,11 +133,11 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
         |
         */
 
-        $this->generateConfig($modulo, $table, $getColumnType);
+        $this->generateConfig($modulo, $table);
         $this->generatePages($modulo, $table, $getColumnType);
     }
 
-    private function generateConfig(string $modulo, string $table, array $getColumnType): void
+    private function generateConfig(string $modulo, string $table): void
     {
         // criando pasta
         $path = $this->makeDirectory($this->pathBase."/configs/".$modulo."/". $table .".ts");
