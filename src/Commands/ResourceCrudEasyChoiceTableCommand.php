@@ -112,6 +112,11 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
 
     private function generateViewsReact(string $modulo, string $table)
     {
+        $this->info('');
+        $this->info("Modulo: {$modulo}");
+        $this->info("Tabela: {$table}");
+        $this->info('');
+
         $schema        = dbSchemaEasy($table, $this->connection);
         $columnListing = $schema->getColumnListing();
 
