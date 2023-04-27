@@ -23,31 +23,24 @@ import toast from 'react-hot-toast'
 
 import { useRouter } from 'next/router'
 
-import providersConfig from 'src/configs/{{ class_folder }}/providers'
+import {{ table_name_camel }}Config from 'src/configs/{{ modulo }}/{{ table_name }}'
 import authConfig from 'src/configs/auth'
 
-import { ProviderTypes } from 'src/types/{{ class_folder }}/providers/ProviderTypes'
+import { {{ table_name_camel_ucfirst }}Types } from 'src/types/{{ modulo }}/{{ table_name }}/{{ table_name_camel_ucfirst }}Types'
 
 // ** Third Party Imports
 import axios from 'axios'
 
 const schema = yup.object().shape({
-  name: yup.string().required('Nome é um campo obrigatório'),
-  status: yup.string().required('Situação é um campo obrigatório')
+    {{ columns_required }}
 })
 
-const defaultValues = {
-  name: '',
-  status: ''
-}
+const defaultValues = {{ columns_default_values_json }}
 
-interface ProviderData {
-  name: string
-  status: string
-}
+interface {{ table_name_camel_ucfirst }}Data {{ columns_json }}
 
-const ProviderEdit = () => {
-  const [provider, setProvider] = useState<ProviderTypes>()
+const {{ table_name_camel_ucfirst }}Edit = () => {
+  const [provider, set{{ table_name_camel_ucfirst }}] = useState<{{ table_name_camel_ucfirst }}Types>()
 
   const {
     control,
@@ -61,36 +54,35 @@ const ProviderEdit = () => {
   })
 
   useEffect(() => {
-    getProvider()
+    get{{ table_name_camel_ucfirst }}()
   }, [])
 
   const router = useRouter()
   const { uuid } = router.query
 
-  const getProvider = async () => {
-    const res = await axios.get(providersConfig.getProviderEndPoint + uuid, {
+  const get{{ table_name_camel_ucfirst }} = async () => {
+    const res = await axios.get({{ table_name_camel }}Config.get{{ table_name_camel_ucfirst }}EndPoint + uuid, {
       headers: {
         Authorization: window.localStorage.getItem(authConfig.storageTokenKeyName)!
       }
     })
-    setProvider(res.data.data)
-    setValue('name', res.data.data.name)
-    setValue('status', res.data.data.status)
+    set{{ table_name_camel_ucfirst }}(res.data.data)
+    {{ edit_set_value }}
   }
 
-  const onSubmit = async (data: ProviderData) => {
+  const onSubmit = async (data: {{ table_name_camel_ucfirst }}Data) => {
     await axios
-      .put(providersConfig.updateEndpoint + uuid, data, {
+      .put({{ table_name_camel }}Config.updateEndpoint + uuid, data, {
         headers: {
           Authorization: window.localStorage.getItem(authConfig.storageTokenKeyName)!
         }
       })
       .then(async () => {
         toast.success('{{ class_title }} editado com sucesso!')
-        router.push('/{{ class_folder }}/providers')
+        router.push('/{{ modulo }}/{{ table_name }}')
       })
       .catch(() => {
-        toast.error('Não foi possivel editar o {{ class_title }}.')
+        toast.error('Não foi possível editar o {{ class_title }}.')
       })
   }
 
@@ -106,50 +98,7 @@ const ProviderEdit = () => {
             </Box>
             <Box sx={{ p: 5 }}>
               <form onSubmit={handleSubmit(onSubmit)}>
-                <FormControl fullWidth sx={{ mb: 6 }}>
-                  <Controller
-                    name='name'
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field: { value, onChange } }) => (
-                      <TextField
-                        value={value}
-                        label='Nome'
-                        onChange={onChange}
-                        placeholder='Nome'
-                        error={Boolean(errors.name)}
-                      />
-                    )}
-                  />
-                  {errors.name && <FormHelperText sx={{ color: 'error.main' }}>{errors.name.message}</FormHelperText>}
-                </FormControl>
-                <FormControl fullWidth sx={{ mb: 6 }}>
-                  <InputLabel id='status-select'>Situação</InputLabel>
-
-                  <Controller
-                    name='status'
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field: { value, onChange } }) => (
-                      <Select
-                        fullWidth
-                        value={value}
-                        id='select-status'
-                        label='Situação'
-                        labelId='status-select'
-                        error={Boolean(errors.status)}
-                        onChange={e => onChange(e.target.value)}
-                        inputProps={{ placeholder: 'Selecionar Situação' }}
-                      >
-                        <MenuItem value='1'>Ativo</MenuItem>
-                        <MenuItem value='2'>Inativo</MenuItem>
-                      </Select>
-                    )}
-                  />
-                  {errors.status && (
-                    <FormHelperText sx={{ color: 'error.main' }}>{errors.status.message}</FormHelperText>
-                  )}
-                </FormControl>
+                {{ columns_form_control }}
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <Button size='large' type='submit' variant='contained' sx={{ mr: 3 }}>
                     Salvar
@@ -164,4 +113,4 @@ const ProviderEdit = () => {
   )
 }
 
-export default ProviderEdit
+export default {{ table_name_camel_ucfirst }}Edit

@@ -174,6 +174,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
         $indexFetchData         = '';
         $indexClearFilter       = '';
         $columnsRequired        = '';
+        $setValue               = '';
 
         $columnsDefaultValues = [];
         $filesystem           = $this->files;
@@ -192,7 +193,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
             |---------------------------------------------------
             */
             $title = $columnOf->title()->replace('_', ' ');
-            $paramss    = [
+            $paramsBase    = [
                 '/\{{ column }}/'               => $column,
                 '/\{{ column_type }}/'          => $type,
                 '/\{{ column_camel }}/'         => $columnOf->camel(),
@@ -202,11 +203,11 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
             ];
             
             // index
-            $columns        .= $this->replace($paramss, $filesystem->get($this->getStubEntite('views/react/pages/column')));
-            $indexGrid      .= $this->replace($paramss, $filesystem->get($this->getStubEntite('views/react/pages/grid')));
-            $indexConst     .= $this->replace($paramss, $filesystem->get($this->getStubEntite('views/react/pages/const')));
-            $indexFetchData .= $this->replace($paramss, $filesystem->get($this->getStubEntite('views/react/pages/fetch_data')));
-            $indexClearFilter .= $this->replace($paramss, $filesystem->get($this->getStubEntite('views/react/pages/clear_filter')));
+            $columns        .= $this->replace($paramsBase, $filesystem->get($this->getStubEntite('views/react/pages/column')));
+            $indexGrid      .= $this->replace($paramsBase, $filesystem->get($this->getStubEntite('views/react/pages/grid')));
+            $indexConst     .= $this->replace($paramsBase, $filesystem->get($this->getStubEntite('views/react/pages/const')));
+            $indexFetchData .= $this->replace($paramsBase, $filesystem->get($this->getStubEntite('views/react/pages/fetch_data')));
+            $indexClearFilter .= $this->replace($paramsBase, $filesystem->get($this->getStubEntite('views/react/pages/clear_filter')));
             
             /*
             |---------------------------------------------------
@@ -218,7 +219,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
                 continue;
             }
             
-            $createIndexFormControl .= $this->replace($paramss, $filesystem->get($this->getStubEntite('views/react/pages/create/form_control')));
+            $createIndexFormControl .= $this->replace($paramsBase, $filesystem->get($this->getStubEntite('views/react/pages/create/form_control')));
 
             // create/index
             $columnsDefaultValues[$column] = '';
@@ -227,12 +228,19 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
             if ($isRequired) {
                 $columnsRequired .= "'$column': yup.string().required('{$title} é um campo obrigatório'),".PHP_EOL;
             }
+
+            /*
+            |---------------------------------------------------
+            | edit/[uuid]
+            |---------------------------------------------------
+            */
+            $setValue .= $this->replace($paramsBase, $filesystem->get($this->getStubEntite('views/react/pages/edit/set_value')));
         }
         ///////////////////////////////////////////////////////////////// exec
         $arches = [
             'index.tsx'        => 'index',
             'create/index.tsx' => 'create/index',
-//            'edit/index.tsx'   => 'edit/index',
+            'edit/[uuid].tsx'   => 'edit/[uuid]',
         ];
 
         foreach ($arches as $arch => $stubPage) {
@@ -250,7 +258,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
                 '/\{{ table_name_camel }}/'         => $tableOf->camel(),
                 '/\{{ table_name_camel_ucfirst }}/' => $tableOf->camel()->ucfirst(),
                 '/\{{ block_column }}/'             => $columns,
-                
+
                 // index
                 '/\{{ columns_grid }}/'         => trim($indexGrid),
                 '/\{{ columns_const }}/'        => trim($indexConst),
@@ -262,6 +270,9 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
                 '/\{{ columns_default_values_json }}/' => json_encode($columnsDefaultValues),
                 '/\{{ columns_required }}/'            => trim($columnsRequired),
                 '/\{{ columns_form_control }}/'        => trim($createIndexFormControl),
+
+                // edit/[uuid]
+                '/\{{ edit_set_value }}/' => trim($setValue),
             ];
 
             // busca o stub
