@@ -95,7 +95,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
             }
             $filesBar->finish();
 
-            dd($tables);
+//            dd($tables);
 
         } catch (\Exception $e) {
             dump('Ops...', $e->getMessage(), $e->getCode(), $e->getLine() );
