@@ -1,4 +1,4 @@
 // ** Types
 export type {{ table_name_camel_ucfirst }}Types = {
- {{ provider_types_json }}
+ {{ columns_json }}
 }
