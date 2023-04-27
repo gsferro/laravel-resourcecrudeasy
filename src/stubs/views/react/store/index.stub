@@ -16,7 +16,7 @@ import toast from 'react-hot-toast'
 interface DataParams {
   page: number
   pageSize: number
-  {{ columns_fetch_data }}
+  {{ columns_json }}
   orderBy: string | any
   sortedBy: string | any
 }
@@ -28,8 +28,8 @@ interface Redux {
 
 // ** Fetch
 export const fetchData = createAsyncThunk('app{{ table_name_camel_ucfirst }}/fetchData', async (params: DataParams) => {
-  console.log(providersConfig.listEndpoint)
-  const response = await axios.get(providersConfig.listEndpoint,{
+  console.log({{ table_name_camel }}Config.listEndpoint)
+  const response = await axios.get({{ table_name_camel }}Config.listEndpoint,{
     headers: {
       Authorization: window.localStorage.getItem(authConfig.storageTokenKeyName)!
     },
@@ -43,7 +43,7 @@ export const fetchData = createAsyncThunk('app{{ table_name_camel_ucfirst }}/fet
 export const delete{{ table_name_camel_ucfirst }} = createAsyncThunk(
   'app{{ table_name_camel_ucfirst }}/delete{{ table_name_camel_ucfirst }}',
   async (uuid: string | string, { getState, dispatch }: Redux) => {
-    await axios.delete(providersConfig.deleteEndpoint + uuid,{
+    await axios.delete({{ table_name_camel }}Config.deleteEndpoint + uuid,{
       headers: {
         Authorization: window.localStorage.getItem(authConfig.storageTokenKeyName)!
       }

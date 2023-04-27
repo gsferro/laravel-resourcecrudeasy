@@ -40,7 +40,7 @@ const defaultValues = {{ columns_default_values_json }}
 interface {{ table_name_camel_ucfirst }}Data {{ columns_json }}
 
 const {{ table_name_camel_ucfirst }}Edit = () => {
-  const [provider, set{{ table_name_camel_ucfirst }}] = useState<{{ table_name_camel_ucfirst }}Types>()
+  const [{{ table_name_camel }}, set{{ table_name_camel_ucfirst }}] = useState<{{ table_name_camel_ucfirst }}Types>()
 
   const {
     control,
@@ -93,7 +93,7 @@ const {{ table_name_camel_ucfirst }}Edit = () => {
           <CardContent>
             <Box sx={{ mb: 8, textAlign: 'center' }}>
               <Typography variant='h5' sx={{ mb: 3, lineHeight: '2rem' }}>
-                Editar {{ class_title }} #{provider?.id}
+                Editar {{ class_title }} #{{{ table_name_camel }}?.id}
               </Typography>
             </Box>
             <Box sx={{ p: 5 }}>
