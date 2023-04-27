@@ -67,10 +67,10 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
     private function exec()
     {
         try {
+            $modulo    = $this->option('modulo') ?: $this->ask('Qual o nome do Modulo?');
             $getTables = $this->getTables();
             $choices   = array_merge(['Todos'], $getTables);
-            $modulo    = $this->option('modulo') ?: $this->ask('Qual o nome do Modulo?');
-            $tables    = $this->choice('Qual tabela voce quer executar?', $choices, null, true, true);
+            $tables    = (bool)$this->option('table') ? [$this->option('table')] : $this->choice('Qual tabela voce quer executar?', $choices, null, true, true);
 
             // caso seja todos, pega as tabelas
             if (current($tables) == 'Todos') {
