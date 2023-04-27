@@ -82,7 +82,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
             $filesBar->start();
 
             foreach ($tables as $table) {
-                $this->info('');
+//                $this->info('');
 //                $action = $this->choice('Qual ação deve executar', [
 //                    'Gerar views react'
 //                ]);
@@ -94,9 +94,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
                 $filesBar->advance();
             }
             $filesBar->finish();
-
-//            dd($tables);
-
+            $this->info('');
         } catch (\Exception $e) {
             dump('Ops...', $e->getMessage(), $e->getCode(), $e->getLine() );
         }
@@ -144,6 +142,14 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
 
     private function generateConfig(string $modulo, string $table): void
     {
+        $this->info('');
+        $this->info("Configs");
+        $this->info('');
+
+        // gerar progress bar
+        $filesBar = $this->output->createProgressBar(1);
+        $filesBar->start();
+
         // criando pasta
         $path = $this->makeDirectory($this->pathBase."/configs/".$modulo."/". $table .".ts");
         // change values
@@ -156,6 +162,9 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
         $contents = $this->replace($params, $stub);
         // cria o arquivo
         $this->files->put("{$path}", "{$contents}");
+
+        $filesBar->advance();
+        $filesBar->finish();
     }
 
     private function generatePages(string $modulo, string $table, array $getColumnType)
@@ -259,6 +268,14 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
             'types' => 'types/index',
         ];
 
+        $this->info('');
+        $this->info("Frontend");
+        $this->info('');
+
+        // gerar progress bar
+        $filesBar = $this->output->createProgressBar(count($arches));
+        $filesBar->start();
+
         foreach ($arches as $arch => $stubPage) {
 
             // change values
@@ -320,7 +337,10 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
             $contents = $this->replace($params, $stub);
             // cria o arquivo
             $filesystem->put("{$path}", "{$contents}");
+
+            $filesBar->advance();
         }
+        $filesBar->finish();
     }
 
     private function getpathModulo(string $page, string $modulo, string $table): string
