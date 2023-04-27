@@ -37,7 +37,9 @@ const schema = yup.object().shape({
 
 const defaultValues = {{ columns_default_values_json }}
 
-interface {{ table_name_camel_ucfirst }}Data {{ columns_json }}
+interface {{ table_name_camel_ucfirst }}Data {
+    {{ columns_json }}
+}
 
 const {{ table_name_camel_ucfirst }}Edit = () => {
   const [{{ table_name_camel }}, set{{ table_name_camel_ucfirst }}] = useState<{{ table_name_camel_ucfirst }}Types>()

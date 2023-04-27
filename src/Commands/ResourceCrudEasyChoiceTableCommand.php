@@ -295,7 +295,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
 
                 // create/index
                 '/\{{ columns_json }}/'                => Str::of(json_encode($getColumnType))->replace('"', '')->replace(',', '
-    '),
+    ')->replace('{', '')->replace('}', ''),
                 '/\{{ columns_default_values_json }}/' => json_encode($columnsDefaultValues),
                 '/\{{ columns_required }}/'            => trim($columnsRequired),
                 '/\{{ columns_form_control }}/'        => trim($createIndexFormControl),
