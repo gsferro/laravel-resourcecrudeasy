@@ -80,11 +80,11 @@ const {{ table_name_camel_ucfirst }}Edit = () => {
         }
       })
       .then(async () => {
-        toast.success('{{ class_title }} editado com sucesso!')
+        toast.success('{{ table_name_camel_ucfirst }} editado com sucesso!')
         router.push('/{{ modulo }}/{{ table_name }}')
       })
       .catch(() => {
-        toast.error('Não foi possível editar o {{ class_title }}.')
+        toast.error('Não foi possível editar o {{ table_name_camel_ucfirst }}.')
       })
   }
 
@@ -95,7 +95,7 @@ const {{ table_name_camel_ucfirst }}Edit = () => {
           <CardContent>
             <Box sx={{ mb: 8, textAlign: 'center' }}>
               <Typography variant='h5' sx={{ mb: 3, lineHeight: '2rem' }}>
-                Editar {{ class_title }} #{{{ table_name_camel }}?.id}
+                Editar {{ table_name_camel_ucfirst }} #{{{ table_name_camel }}?.id}
               </Typography>
             </Box>
             <Box sx={{ p: 5 }}>

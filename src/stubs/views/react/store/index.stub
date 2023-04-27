@@ -49,11 +49,11 @@ export const delete{{ table_name_camel_ucfirst }} = createAsyncThunk(
       }
     })
     .then(async () => {
-      toast.success('{{ class_title }} deletado com sucesso!')
+      toast.success('{{ table_name_camel_ucfirst }} deletado com sucesso!')
       dispatch(fetchData(getState().{{ table_name_camel }}.params))
     })
     .catch(() => {
-      toast.error("Não foi possível deletar o {{ class_title }}.")
+      toast.error("Não foi possível deletar o {{ table_name_camel_ucfirst }}.")
     })
   }
 )
