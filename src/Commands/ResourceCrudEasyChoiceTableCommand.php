@@ -54,7 +54,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
         | Wellcome package
         |---------------------------------------------------
         */
-//        $this->messageWelcome();
+        $this->messageWelcome();
 
         /*
         |---------------------------------------------------
