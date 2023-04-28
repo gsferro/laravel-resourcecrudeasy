@@ -93,7 +93,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
 //                ]);
 
 //                if ($action == 'Gerar views react') {
-                    $this->generateViewsReact($table);
+//                    $this->generateViewsReact($table);
                     $this->generateDomains($table);
 //                }
 
