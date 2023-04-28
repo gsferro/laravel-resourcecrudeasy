@@ -335,7 +335,7 @@ trait UseDomains
         |---------------------------------------------------
         */
         $arches = [
-            'http/repositories/repository' => 'Repository',
+            'repositories/repository' => 'Repository',
         ];
 
         $this->info('');
