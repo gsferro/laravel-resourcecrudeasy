@@ -229,8 +229,8 @@ trait UseDomains
         $this->info('');
         $this->info("Export");
         // gerar progress bar
-        $filesBar = $this->output->createProgressBar(count($arches));
-        $filesBar->start();
+        $filesBarExport = $this->output->createProgressBar(count($arches));
+        $filesBarExport->start();
 
         $columnData = $this->getExtraParamsDomains($tableOf)['columnData'];
 
@@ -249,9 +249,9 @@ trait UseDomains
             // cria o arquivo
             $filesystem->put("{$path}", "{$contents}");
 
-            $filesBar->advance();
+            $filesBarExport->advance();
         }
-        $filesBar->finish();
+        $filesBarExport->finish();
     }
 
     private function generateDomainsHttp(string $pathTable, Stringable $tableOf)
@@ -277,8 +277,8 @@ trait UseDomains
         $this->info('');
         $this->info("Http");
         // gerar progress bar
-        $filesBar = $this->output->createProgressBar(count($arches));
-        $filesBar->start();
+        $filesBarHttp = $this->output->createProgressBar(count($arches));
+        $filesBarHttp->start();
 
         $attributes = $this->getExtraParamsDomains($tableOf)['attributes'];
 
@@ -308,9 +308,9 @@ trait UseDomains
 
             $this->writeFile("domains/$arch", $params, $path);
 
-            $filesBar->advance();
+            $filesBarHttp->advance();
         }
-        $filesBar->finish();
+        $filesBarHttp->finish();
     }
 
     /*
