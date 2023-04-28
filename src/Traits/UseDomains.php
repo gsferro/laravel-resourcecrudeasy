@@ -238,7 +238,7 @@ trait UseDomains
             $params   = $this->getParams($tableOf) + [
                 '/\{{ column_data }}/' => trim($columnData),
             ];
-            $filename = $tableOf->camel()->ucfirst() . "Export.php";
+            $filename = $tableOf->singular()->camel()->ucfirst() . "Export.php";
             $path     = $this->makeDirectory($pathBase . "/" . $filename);
 
             // busca o stub

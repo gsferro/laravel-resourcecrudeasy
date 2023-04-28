@@ -9,13 +9,13 @@ use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Actions\{
     Destroy{{ table_name_singular_camel_ucfirst }}Action,
     Export{{ table_name_camel_ucfirst }}Action
 };
-use App\Domains\{{ modulo }}{{ table_name_singular_camel_ucfirst }}\Bags\{{ table_name_singular_camel_ucfirst }}Bag;
-use App\Domains\{{ modulo }}{{ table_name_singular_camel_ucfirst }}\Http\Requests\{
+use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Bags\{{ table_name_singular_camel_ucfirst }}Bag;
+use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Http\Requests\{
     Create{{ table_name_singular_camel_ucfirst }}Request,
     Update{{ table_name_singular_camel_ucfirst }}Request
 };
-use App\Domains\{{ modulo }}{{ table_name_singular_camel_ucfirst }}\Http\Resources\{{ table_name_singular_camel_ucfirst }}Resource;
-use App\Domains\{{ modulo }}{{ table_name_singular_camel_ucfirst }}\Models\{{ table_name_singular_camel_ucfirst }};
+use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Http\Resources\{{ table_name_singular_camel_ucfirst }}Resource;
+use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Models\{{ table_name_singular_camel_ucfirst }};
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
