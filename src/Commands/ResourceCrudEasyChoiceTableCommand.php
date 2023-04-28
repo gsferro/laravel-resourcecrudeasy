@@ -2,17 +2,18 @@
 
 namespace Gsferro\ResourceCrudEasy\Commands;
 
+use Exception;
 use Gsferro\DatabaseSchemaEasy\DatabaseSchemaEasy;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Gsferro\ResourceCrudEasy\Traits\UseDomains;
 use Illuminate\Support\Facades\DB;
-use Gsferro\ResourceCrudEasy\Traits\Commands\{WithExistsTableCommand, UseModelCommand, UseControllerCommand, UtilCommand};
 use Illuminate\Support\Str;
 
 class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
 {
-//    use WithExistsTableCommand, UseControllerCommand, UseModelCommand, UtilCommand;
+    use UseDomains;
 
     private string              $pathBase;
+    private string              $modulo;
     private ?string             $connection = null;
     private ?DatabaseSchemaEasy $schema     = null;
 
@@ -67,9 +68,9 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
     private function exec()
     {
         try {
-            $modulo    = $this->option('modulo') ?: $this->ask('Qual o nome do Modulo?');
+            $this->modulo    = $this->option('modulo') ?: $this->ask('Qual o nome do Modulo?');
             $this->info('');
-            $this->info("Modulo: {$modulo}");
+            $this->info("Modulo: {$this->modulo}");
             $this->info('');
 
             $getTables = $this->getTables();
@@ -92,14 +93,15 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
 //                ]);
 
 //                if ($action == 'Gerar views react') {
-                    $this->generateViewsReact($modulo, $table);
+                    $this->generateViewsReact($table);
+                    $this->generateDomains($table);
 //                }
 
                 $filesBar->advance();
             }
             $filesBar->finish();
             $this->info('');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             dump('Ops...', $e->getMessage(), $e->getCode(), $e->getLine() );
         }
     }
@@ -112,7 +114,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
             ->listTableNames();
     }
 
-    private function generateViewsReact(string $modulo, string $table)
+    private function generateViewsReact(string $table)
     {
         $this->info('');
         $this->info("Tabela: {$table}");
@@ -139,11 +141,11 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
         |
         */
 
-        $this->generateConfig($modulo, $table);
-        $this->generatePages($modulo, $table, $getColumnType);
+        $this->generateConfig($table);
+        $this->generatePages($table, $getColumnType);
     }
 
-    private function generateConfig(string $modulo, string $table): void
+    private function generateConfig(string $table): void
     {
         $this->info('');
         $this->info("Configs");
@@ -153,7 +155,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
         $filesBarConfig->start();
 
         // criando pasta
-        $path = $this->makeDirectory($this->pathBase."/configs/".$modulo."/". $table .".ts");
+        $path = $this->makeDirectory($this->pathBase."/configs/".$this->modulo."/". $table .".ts");
         // change values
         $params = [
           '/\{{ table_name }}/' => $table
@@ -169,7 +171,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
         $filesBarConfig->finish();
     }
 
-    private function generatePages(string $modulo, string $table, array $getColumnType)
+    private function generatePages(string $table, array $getColumnType)
     {
         $schema = dbSchemaEasy($table, $this->connection);
         /*
@@ -286,17 +288,17 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
                 'index.tsx',
                 'create/index.tsx',
                 'edit/[uuid].tsx'
-                    => $this->makeDirectory($this->getpathModulo('pages', $modulo, $table) . "/" . $arch),
+                    => $this->makeDirectory($this->getpathModulo('pages', $table) . "/" . $arch),
                 'store'
-                    => $this->makeDirectory($this->getpathModulo('store', $modulo, $table) . "/index.tsx"),
+                    => $this->makeDirectory($this->getpathModulo('store', $table) . "/index.tsx"),
                 'types'
-                    => $this->makeDirectory($this->getpathModulo('types', $modulo, $table) . "/". $tableOf->camel()->ucfirst() ."Types.ts"),
+                    => $this->makeDirectory($this->getpathModulo('types', $table) . "/". $tableOf->camel()->ucfirst() ."Types.ts"),
             };
-//            $path = $this->makeDirectory($this->pathBase . "/pages/" . $modulo . "/" . $table . "/" . $arch);
+//            $path = $this->makeDirectory($this->pathBase . "/pages/" . $this->modulo . "/" . $table . "/" . $arch);
 
             $params = [
                 // base
-                '/\{{ modulo }}/'                   => $modulo,
+                '/\{{ modulo }}/'                   => $this->modulo,
                 '/\{{ table_name }}/'               => $table,
                 '/\{{ table_singular }}/'           => $tableOf->singular(),
                 '/\{{ table_title }}/'              => $tableOf->title()->replace('_', ' '),
@@ -343,8 +345,8 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
         $filesBarPages->finish();
     }
 
-    private function getpathModulo(string $page, string $modulo, string $table): string
+    private function getpathModulo(string $page, string $table): string
     {
-        return "{$this->pathBase}/{$page}/{$modulo}/{$table}";
+        return "{$this->pathBase}/{$page}/{$this->modulo}/{$table}";
     }
 }
