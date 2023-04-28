@@ -86,7 +86,7 @@ trait UseDomains
         ];
 
         $this->info('');
-        $this->comment("> Actions");
+        $this->info("► Actions");
         // gerar progress bar
         $filesBarActions = $this->output->createProgressBar(count($arches));
         $filesBarActions->start();
@@ -141,7 +141,7 @@ trait UseDomains
         ];
 
         $this->info('');
-        $this->comment("> Bags");
+        $this->info("► Bags");
         // gerar progress bar
         $filesBarBags = $this->output->createProgressBar(count($arches));
         $filesBarBags->start();
@@ -190,7 +190,7 @@ trait UseDomains
         ];
 
         $this->info('');
-        $this->comment("> Criteria");
+        $this->info("► Criteria");
         // gerar progress bar
         $filesBarCriteria = $this->output->createProgressBar(count($arches));
         $filesBarCriteria->start();
@@ -239,7 +239,7 @@ trait UseDomains
         ];
 
         $this->info('');
-        $this->comment("> Export");
+        $this->info("► Export");
         // gerar progress bar
         $filesBarExport = $this->output->createProgressBar(count($arches));
         $filesBarExport->start();
@@ -288,7 +288,7 @@ trait UseDomains
         ];
 
         $this->info('');
-        $this->comment("> Http");
+        $this->info("► Http");
         // gerar progress bar
         $filesBarHttp = $this->output->createProgressBar(count($arches));
         $filesBarHttp->start();
@@ -348,7 +348,7 @@ trait UseDomains
         ];
 
         $this->info('');
-        $this->comment("> Repositories");
+        $this->info("► Repositories");
         // gerar progress bar
         $filesBarRepository = $this->output->createProgressBar(count($arches));
         $filesBarRepository->start();
@@ -386,7 +386,7 @@ trait UseDomains
         ];
 
         $this->info('');
-        $this->comment("> Routes");
+        $this->info("► Routes");
         // gerar progress bar
         $filesBarRoute = $this->output->createProgressBar(count($arches));
         $filesBarRoute->start();
@@ -423,7 +423,7 @@ trait UseDomains
         ];
 
         $this->info('');
-        $this->comment("> Models");
+        $this->info("► Models");
         // gerar progress bar
         $barModel = $this->output->createProgressBar(count($arches));
         $barModel->start();

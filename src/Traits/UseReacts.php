@@ -47,7 +47,7 @@ trait UseReacts
     private function generateConfig(string $table): void
     {
         $this->info('');
-        $this->info("Configs");
+        $this->info("► Configs");
 
         // gerar progress bar
         $filesBarConfig = $this->output->createProgressBar(1);
@@ -172,7 +172,7 @@ trait UseReacts
         ];
 
         $this->info('');
-        $this->info("Pages");
+        $this->info("► Pages");
         // gerar progress bar
         $filesBarPages = $this->output->createProgressBar(count($arches));
         $filesBarPages->start();

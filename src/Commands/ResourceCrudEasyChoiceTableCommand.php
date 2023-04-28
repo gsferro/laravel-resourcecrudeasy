@@ -79,14 +79,19 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
             | Proteção
             |---------------------------------------------------
             */
-            if (!in_array($tables, $getTables)) {
+            $tableChoice = current($tables);
+            if (!in_array($tableChoice, $getTables)) {
                 $this->info('');
                 $this->error('The table choice not exists in connection');
                 return;
             }
 
-            // caso seja todos, pega as tabelas
-            if (current($tables) == 'Todos') {
+            /*
+            |---------------------------------------------------
+            | Caso seja 'Todos', pega getTables()
+            |---------------------------------------------------
+            */
+            if ($tableChoice == 'Todos') {
                 $tables = $getTables;
             }
 
@@ -96,8 +101,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
 
             foreach ($tables as $table) {
                 $this->info('');
-                $this->info("Tabela: {$table}");
-                $this->info('');
+                $this->info("Table: {$table}");
 //                $this->info('');
 //                $action = $this->choice('Qual ação deve executar', [
 //                    'Gerar views react'
@@ -107,6 +111,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
                     $this->setEntity($table);
                     $this->generateViewsReact($table);
                     $this->generateDomains($table);
+                    $this->info('');
 //                }
 
                 $filesBar->advance();
