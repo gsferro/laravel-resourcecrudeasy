@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class Create{{ table_name_camel_ucfirst }}Request extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'name' => [
+                'required',
+                'string',
+                'unique:providers,name,null,id,deleted_at,null'
+            ],
+            'status' => [
+                'required',
+                'integer',
+                'in:'. implode(",", ProviderStatus::toArray()),
+            ]
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            {{ attributes }}
+        ];
+    }
+}

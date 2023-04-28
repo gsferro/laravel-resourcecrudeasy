@@ -270,6 +270,8 @@ trait UseDomains
         */
         $arches = [
             'http/controllers/controllers' => 'Controller',
+            'http/requests/create'         => 'Request',
+            'http/requests/update'         => 'Request',
         ];
 
         $this->info('');
@@ -278,11 +280,11 @@ trait UseDomains
         $filesBar = $this->output->createProgressBar(count($arches));
         $filesBar->start();
 
-//        $columnData = $this->getExtraParamsDomains($tableOf)['columnData'];
+        $attributes = $this->getExtraParamsDomains($tableOf)['attributes'];
 
         foreach ($arches as $arch => $fileExtensionName) {
             $params = $this->getParams($tableOf) + [
-//                '/\{{ column_data }}/' => trim($columnData),
+                '/\{{ attributes }}/' => trim($attributes),
             ];
 
             $filename = $tableOf->singular()->camel()->ucfirst() . $fileExtensionName . ".php";
@@ -329,6 +331,7 @@ trait UseDomains
         $filesystem = $this->files;
 
         $columnData = "";
+        $attributes = "";
         foreach ($getColumnType as $column => $type) {
             $columnOf = Str::of($column);
 
@@ -358,10 +361,14 @@ trait UseDomains
             $columnData .= $this->replace($paramsBase,
                 $filesystem->get($this->getStubEntity('domains/export/column_data'))
             );
+            $attributes .= $this->replace($paramsBase,
+                $filesystem->get($this->getStubEntity('domains/http/requests/attributes'))
+            );
         }
 
         return [
             'columnData' => $columnData,
+            'attributes' => $attributes,
         ];
     }
 
