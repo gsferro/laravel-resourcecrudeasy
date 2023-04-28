@@ -147,7 +147,6 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
     {
         $this->info('');
         $this->info("Configs");
-        $this->info('');
 
         // gerar progress bar
         $filesBarConfig = $this->output->createProgressBar(1);
@@ -273,8 +272,6 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
 
         $this->info('');
         $this->info("Pages");
-        $this->info('');
-
         // gerar progress bar
         $filesBarPages = $this->output->createProgressBar(count($arches));
         $filesBarPages->start();
