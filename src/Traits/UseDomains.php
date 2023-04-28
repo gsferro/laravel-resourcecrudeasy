@@ -291,10 +291,8 @@ trait UseDomains
                 'Controller' => 'Controllers',
                 'Request'    => 'Requests',
             };
-            $name = match ($fileExtensionName) {
-                'Controller' => $tableOf->singular()->camel()->ucfirst(),
-                'Request'    => $tableOf->camel()->ucfirst(),
-            };
+
+            $name = $tableOf->singular()->camel()->ucfirst();
 
             if ($fileExtensionName == 'Request') {
                 $prefix = match ($arch) {

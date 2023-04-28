@@ -4,7 +4,7 @@ namespace App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Http\
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class Create{{ table_name_camel_ucfirst }}Request extends FormRequest
+class Create{{ table_name_singular_camel_ucfirst }}Request extends FormRequest
 {
     public function authorize(): bool
     {
