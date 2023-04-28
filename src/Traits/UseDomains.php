@@ -40,6 +40,7 @@ trait UseDomains
         $this->generateDomainsActions($pathTable, $tableOf);
         $this->generateDomainsBags($pathTable, $tableOf);
         $this->generateDomainsCriteria($pathTable, $tableOf);
+        $this->generateDomainsExport($pathTable, $tableOf);
     }
 
     private function generateDomainsActions(string $pathTable, Stringable $tableOf)
@@ -199,6 +200,58 @@ trait UseDomains
         $filesBarCriteria->finish();
     }
 
+    private function generateDomainsExport(string $pathTable, Stringable $tableOf)
+    {
+        /*
+        |---------------------------------------------------
+        | Cria a pasta base
+        |---------------------------------------------------
+        */
+        $pathBase = $this->makeDirectory($pathTable."/Export");
+
+        /*
+        |---------------------------------------------------
+        | reuso
+        |---------------------------------------------------
+        */
+        $filesystem = $this->files;
+
+        /*
+        |---------------------------------------------------
+        | Arquivos a serem criados
+        |---------------------------------------------------
+        */
+        $arches = [
+            'export',
+        ];
+
+        $this->info('');
+        $this->info("Export");
+        // gerar progress bar
+        $filesBar = $this->output->createProgressBar(count($arches));
+        $filesBar->start();
+
+        $columnData = $this->getExtraParamsDomains($tableOf)['columnData'];
+
+        foreach ($arches as $arch) {
+            $params   = $this->getParams($tableOf) + [
+                '/\{{ column_data }}/' => trim($columnData),
+            ];
+            $filename = $tableOf->camel()->ucfirst() . "Export.php";
+            $path     = $this->makeDirectory($pathBase . "/" . $filename);
+
+            // busca o stub
+            $stub = $filesystem->get($this->getStubEntity('domains/export/' . $arch));
+
+            // aplica as alterações
+            $contents = $this->replace($params, $stub);
+            // cria o arquivo
+            $filesystem->put("{$path}", "{$contents}");
+
+            $filesBar->advance();
+        }
+        $filesBar->finish();
+    }
     /*
     |---------------------------------------------------
     | Reuso
@@ -216,6 +269,55 @@ trait UseDomains
             '/\{{ table_name_camel_ucfirst }}/'          => $tableOf->camel()->ucfirst(),
             '/\{{ table_name_singular_camel }}/'         => $tableOf->singular()->camel(),
             '/\{{ table_name_singular_camel_ucfirst }}/' => $tableOf->singular()->camel()->ucfirst(),
+        ];
+    }
+
+    private function getExtraParamsDomains(Stringable $tableOf)
+    {
+        $schema        = dbSchemaEasy($tableOf, $this->connection);
+        $columnListing = $schema->getColumnListing();
+
+        $getColumnType = [];
+        foreach ($columnListing as $column) {
+            $type = $schema->getColumnType($column) == 'integer' ? 'number' : 'string';
+            $getColumnType[ $column ] = $type;
+        }
+
+        $filesystem = $this->files;
+
+        $columnData = "";
+        foreach ($getColumnType as $column => $type) {
+            $columnOf = Str::of($column);
+
+            if ($column == 'uuid') {
+                continue;
+            }
+
+            $isRequired = $schema->getDoctrineColumn($column)[ 'notnull' ];
+
+            /*
+            |---------------------------------------------------
+            | params reuso
+            |---------------------------------------------------
+            */
+            $title = $columnOf->title()->replace('_', ' ');
+            $paramsBase    = [
+                '/\{{ column }}/'               => $column,
+                '/\{{ column_type }}/'          => $type,
+                '/\{{ column_camel }}/'         => $columnOf->camel(),
+                '/\{{ column_camel_ucfirst }}/' => $columnOf->camel()->ucfirst(),
+                '/\{{ column_title }}/'         => $title,
+                '/\{{ column_is_required }}/'   => $isRequired ? 'rules={{ required: true }}' : '',
+            ];
+
+            // export
+            $columnData .= $this->replace($paramsBase,
+                $filesystem->get($this->getStubEntity('domains/export/column_data'))
+            );
+        }
+
+        return [
+            'columnData' => $columnData,
         ];
     }
 }

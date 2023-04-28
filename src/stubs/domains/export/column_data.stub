@@ -1,0 +1,1 @@
+$data[$key]['{{ column_title }}'] = ${{ table_name_singular_camel }}->{{ column }};
