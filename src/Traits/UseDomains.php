@@ -295,6 +295,16 @@ trait UseDomains
                 'Controller' => $tableOf->singular()->camel()->ucfirst(),
                 'Request'    => $tableOf->camel()->ucfirst(),
             };
+
+            if ($fileExtensionName == 'Request') {
+                $prefix = match ($arch) {
+                    'http/requests/create' => 'Create',
+                    'http/requests/update' => 'Update',
+                };
+                $name = $prefix.$name;
+            }
+
+
             $filename = $folder . "/" .$name . $fileExtensionName . ".php";
             $path     = $this->makeDirectory($pathBase . "/" . $filename);
 
