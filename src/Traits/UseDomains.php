@@ -71,7 +71,7 @@ trait UseDomains
             'destroy',
             'export',
             'get',
-//            'update',
+            'update',
         ];
 
         $this->info('');

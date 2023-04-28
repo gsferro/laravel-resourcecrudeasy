@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Actions;
+
+use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Bags\{{ table_name_singular_camel_ucfirst }}Bag;
+use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Models\{{ table_name_singular_camel_ucfirst }};
+use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Repositories\{{ table_name_singular_camel_ucfirst }}Repository;
+
+class Update{{ table_name_singular_camel_ucfirst }}Action
+{
+    private {{ table_name_singular_camel_ucfirst }}Repository ${{ table_name_singular_camel }}Repository;
+
+    public function __construct({{ table_name_singular_camel_ucfirst }}Repository ${{ table_name_singular_camel }}Repository)
+    {
+        $this->{{ table_name_singular_camel }}Repository = ${{ table_name_singular_camel }}Repository;
+    }
+
+    public function execute({{ table_name_singular_camel_ucfirst }}Bag ${{ table_name_singular_camel }}Bag): {{ table_name_singular_camel_ucfirst }}
+    {
+        return $this->{{ table_name_singular_camel }}Repository->update(${{ table_name_singular_camel }}Bag->attributes(), ${{ table_name_singular_camel }}->id);
+    }
+}
