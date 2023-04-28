@@ -17,7 +17,6 @@ trait UseReacts
 
         $this->info('');
         $this->comment("► ► ► Generate React Files");
-        $this->info('');
 
         $schema        = dbSchemaEasy($table, $this->connection);
         $columnListing = $schema->getColumnListing();
