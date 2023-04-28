@@ -38,15 +38,15 @@ trait UseDomains
         |---------------------------------------------------
         */
         $this->generateDomainsActions($pathTable, $tableOf);
+        $this->generateDomainsBags($pathTable, $tableOf);
 
-        $this->info('');
-        $this->info("Domains: {$this->modulo}");
-        $this->info('');
+//        $this->info('');
+//        $this->info("Domains: {$this->modulo}");
+//        $this->info('');
     }
 
     private function generateDomainsActions(string $pathTable, Stringable $tableOf)
     {
-        //        $schema = dbSchemaEasy($tableOf, $this->connection);
         /*
         |---------------------------------------------------
         | Cria a pasta base
@@ -77,26 +77,15 @@ trait UseDomains
         $this->info('');
         $this->info("Actions");
         // gerar progress bar
-        $filesBarPages = $this->output->createProgressBar(count($arches));
-        $filesBarPages->start();
+        $filesBarActions = $this->output->createProgressBar(count($arches));
+        $filesBarActions->start();
 
         foreach ($arches as $arch) {
-            $tableName = $tableOf->singular()->camel()->ucfirst();
-            $params     = [
-                // base
-                '/\{{ modulo }}/'                   => $this->modulo,
-                '/\{{ table_name }}/'               => $tableOf,
-                '/\{{ table_singular }}/'           => $tableOf->singular(),
-                '/\{{ table_title }}/'              => $tableOf->title()->replace('_', ' '),
-                '/\{{ table_name_camel }}/'         => $tableOf->camel(),
-                '/\{{ table_name_camel_ucfirst }}/' => $tableOf->camel()->ucfirst(),
-                '/\{{ table_name_singular_camel }}/' => $tableOf->singular()->camel(),
-                '/\{{ table_name_singular_camel_ucfirst }}/' => $tableName,
-            ];
+            $params = $this->getParams($tableOf);
 
             $tableNameUse = match ($arch) {
                 'export', 'get' => $tableOf->camel()->ucfirst(),
-                default => $tableName
+                default => $tableOf->singular()->camel()->ucfirst()
             };
             $filename = Str::ucfirst($arch) . $tableNameUse . "Action.php";
             $path     = $this->makeDirectory($pathBase . "/" . $filename);
@@ -109,9 +98,75 @@ trait UseDomains
             // cria o arquivo
             $filesystem->put("{$path}", "{$contents}");
 
-            $filesBarPages->advance();
+            $filesBarActions->advance();
         }
-        $filesBarPages->finish();
+        $filesBarActions->finish();
 
+    }
+
+    private function generateDomainsBags(string $pathTable, Stringable $tableOf)
+    {
+        /*
+        |---------------------------------------------------
+        | Cria a pasta base
+        |---------------------------------------------------
+        */
+        $pathBase = $this->makeDirectory($pathTable."/Bags");
+
+        /*
+        |---------------------------------------------------
+        | reuso
+        |---------------------------------------------------
+        */
+        $filesystem = $this->files;
+
+        /*
+        |---------------------------------------------------
+        | Arquivos a serem criados
+        |---------------------------------------------------
+        */
+        $arches = [
+            'bag',
+        ];
+
+        $this->info('');
+        $this->info("Bags");
+        // gerar progress bar
+        $filesBarBags = $this->output->createProgressBar(count($arches));
+        $filesBarBags->start();
+
+        foreach ($arches as $arch) {
+            $params = $this->getParams($tableOf);
+
+            $tableNameUse = $tableOf->camel()->ucfirst();
+            $filename     = Str::ucfirst($arch) . $tableNameUse . "Bag.php";
+            $path         = $this->makeDirectory($pathBase . "/" . $filename);
+
+            // busca o stub
+            $stub = $filesystem->get($this->getStubEntity('domains/bags/' . $arch));
+
+            // aplica as alterações
+            $contents = $this->replace($params, $stub);
+            // cria o arquivo
+            $filesystem->put("{$path}", "{$contents}");
+
+            $filesBarBags->advance();
+        }
+        $filesBarBags->finish();
+    }
+
+    private function getParams(Stringable $tableOf): array
+    {
+        return [
+            // base
+            '/\{{ modulo }}/'                            => $this->modulo,
+            '/\{{ table_name }}/'                        => $tableOf,
+            '/\{{ table_singular }}/'                    => $tableOf->singular(),
+            '/\{{ table_title }}/'                       => $tableOf->title()->replace('_', ' '),
+            '/\{{ table_name_camel }}/'                  => $tableOf->camel(),
+            '/\{{ table_name_camel_ucfirst }}/'          => $tableOf->camel()->ucfirst(),
+            '/\{{ table_name_singular_camel }}/'         => $tableOf->singular()->camel(),
+            '/\{{ table_name_singular_camel_ucfirst }}/' => $tableOf->singular()->camel()->ucfirst(),
+        ];
     }
 }
