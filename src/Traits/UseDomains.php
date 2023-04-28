@@ -136,11 +136,9 @@ trait UseDomains
         $filesBarBags->start();
 
         foreach ($arches as $arch) {
-            $params = $this->getParams($tableOf);
-
-            $tableNameUse = $tableOf->camel()->ucfirst();
-            $filename     = Str::ucfirst($arch) . $tableNameUse . "Bag.php";
-            $path         = $this->makeDirectory($pathBase . "/" . $filename);
+            $params   = $this->getParams($tableOf);
+            $filename = $tableOf->camel()->ucfirst() . "Bag.php";
+            $path     = $this->makeDirectory($pathBase . "/" . $filename);
 
             // busca o stub
             $stub = $filesystem->get($this->getStubEntity('domains/bags/' . $arch));
