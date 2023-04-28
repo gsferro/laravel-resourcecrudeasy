@@ -43,6 +43,7 @@ trait UseDomains
         $this->generateDomainsExport($pathTable, $tableOf);
         $this->generateDomainsHttps($pathTable, $tableOf);
         $this->generateDomainsRespositories($pathTable, $tableOf);
+        $this->generateDomainsRoutes($pathTable, $tableOf);
 
         $this->info('');
     }
@@ -356,6 +357,43 @@ trait UseDomains
             $filesBarRepository->advance();
         }
         $filesBarRepository->finish();
+    }
+
+    private function generateDomainsRoutes(string $pathTable, Stringable $tableOf)
+    {
+        /*
+        |---------------------------------------------------
+        | Cria a pasta base
+        |---------------------------------------------------
+        */
+        $pathBase = $this->makeDirectory($pathTable."/routes");
+
+        /*
+        |---------------------------------------------------
+        | Arquivos a serem criados
+        |---------------------------------------------------
+        */
+        $arches = [
+            'routes/api',
+        ];
+
+        $this->info('');
+        $this->comment("> Routes");
+        // gerar progress bar
+        $filesBarRoute = $this->output->createProgressBar(count($arches));
+        $filesBarRoute->start();
+
+        foreach ($arches as $arch) {
+            $params = $this->getParams($tableOf);
+
+            $filename = $tableOf->camel() . ".php";
+            $path     = $this->makeDirectory($pathBase . "/" . $filename);
+
+            $this->writeFile("domains/$arch", $params, $path);
+
+            $filesBarRoute->advance();
+        }
+        $filesBarRoute->finish();
     }
     /*
     |---------------------------------------------------

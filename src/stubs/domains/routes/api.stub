@@ -1,0 +1,23 @@
+use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Http\Controllers\{{ table_name_singular_camel_ucfirst }}Controller;
+use Illuminate\Support\Facades\Route;
+
+Route::group(['middleware' => ['cors', 'auth:api', 'tenant']], function () {
+    Route::group(['middleware' => ['permission:{{ table_name_camel }}.export']], function () {
+        Route::get('/{{ table_name_camel }}/export', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'export'])->name('{{ table_name_camel }}.export');
+    });
+     Route::group(['middleware' => ['permission:{{ table_name_camel }}.index']], function () {
+        Route::get('/{{ table_name_camel }}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'index'])->name('{{ table_name_camel }}.index');
+    });
+    Route::group(['middleware' => ['permission:{{ table_name_camel }}.store'], ], function () {
+        Route::POST('/{{ table_name_camel }}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'store'])->name('{{ table_name_camel }}.store');
+    });
+     Route::group(['middleware' => ['permission:{{ table_name_camel }}.update'], ], function () {
+        Route::match(['put', 'patch'], '{{ table_name_camel }}/{uuid}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'update'])->name('{{ table_name_camel }}.update');
+    });
+    Route::group(['middleware' => ['permission:{{ table_name_camel }}.show'], ], function () {
+        Route::get( '{{ table_name_camel }}/{uuid}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'show'])->name('{{ table_name_camel }}.show');
+    });
+    Route::group(['middleware' => ['permission:{{ table_name_camel }}.destroy'], ], function () {
+        Route::delete( '{{ table_name_camel }}/{uuid}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'destroy'])->name('{{ table_name_camel }}.destroy');
+    });
+});
