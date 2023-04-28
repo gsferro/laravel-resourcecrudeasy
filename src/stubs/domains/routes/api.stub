@@ -11,7 +11,7 @@ Route::group(['middleware' => ['cors', 'auth:api', 'tenant']], function () {
         Route::get('/{{ table_name_camel }}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'index'])->name('{{ table_name_camel }}.index');
     });
     Route::group(['middleware' => ['permission:{{ table_name_camel }}.store'], ], function () {
-        Route::POST('/{{ table_name_camel }}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'store'])->name('{{ table_name_camel }}.store');
+        Route::post('/{{ table_name_camel }}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'store'])->name('{{ table_name_camel }}.store');
     });
      Route::group(['middleware' => ['permission:{{ table_name_camel }}.update'], ], function () {
         Route::match(['put', 'patch'], '{{ table_name_camel }}/{uuid}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'update'])->name('{{ table_name_camel }}.update');
