@@ -1,0 +1,73 @@
+<?php
+
+namespace App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Http\Controllers;
+
+use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Actions\{
+    Get{{ table_name_camel_ucfirst }}Action,
+    Create{{ table_name_singular_camel_ucfirst }}Action,
+    Update{{ table_name_singular_camel_ucfirst }}Action,
+    Destroy{{ table_name_singular_camel_ucfirst }}Action,
+    Export{{ table_name_camel_ucfirst }}Action
+};
+use App\Domains\{{ modulo }}{{ table_name_singular_camel_ucfirst }}\Bags\{{ table_name_singular_camel_ucfirst }}Bag;
+use App\Domains\{{ modulo }}{{ table_name_singular_camel_ucfirst }}\Http\Requests\{
+    Create{{ table_name_singular_camel_ucfirst }}Request,
+    Update{{ table_name_singular_camel_ucfirst }}Request
+};
+use App\Domains\{{ modulo }}{{ table_name_singular_camel_ucfirst }}\Http\Resources\{{ table_name_singular_camel_ucfirst }}Resource;
+use App\Domains\{{ modulo }}{{ table_name_singular_camel_ucfirst }}\Models\{{ table_name_singular_camel_ucfirst }};
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+
+class {{ table_name_singular_camel_ucfirst }}Controller extends Controller
+{
+    public function __construct(
+        private Get{{ table_name_camel_ucfirst }}Action      $get{{ table_name_camel_ucfirst }}Action,
+        private Create{{ table_name_singular_camel_ucfirst }}Action    $create{{ table_name_singular_camel_ucfirst }}Action,
+        private Update{{ table_name_singular_camel_ucfirst }}Action    $update{{ table_name_singular_camel_ucfirst }}Action,
+        private Destroy{{ table_name_singular_camel_ucfirst }}Action   $destroy{{ table_name_singular_camel_ucfirst }}Action,
+        private Export{{ table_name_camel_ucfirst }}Action    $export{{ table_name_camel_ucfirst }}Action
+    ) { }
+
+    public function index(): JsonResponse|AnonymousResourceCollection
+    {
+        $action = $this->get{{ table_name_camel_ucfirst }}Action->execute();
+
+        return !$action
+            ? response()->json([], 204)
+            : {{ table_name_singular_camel_ucfirst }}Resource::collection($action);
+    }
+
+    public function store(Create{{ table_name_singular_camel_ucfirst }}Request $request): {{ table_name_singular_camel_ucfirst }}Resource
+    {
+        $bag    = {{ table_name_singular_camel_ucfirst }}Bag::fromRequest($request->validated());
+        $action = $this->create{{ table_name_singular_camel_ucfirst }}Action->execute($bag);
+
+        return {{ table_name_singular_camel_ucfirst }}Resource::make($action);
+    }
+
+    public function show({{ table_name_singular_camel_ucfirst }} $model): {{ table_name_singular_camel_ucfirst }}Resource
+    {
+        return {{ table_name_singular_camel_ucfirst }}Resource::make($model);
+    }
+
+    public function update(Update{{ table_name_singular_camel_ucfirst }}Request $request, {{ table_name_singular_camel_ucfirst }} $model): {{ table_name_singular_camel_ucfirst }}Resource
+    {
+        $bag    = {{ table_name_singular_camel_ucfirst }}Bag::fromRequest($request->validated());
+        $action = $this->update{{ table_name_singular_camel_ucfirst }}Action->execute($bag, $model);
+
+        return {{ table_name_singular_camel_ucfirst }}Resource::make($action);
+    }
+
+    public function destroy({{ table_name_singular_camel_ucfirst }} $model): void
+    {
+        $this->destroy{{ table_name_singular_camel_ucfirst }}Action->execute($model);
+    }
+
+    public function export(): BinaryFileResponse|JsonResponse
+    {
+        return $this->export{{ table_name_camel_ucfirst }}Action->execute();
+    }
+}
