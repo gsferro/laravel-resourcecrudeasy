@@ -12,6 +12,10 @@ trait UseDomains
 
     private function generateDomains(string $table)
     {
+        $this->info('');
+        $this->comment("► ► ► Generate Domains Files");
+        $this->info('');
+
         $tableOf = Str::of($table);
         /*
         |---------------------------------------------------
