@@ -20,12 +20,10 @@ class Export{{ table_name_camel_ucfirst }}Action
 
     public function execute(): BinaryFileResponse|JsonResponse
     {
-        return $this->{{ table_name_singular_camel }}Repository->delete(${{ table_name_singular_camel }}->id);
-
         ${{ table_name_camel }} = $this->{{ table_name_singular_camel }}Repository
-                    ->pushCriteria(new {{ table_name_camel_ucfirst }}ListCriteria())
-                    ->orderBy('id')
-                    ->all();
+            ->pushCriteria(new {{ table_name_camel_ucfirst }}ListCriteria())
+            ->orderBy('id')
+            ->all();
 
         if (${{ table_name_camel }}->count() == 0) {
             return response()->json([], 204);

@@ -67,8 +67,8 @@ trait UseDomains
         |---------------------------------------------------
         */
         $arches = [
-            'create',
-            'destroy',
+//            'create',
+//            'destroy',
             'export',
 //            'get',
 //            'update',
@@ -94,8 +94,11 @@ trait UseDomains
                 '/\{{ table_name_singular_camel_ucfirst }}/' => $tableName,
             ];
 
-            // CreateProviderAction.php
-            $filename = Str::ucfirst($arch) . $tableName . "Action.php";
+            $tableNameUse = match ($arch) {
+                'export', 'get' => $tableOf->camel()->ucfirst(),
+                default => $tableName
+            };
+            $filename = Str::ucfirst($arch) . $tableNameUse . "Action.php";
             $path     = $this->makeDirectory($pathBase . "/" . $filename);
 
             // busca o stub
