@@ -41,7 +41,8 @@ trait UseDomains
         $this->generateDomainsBags($pathTable, $tableOf);
         $this->generateDomainsCriteria($pathTable, $tableOf);
         $this->generateDomainsExport($pathTable, $tableOf);
-        $this->generateDomainsHttp($pathTable, $tableOf);
+        $this->generateDomainsHttps($pathTable, $tableOf);
+        $this->generateDomainsRespositories($pathTable, $tableOf);
 
         $this->info('');
     }
@@ -256,7 +257,7 @@ trait UseDomains
         $filesBarExport->finish();
     }
 
-    private function generateDomainsHttp(string $pathTable, Stringable $tableOf)
+    private function generateDomainsHttps(string $pathTable, Stringable $tableOf)
     {
         /*
         |---------------------------------------------------
@@ -319,6 +320,43 @@ trait UseDomains
         $filesBarHttp->finish();
     }
 
+    private function generateDomainsRespositories(string $pathTable, Stringable $tableOf)
+    {
+        /*
+        |---------------------------------------------------
+        | Cria a pasta base
+        |---------------------------------------------------
+        */
+        $pathBase = $this->makeDirectory($pathTable."/Repositories");
+
+        /*
+        |---------------------------------------------------
+        | Arquivos a serem criados
+        |---------------------------------------------------
+        */
+        $arches = [
+            'http/repositories/repository' => 'Repository',
+        ];
+
+        $this->info('');
+        $this->comment("> Repositories");
+        // gerar progress bar
+        $filesBarRepository = $this->output->createProgressBar(count($arches));
+        $filesBarRepository->start();
+
+        foreach ($arches as $arch => $fileExtensionName) {
+            $params = $this->getParams($tableOf);
+
+            $name     = $tableOf->singular()->camel()->ucfirst();
+            $filename = $name . $fileExtensionName . ".php";
+            $path     = $this->makeDirectory($pathBase . "/" . $filename);
+
+            $this->writeFile("domains/$arch", $params, $path);
+
+            $filesBarRepository->advance();
+        }
+        $filesBarRepository->finish();
+    }
     /*
     |---------------------------------------------------
     | Reuso
