@@ -8,7 +8,6 @@ use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Repositorie
 
 class Create{{ table_name_singular_camel_ucfirst }}Action
 {
-
     private {{ table_name_singular_camel_ucfirst }}Repository ${{ table_name_singular_camel }}Repository;
 
     public function __construct({{ table_name_singular_camel_ucfirst }}Repository ${{ table_name_singular_camel }}Repository)

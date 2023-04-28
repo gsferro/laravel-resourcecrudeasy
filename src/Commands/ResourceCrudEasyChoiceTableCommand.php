@@ -158,7 +158,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
         $path = $this->makeDirectory($this->pathBase."/configs/".$this->modulo."/". $table .".ts");
         // change values
         $params = [
-          '/\{{ table_name }}/' => $table
+            '/\{{ table_name }}/' => $table
         ];
         // busca o stub
         $stub = $this->files->get($this->getStubEntity('views/react/configs/config'));
@@ -202,11 +202,11 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
         $filesystem           = $this->files;
         foreach ($getColumnType as $column => $type) {
             $columnOf = Str::of($column);
-            
+
             if ($column == 'uuid') {
                 continue;
             }
-            
+
             $isRequired = $schema->getDoctrineColumn($column)[ 'notnull' ];
 
             /*
@@ -223,14 +223,14 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
                 '/\{{ column_title }}/'         => $title,
                 '/\{{ column_is_required }}/'   => $isRequired ? 'rules={{ required: true }}' : '',
             ];
-            
+
             // index
             $columns        .= $this->replace($paramsBase, $filesystem->get($this->getStubEntity('views/react/pages/column')));
             $indexGrid      .= $this->replace($paramsBase, $filesystem->get($this->getStubEntity('views/react/pages/grid')));
             $indexConst     .= $this->replace($paramsBase, $filesystem->get($this->getStubEntity('views/react/pages/const')));
             $indexFetchData .= $this->replace($paramsBase, $filesystem->get($this->getStubEntity('views/react/pages/fetch_data')));
             $indexClearFilter .= $this->replace($paramsBase, $filesystem->get($this->getStubEntity('views/react/pages/clear_filter')));
-            
+
             /*
             |---------------------------------------------------
             | create/index
@@ -240,7 +240,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
             if ($schema->isPrimaryKey($column) || $column == 'uuid') {
                 continue;
             }
-            
+
             $createIndexFormControl .= $this->replace($paramsBase, $filesystem->get($this->getStubEntity('views/react/pages/create/form_control')));
 
             // create/index
@@ -288,13 +288,13 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
                 'index.tsx',
                 'create/index.tsx',
                 'edit/[uuid].tsx'
-                    => $this->makeDirectory($this->getpathModulo('pages', $table) . "/" . $arch),
+                => $this->makeDirectory($this->getpathModulo('pages', $table) . "/" . $arch),
                 'store'
-                    => $this->makeDirectory($this->getpathModulo('store', $table) . "/index.tsx"),
+                => $this->makeDirectory($this->getpathModulo('store', $table) . "/index.tsx"),
                 'types'
-                    => $this->makeDirectory($this->getpathModulo('types', $table) . "/". $tableOf->camel()->ucfirst() ."Types.ts"),
+                => $this->makeDirectory($this->getpathModulo('types', $table) . "/". $tableOf->camel()->ucfirst() ."Types.ts"),
             };
-//            $path = $this->makeDirectory($this->pathBase . "/pages/" . $this->modulo . "/" . $table . "/" . $arch);
+            //            $path = $this->makeDirectory($this->pathBase . "/pages/" . $this->modulo . "/" . $table . "/" . $arch);
 
             $params = [
                 // base
@@ -324,15 +324,15 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
             ];
 
             // busca o stub
-//            $stub = $filesystem->get($this->getStubEntity('views/react/pages/' . $stubPage));
+            //            $stub = $filesystem->get($this->getStubEntity('views/react/pages/' . $stubPage));
             $stub = match($stubPage) {
                 'index',
                 'create/index',
                 'edit/[uuid]',
-                    => $filesystem->get($this->getStubEntity('views/react/pages/' . $stubPage)),
+                => $filesystem->get($this->getStubEntity('views/react/pages/' . $stubPage)),
                 'store/index',
                 'types/index',
-                    => $filesystem->get($this->getStubEntity('views/react/' . $stubPage)),
+                => $filesystem->get($this->getStubEntity('views/react/' . $stubPage)),
             };
 
             // aplica as alterações

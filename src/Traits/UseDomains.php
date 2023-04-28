@@ -7,7 +7,7 @@ use Illuminate\Support\Stringable;
 
 trait UseDomains
 {
-    private function UseDomains(string $modulo, string $table)
+    private function generateDomains(string $table)
     {
         $tableOf = Str::of($table);
         /*
@@ -22,30 +22,31 @@ trait UseDomains
         | Cria a pasta do modulo
         |---------------------------------------------------
         */
-        $pathBase = $this->makeDirectory($domain."/". $modulo);
+        $pathBase = $this->makeDirectory($domain."/". $this->modulo);
 
         /*
         |---------------------------------------------------
         | Cria a pasta com o nome da Table
         |---------------------------------------------------
         */
-        $pathTable = $this->makeDirectory($pathBase."/". $tableOf->singular()->camel()->ucfirst());
+        $tableName = $tableOf->singular()->camel()->ucfirst();
+        $pathTable = $this->makeDirectory($pathBase . "/" . $tableName);
 
         /*
         |---------------------------------------------------
         | Criar pastas
         |---------------------------------------------------
         */
-        $this->generateDomainsActions($modulo, $pathTable, $tableOf);
+        $this->generateDomainsActions($pathTable, $tableOf);
 
         $this->info('');
-        $this->info("Domains: {$modulo}");
+        $this->info("Domains: {$this->modulo}");
         $this->info('');
     }
 
-    private function generateDomainsActions(string $modulo, string $pathTable, Stringable $tableOf)
+    private function generateDomainsActions(string $pathTable, Stringable $tableOf)
     {
-        $schema = dbSchemaEasy($tableOf, $this->connection);
+        //        $schema = dbSchemaEasy($tableOf, $this->connection);
         /*
         |---------------------------------------------------
         | Cria a pasta base
@@ -67,10 +68,10 @@ trait UseDomains
         */
         $arches = [
             'create',
-//            'destroy',
-//            'export',
-//            'get',
-//            'update',
+            //            'destroy',
+            //            'export',
+            //            'get',
+            //            'update',
         ];
 
         $this->info('');
@@ -83,7 +84,7 @@ trait UseDomains
             $tableName = $tableOf->singular()->camel()->ucfirst();
             $params     = [
                 // base
-                '/\{{ modulo }}/'                   => $modulo,
+                '/\{{ modulo }}/'                   => $this->modulo,
                 '/\{{ table_name }}/'               => $tableOf,
                 '/\{{ table_singular }}/'           => $tableOf->singular(),
                 '/\{{ table_title }}/'              => $tableOf->title()->replace('_', ' '),
