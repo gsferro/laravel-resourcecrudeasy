@@ -137,7 +137,7 @@ trait UseDomains
 
         foreach ($arches as $arch) {
             $params   = $this->getParams($tableOf);
-            $filename = $tableOf->camel()->ucfirst() . "Bag.php";
+            $filename = $tableOf->singular()->camel()->ucfirst() . "Bag.php";
             $path     = $this->makeDirectory($pathBase . "/" . $filename);
 
             // busca o stub
