@@ -42,6 +42,8 @@ trait UseDomains
         $this->generateDomainsCriteria($pathTable, $tableOf);
         $this->generateDomainsExport($pathTable, $tableOf);
         $this->generateDomainsHttp($pathTable, $tableOf);
+
+        $this->info('');
     }
 
     private function generateDomainsActions(string $pathTable, Stringable $tableOf)
@@ -74,7 +76,7 @@ trait UseDomains
         ];
 
         $this->info('');
-        $this->info("Actions");
+        $this->comment("> Actions");
         // gerar progress bar
         $filesBarActions = $this->output->createProgressBar(count($arches));
         $filesBarActions->start();
@@ -129,7 +131,7 @@ trait UseDomains
         ];
 
         $this->info('');
-        $this->info("Bags");
+        $this->comment("> Bags");
         // gerar progress bar
         $filesBarBags = $this->output->createProgressBar(count($arches));
         $filesBarBags->start();
@@ -178,7 +180,7 @@ trait UseDomains
         ];
 
         $this->info('');
-        $this->info("Criteria");
+        $this->comment("> Criteria");
         // gerar progress bar
         $filesBarCriteria = $this->output->createProgressBar(count($arches));
         $filesBarCriteria->start();
@@ -227,7 +229,7 @@ trait UseDomains
         ];
 
         $this->info('');
-        $this->info("Export");
+        $this->comment("> Export");
         // gerar progress bar
         $filesBarExport = $this->output->createProgressBar(count($arches));
         $filesBarExport->start();
@@ -275,7 +277,7 @@ trait UseDomains
         ];
 
         $this->info('');
-        $this->info("Http");
+        $this->comment("> Http");
         // gerar progress bar
         $filesBarHttp = $this->output->createProgressBar(count($arches));
         $filesBarHttp->start();
