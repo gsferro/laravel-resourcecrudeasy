@@ -6,7 +6,7 @@ use Gsferro\ResourceCrudEasy\Models\BaseModel;
 use YourAppRocks\EloquentUuid\Traits\HasUuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class {{ class }} extends BaseModel
+class {{ table_name_singular_camel_ucfirst }} extends BaseModel
 {
     /*
     |---------------------------------------------------

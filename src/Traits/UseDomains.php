@@ -2,13 +2,13 @@
 
 namespace Gsferro\ResourceCrudEasy\Traits;
 
-use Gsferro\ResourceCrudEasy\Traits\Commands\WithExistsTableCommand;
+use Gsferro\ResourceCrudEasy\Traits\Commands\{WithExistsTableCommand, UtilCommand};
 use Illuminate\Support\Str;
 use Illuminate\Support\Stringable;
 
 trait UseDomains
 {
-    use WithExistsTableCommand;
+    use WithExistsTableCommand, UtilCommand;
 
     private function generateDomains(string $table)
     {
