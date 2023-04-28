@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Actions;
+
+use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Criteria\{{ table_name_camel_ucfirst }}ListCriteria;
+use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Exports\{{ table_name_camel_ucfirst }}Exports;
+use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Repositories\{{ table_name_singular_camel_ucfirst }}Repository;
+use App\Helpers\GridParams;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
+use Prettus\Repository\Exceptions\RepositoryException;
+
+class Get{{ table_name_camel_ucfirst }}Action
+{
+    private {{ table_name_singular_camel_ucfirst }}Repository ${{ table_name_singular_camel }}Repository;
+
+    public function __construct({{ table_name_singular_camel_ucfirst }}Repository ${{ table_name_singular_camel }}Repository)
+    {
+        $this->{{ table_name_singular_camel }}Repository = ${{ table_name_singular_camel }}Repository;
+    }
+
+    /**
+     * @throws RepositoryException
+     */
+    public function execute(): LengthAwarePaginator|Collection
+    {
+        $this->{{ table_name_singular_camel }}Repository
+            ->pushCriteria(new {{ table_name_camel_ucfirst }}ListCriteria())
+            ->orderBy(GridParams::getOrderedField(), GridParams::getSortDirection());
+
+        return Request::input('isAll')
+            ? $this->{{ table_name_singular_camel }}Repository->all()
+            : $this->{{ table_name_singular_camel }}Repository->paginate(Request::get('pageSize') ?? 10);
+    }
+}

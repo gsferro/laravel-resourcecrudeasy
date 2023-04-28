@@ -67,10 +67,10 @@ trait UseDomains
         |---------------------------------------------------
         */
         $arches = [
-//            'create',
-//            'destroy',
+            'create',
+            'destroy',
             'export',
-//            'get',
+            'get',
 //            'update',
         ];
 
