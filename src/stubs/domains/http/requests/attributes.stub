@@ -1,1 +1,1 @@
-'{{ column }}' > '{{ column_title }}',
+'{{ column }}' => '{{ column_title }}',
