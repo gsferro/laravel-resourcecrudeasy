@@ -68,6 +68,10 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
     {
         try {
             $modulo    = $this->option('modulo') ?: $this->ask('Qual o nome do Modulo?');
+            $this->info('');
+            $this->info("Modulo: {$modulo}");
+            $this->info('');
+
             $getTables = $this->getTables();
             $choices   = array_merge(['Todos'], $getTables);
             $tables    = (bool)$this->option('table') ? [$this->option('table')] : $this->choice('Qual tabela voce quer executar?', $choices, null, true, true);
@@ -111,7 +115,6 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
     private function generateViewsReact(string $modulo, string $table)
     {
         $this->info('');
-        $this->info("Modulo: {$modulo}");
         $this->info("Tabela: {$table}");
         $this->info('');
 
@@ -147,8 +150,8 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
         $this->info('');
 
         // gerar progress bar
-        $filesBar = $this->output->createProgressBar(1);
-        $filesBar->start();
+        $filesBarConfig = $this->output->createProgressBar(1);
+        $filesBarConfig->start();
 
         // criando pasta
         $path = $this->makeDirectory($this->pathBase."/configs/".$modulo."/". $table .".ts");
@@ -163,8 +166,8 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
         // cria o arquivo
         $this->files->put("{$path}", "{$contents}");
 
-        $filesBar->advance();
-        $filesBar->finish();
+        $filesBarConfig->advance();
+        $filesBarConfig->finish();
     }
 
     private function generatePages(string $modulo, string $table, array $getColumnType)
@@ -269,12 +272,12 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
         ];
 
         $this->info('');
-        $this->info("Frontend");
+        $this->info("Pages");
         $this->info('');
 
         // gerar progress bar
-        $filesBar = $this->output->createProgressBar(count($arches));
-        $filesBar->start();
+        $filesBarPages = $this->output->createProgressBar(count($arches));
+        $filesBarPages->start();
 
         foreach ($arches as $arch => $stubPage) {
 
@@ -338,9 +341,9 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
             // cria o arquivo
             $filesystem->put("{$path}", "{$contents}");
 
-            $filesBar->advance();
+            $filesBarPages->advance();
         }
-        $filesBar->finish();
+        $filesBarPages->finish();
     }
 
     private function getpathModulo(string $page, string $modulo, string $table): string
