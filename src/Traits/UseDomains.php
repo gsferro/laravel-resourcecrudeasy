@@ -41,6 +41,7 @@ trait UseDomains
         $this->generateDomainsBags($pathTable, $tableOf);
         $this->generateDomainsCriteria($pathTable, $tableOf);
         $this->generateDomainsExport($pathTable, $tableOf);
+        $this->generateDomainsHttp($pathTable, $tableOf);
     }
 
     private function generateDomainsActions(string $pathTable, Stringable $tableOf)
@@ -252,6 +253,48 @@ trait UseDomains
         }
         $filesBar->finish();
     }
+
+    private function generateDomainsHttp(string $pathTable, Stringable $tableOf)
+    {
+        /*
+        |---------------------------------------------------
+        | Cria a pasta base
+        |---------------------------------------------------
+        */
+        $pathBase = $this->makeDirectory($pathTable."/Http");
+
+        /*
+        |---------------------------------------------------
+        | Arquivos a serem criados
+        |---------------------------------------------------
+        */
+        $arches = [
+            'http/controllers/controllers' => 'Controller',
+        ];
+
+        $this->info('');
+        $this->info("Http");
+        // gerar progress bar
+        $filesBar = $this->output->createProgressBar(count($arches));
+        $filesBar->start();
+
+//        $columnData = $this->getExtraParamsDomains($tableOf)['columnData'];
+
+        foreach ($arches as $arch => $fileExtensionName) {
+            $params = $this->getParams($tableOf) + [
+//                '/\{{ column_data }}/' => trim($columnData),
+            ];
+
+            $filename = $tableOf->camel()->ucfirst() . $fileExtensionName . ".php";
+            $path     = $this->makeDirectory($pathBase . "/" . $filename);
+
+            $this->writeFile("domains/$arch", $params, $path);
+
+            $filesBar->advance();
+        }
+        $filesBar->finish();
+    }
+
     /*
     |---------------------------------------------------
     | Reuso
@@ -272,7 +315,7 @@ trait UseDomains
         ];
     }
 
-    private function getExtraParamsDomains(Stringable $tableOf)
+    private function getExtraParamsDomains(Stringable $tableOf): array
     {
         $schema        = dbSchemaEasy($tableOf, $this->connection);
         $columnListing = $schema->getColumnListing();
@@ -320,5 +363,20 @@ trait UseDomains
         return [
             'columnData' => $columnData,
         ];
+    }
+
+    private function writeFile(string $stubPath, array $params, string $path): void
+    {
+        // encapsulamento
+        $filesystem = $this->files;
+
+        // busca o stub
+        $stub = $filesystem->get($this->getStubEntity($stubPath));
+
+        // aplica as alterações
+        $contents = $this->replace($params, $stub);
+
+        // cria o arquivo
+        $filesystem->put("{$path}", "{$contents}");
     }
 }
