@@ -13,12 +13,7 @@ use Prettus\Repository\Exceptions\RepositoryException;
 
 class Get{{ table_name_camel_ucfirst }}Action
 {
-    private {{ table_name_singular_camel_ucfirst }}Repository ${{ table_name_singular_camel }}Repository;
-
-    public function __construct({{ table_name_singular_camel_ucfirst }}Repository ${{ table_name_singular_camel }}Repository)
-    {
-        $this->{{ table_name_singular_camel }}Repository = ${{ table_name_singular_camel }}Repository;
-    }
+    public function __construct(private {{ table_name_singular_camel_ucfirst }}Repository ${{ table_name_singular_camel }}Repository) {}
 
     /**
      * @throws RepositoryException

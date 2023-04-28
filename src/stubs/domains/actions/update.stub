@@ -8,12 +8,7 @@ use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Repositorie
 
 class Update{{ table_name_singular_camel_ucfirst }}Action
 {
-    private {{ table_name_singular_camel_ucfirst }}Repository ${{ table_name_singular_camel }}Repository;
-
-    public function __construct({{ table_name_singular_camel_ucfirst }}Repository ${{ table_name_singular_camel }}Repository)
-    {
-        $this->{{ table_name_singular_camel }}Repository = ${{ table_name_singular_camel }}Repository;
-    }
+    public function __construct(private {{ table_name_singular_camel_ucfirst }}Repository ${{ table_name_singular_camel }}Repository) {}
 
     public function execute({{ table_name_singular_camel_ucfirst }}Bag ${{ table_name_singular_camel }}Bag, {{ table_name_singular_camel_ucfirst }} ${{ table_name_singular_camel }}): {{ table_name_singular_camel_ucfirst }}
     {

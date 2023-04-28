@@ -4,12 +4,7 @@ namespace App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Bags;
 
 class {{ table_name_singular_camel_ucfirst }}Bag
 {
-   private array $attributes;
-
-   public function __construct(array $attributes)
-   {
-       $this->attributes = $attributes;
-   }
+   public function __construct(private array $attributes) {}
 
    public function attributes(): array
    {
