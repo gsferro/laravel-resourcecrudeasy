@@ -207,7 +207,7 @@ trait UseDomains
         | Cria a pasta base
         |---------------------------------------------------
         */
-        $pathBase = $this->makeDirectory($pathTable."/Export");
+        $pathBase = $this->makeDirectory($pathTable."/Exports");
 
         /*
         |---------------------------------------------------
@@ -302,12 +302,13 @@ trait UseDomains
             */
             $title = $columnOf->title()->replace('_', ' ');
             $paramsBase    = [
-                '/\{{ column }}/'               => $column,
-                '/\{{ column_type }}/'          => $type,
-                '/\{{ column_camel }}/'         => $columnOf->camel(),
-                '/\{{ column_camel_ucfirst }}/' => $columnOf->camel()->ucfirst(),
-                '/\{{ column_title }}/'         => $title,
-                '/\{{ column_is_required }}/'   => $isRequired ? 'rules={{ required: true }}' : '',
+                '/\{{ column }}/'                    => $column,
+                '/\{{ column_type }}/'               => $type,
+                '/\{{ column_camel }}/'              => $columnOf->camel(),
+                '/\{{ column_camel_ucfirst }}/'      => $columnOf->camel()->ucfirst(),
+                '/\{{ column_title }}/'              => $title,
+                '/\{{ column_is_required }}/'        => $isRequired ? 'rules={{ required: true }}' : '',
+                '/\{{ table_name_singular_camel }}/' => $tableOf->singular()->camel(),
             ];
 
             // export
