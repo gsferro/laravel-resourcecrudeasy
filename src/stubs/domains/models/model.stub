@@ -1,0 +1,73 @@
+<?php
+
+namespace App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Models;
+
+use Gsferro\ResourceCrudEasy\Models\BaseModel;
+use YourAppRocks\EloquentUuid\Traits\HasUuid;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class {{ class }} extends BaseModel
+{
+    /*
+    |---------------------------------------------------
+    | Uses
+    |---------------------------------------------------
+    */
+    use HasUuid, SoftDeletes;
+
+    /*
+    |---------------------------------------------------
+    | Configs Table
+    |---------------------------------------------------
+    */
+    public $table = '{{ class_table }}';
+    {{ pk_string }}
+    {{ timestamps }}
+    {{ connection }}
+    protected $dates = ['deleted_at'];
+
+    /**
+     * Fillable utilizado para setar os campos que serão observados no audits
+     *
+     * @var array
+     */
+    public $fillable = [
+        {{ fillable }}
+    ];
+
+    /**
+     * @var array
+     */
+    protected $casts = [
+        {{ cast }}
+    ];
+
+    /*
+    |---------------------------------------------------
+    | FilterEasy
+    |---------------------------------------------------
+    */
+    public array $likeFilterFields = [
+        {{ fillable }}
+    ];
+
+    /*
+    |---------------------------------------------------
+    | Rules from Validate
+    |---------------------------------------------------
+    |
+    | TODO package autovalidate
+    |
+    */
+    /**
+     * Validation rules
+     */
+    public static array $rules = [
+        'store' => [
+        {{ rules_store }}
+        ],
+        'update' => [
+        {{ rules_update }}
+        ],
+    ];
+}

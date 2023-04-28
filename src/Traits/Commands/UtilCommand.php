@@ -170,7 +170,7 @@ trait UtilCommand
             'decimal', 'float' => "numeric",
             'datetime' => "date_format:Y-m-d H:i:s",
             'smallint', 'bigint' => "integer",
-            'text' => "string",
+            default => "string"
         };
     }
 
@@ -181,8 +181,8 @@ trait UtilCommand
     private function replaceTypeColumnCast(string $columnType): string
     {
         return match ($columnType) {
-            'guid', 'uuid', 'text', 'date' => "string",
             'smallint', 'bigint' => "integer",
+            default => "string"
         };
     }
 }

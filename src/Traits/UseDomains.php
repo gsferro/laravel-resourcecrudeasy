@@ -415,7 +415,7 @@ trait UseDomains
         |---------------------------------------------------
         */
         $arches = [
-            'model',
+            'models/model',
         ];
 
         $this->info('');
@@ -424,13 +424,23 @@ trait UseDomains
         $barModel = $this->output->createProgressBar(count($arches));
         $barModel->start();
 
-        foreach ($arches as $arch) {
-            $params = $this->getParams($tableOf) + $this->modelTable($tableOf);
+        // encapsulamento
+        $filesystem = $this->files;
 
-            $filename = $tableOf->singular()->camel() . ".php";
+        foreach ($arches as $arch) {
+            $params = $this->getParams($tableOf) + $this->modelTable($tableOf, false);
+
+            $filename = $tableOf->singular()->camel()->ucfirst() . ".php";
             $path     = $this->makeDirectory($pathBase . "/" . $filename);
 
-            $this->writeFile("models/$arch", $params, $path);
+            // busca o stub
+            $stub = $filesystem->get($this->getStubEntity("domains/$arch"));
+            // aplica as alterações
+            $contents = $this->replace($params, $this->applyReplace($stub, $tableOf, $stub));
+            // cria o arquivo
+            $filesystem->put("{$path}", "{$contents}");
+
+            //            $this->writeFile("models/$arch", $params, $path);
 
             $barModel->advance();
         }

@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 trait WithExistsTableCommand
 {
-    private function modelTable(string $entity): array
+    private function modelTable(string $entity, bool $isRecursive = true): array
     {
         // prepara variaveis
         $pkString    = "";
@@ -54,7 +54,7 @@ trait WithExistsTableCommand
             }
 
             // new entity
-            if (!$schema->hasModelWithTableName($foreinsKey['table'])) {
+            if ($isRecursive && !$schema->hasModelWithTableName($foreinsKey['table'])) {
                 $this->newEntityFromRelation($entitys['table'], $foreinsKey);
             }
 
