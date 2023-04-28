@@ -1,3 +1,5 @@
+<?php
+
 use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Http\Controllers\{{ table_name_singular_camel_ucfirst }}Controller;
 use Illuminate\Support\Facades\Route;
 

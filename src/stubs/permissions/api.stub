@@ -3,7 +3,7 @@ Route::group([], function () {
         Route::get('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'index'])->name('{{ class_route_slug }}.index');
     });
     Route::group(['middleware' => ['permission:{{ class_route_slug }}.store'], ], function () {
-        Route::POST('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'store'])->name('{{ class_route_slug }}.store');
+        Route::post('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'store'])->name('{{ class_route_slug }}.store');
     });
      Route::group(['middleware' => ['permission:{{ class_route_slug }}.update'], ], function () {
         Route::match(['put', 'patch'], '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'update'])->name('{{ class_route_slug }}.update');
