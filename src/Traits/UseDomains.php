@@ -309,7 +309,6 @@ trait UseDomains
                 $name = $prefix.$name;
             }
 
-
             $filename = $folder . "/" .$name . $fileExtensionName . ".php";
             $path     = $this->makeDirectory($pathBase . "/" . $filename);
 

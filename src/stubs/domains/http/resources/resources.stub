@@ -11,7 +11,7 @@ class {{ table_name_singular_camel_ucfirst }}Resource extends JsonResource
     {
         /** @var {{ table_name_singular_camel_ucfirst }} $this */
         return [
-            {{ attributes_resource}}
+            {{ attributes_resource }}
         ];
     }
 }
