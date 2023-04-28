@@ -1,0 +1,17 @@
+<?php
+
+namespace App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Http\Resources;
+
+use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Models\Provider;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class {{ table_name_singular_camel_ucfirst }}Resource extends JsonResource
+{
+    public function toArray($request): array
+    {
+        /** @var {{ table_name_singular_camel_ucfirst }} $this */
+        return [
+            {{ attributes_resource}}
+        ];
+    }
+}

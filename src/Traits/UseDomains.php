@@ -274,6 +274,7 @@ trait UseDomains
             'http/controllers/controllers' => 'Controller',
             'http/requests/create'         => 'Request',
             'http/requests/update'         => 'Request',
+            'http/resources/resources'     => 'Resource',
         ];
 
         $this->info('');
@@ -282,16 +283,20 @@ trait UseDomains
         $filesBarHttp = $this->output->createProgressBar(count($arches));
         $filesBarHttp->start();
 
-        $attributes = $this->getExtraParamsDomains($tableOf)['attributes'];
+        $extraParamsDomains = $this->getExtraParamsDomains($tableOf);
+        $attributesRequest  = $extraParamsDomains['attributesRequest'];
+        $attributesResource = $extraParamsDomains['attributesResource'];
 
         foreach ($arches as $arch => $fileExtensionName) {
             $params = $this->getParams($tableOf) + [
-                '/\{{ attributes }}/' => trim($attributes),
+                '/\{{ attributes_request }}/' => trim($attributesRequest),
+                '/\{{ attributes_resource }}/' => trim($attributesResource),
             ];
 
             $folder = match ($fileExtensionName) {
                 'Controller' => 'Controllers',
                 'Request'    => 'Requests',
+                'Resource'   => 'Resources',
             };
 
             $name = $tableOf->singular()->camel()->ucfirst();
@@ -349,7 +354,8 @@ trait UseDomains
         $filesystem = $this->files;
 
         $columnData = "";
-        $attributes = "";
+        $attributesRequest = "";
+        $attributesResource = "";
         foreach ($getColumnType as $column => $type) {
             $columnOf = Str::of($column);
 
@@ -379,14 +385,18 @@ trait UseDomains
             $columnData .= $this->replace($paramsBase,
                 $filesystem->get($this->getStubEntity('domains/export/column_data'))
             );
-            $attributes .= $this->replace($paramsBase,
+            $attributesRequest .= $this->replace($paramsBase,
                 $filesystem->get($this->getStubEntity('domains/http/requests/attributes'))
+            );
+            $attributesResource .= $this->replace($paramsBase,
+                $filesystem->get($this->getStubEntity('domains/http/resources/attributes'))
             );
         }
 
         return [
-            'columnData' => $columnData,
-            'attributes' => $attributes,
+            'columnData'         => $columnData,
+            'attributesRequest'  => $attributesRequest,
+            'attributesResource' => $attributesResource,
         ];
     }
 

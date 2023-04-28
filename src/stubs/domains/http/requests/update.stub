@@ -14,23 +14,14 @@ class Update{{ table_name_singular_camel_ucfirst }}Request extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => [
-                'required',
-                'string',
-                'unique:providers,name,null,id,deleted_at,null'
-            ],
-            'status' => [
-                'required',
-                'integer',
-                'in:'. implode(",", ProviderStatus::toArray()),
-            ]
+
         ];
     }
 
     public function attributes(): array
     {
         return [
-            {{ attributes }}
+            {{ attributes_request }}
         ];
     }
 }
