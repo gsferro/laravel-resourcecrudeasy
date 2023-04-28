@@ -187,7 +187,7 @@ const {{ table_name_camel_ucfirst }}List = () => {
         link.setAttribute('download', 'Prime {{ modulo }}.xlsx')
         link.click()
       } else if (res.status == 204) {
-        toast.error('Não há dados a serem exportados com os perimetros informados.')
+        toast.error('Não há dados a serem exportados com os parâmetros informados.')
       } else {
         toast.error('Erro não informado, entre em contato com o administrador do sistema.')
       }
