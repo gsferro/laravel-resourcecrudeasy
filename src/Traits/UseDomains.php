@@ -39,10 +39,7 @@ trait UseDomains
         */
         $this->generateDomainsActions($pathTable, $tableOf);
         $this->generateDomainsBags($pathTable, $tableOf);
-
-//        $this->info('');
-//        $this->info("Domains: {$this->modulo}");
-//        $this->info('');
+        $this->generateDomainsCriteria($pathTable, $tableOf);
     }
 
     private function generateDomainsActions(string $pathTable, Stringable $tableOf)
@@ -153,6 +150,60 @@ trait UseDomains
         $filesBarBags->finish();
     }
 
+    private function generateDomainsCriteria(string $pathTable, Stringable $tableOf)
+    {
+        /*
+        |---------------------------------------------------
+        | Cria a pasta base
+        |---------------------------------------------------
+        */
+        $pathBase = $this->makeDirectory($pathTable."/Criteria");
+
+        /*
+        |---------------------------------------------------
+        | reuso
+        |---------------------------------------------------
+        */
+        $filesystem = $this->files;
+
+        /*
+        |---------------------------------------------------
+        | Arquivos a serem criados
+        |---------------------------------------------------
+        */
+        $arches = [
+            'criteria',
+        ];
+
+        $this->info('');
+        $this->info("Criteria");
+        // gerar progress bar
+        $filesBarCriteria = $this->output->createProgressBar(count($arches));
+        $filesBarCriteria->start();
+
+        foreach ($arches as $arch) {
+            $params   = $this->getParams($tableOf);
+            $filename = $tableOf->camel()->ucfirst() . "ListCriteria.php";
+            $path     = $this->makeDirectory($pathBase . "/" . $filename);
+
+            // busca o stub
+            $stub = $filesystem->get($this->getStubEntity('domains/criterias/' . $arch));
+
+            // aplica as alterações
+            $contents = $this->replace($params, $stub);
+            // cria o arquivo
+            $filesystem->put("{$path}", "{$contents}");
+
+            $filesBarCriteria->advance();
+        }
+        $filesBarCriteria->finish();
+    }
+
+    /*
+    |---------------------------------------------------
+    | Reuso
+    |---------------------------------------------------
+    */
     private function getParams(Stringable $tableOf): array
     {
         return [
