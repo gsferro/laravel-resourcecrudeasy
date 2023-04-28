@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Actions;
+namespace App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Bags;
 
 class {{ table_name_singular_camel_ucfirst }}Bag
 {
