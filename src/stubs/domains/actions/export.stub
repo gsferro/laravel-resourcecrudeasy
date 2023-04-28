@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Actions;
+
+use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Criteria\{{ table_name_camel_ucfirst }}ListCriteria;
+use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Exports\{{ table_name_camel_ucfirst }}Exports;
+use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Repositories\{{ table_name_singular_camel_ucfirst }}Repository;
+use Illuminate\Http\JsonResponse;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+
+class Export{{ table_name_camel_ucfirst }}Action
+{
+    private {{ table_name_singular_camel_ucfirst }}Repository ${{ table_name_singular_camel }}Repository;
+
+    public function __construct({{ table_name_singular_camel_ucfirst }}Repository ${{ table_name_singular_camel }}Repository)
+    {
+        $this->{{ table_name_singular_camel }}Repository = ${{ table_name_singular_camel }}Repository;
+    }
+
+    public function execute(): BinaryFileResponse|JsonResponse
+    {
+        return $this->{{ table_name_singular_camel }}Repository->delete(${{ table_name_singular_camel }}->id);
+
+        ${{ table_name_camel }} = $this->{{ table_name_singular_camel }}Repository
+                    ->pushCriteria(new {{ table_name_camel_ucfirst }}ListCriteria())
+                    ->orderBy('id')
+                    ->all();
+
+        if (${{ table_name_camel }}->count() == 0) {
+            return response()->json([], 204);
+        }
+
+        return Excel::download(new {{ table_name_camel_ucfirst }}Export(${{ table_name_camel }}), "Prime {{ table_title }}.xlsx");
+    }
+}

@@ -69,9 +69,9 @@ trait UseDomains
         $arches = [
             'create',
             'destroy',
-            //            'export',
-            //            'get',
-            //            'update',
+            'export',
+//            'get',
+//            'update',
         ];
 
         $this->info('');
