@@ -2,6 +2,7 @@
 
 namespace App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Http\Requests;
 
+use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Models\{{ table_name_singular_camel_ucfirst }};
 use Illuminate\Foundation\Http\FormRequest;
 
 class Update{{ table_name_singular_camel_ucfirst }}Request extends FormRequest
@@ -13,9 +14,7 @@ class Update{{ table_name_singular_camel_ucfirst }}Request extends FormRequest
 
     public function rules(): array
     {
-        return [
-
-        ];
+        return {{ table_name_singular_camel_ucfirst }}::$rules['update'] ?? [];
     }
 
     public function attributes(): array
