@@ -19,7 +19,7 @@ class {{ table_name_singular_camel_ucfirst }}ListCriteria implements CriteriaInt
     public function apply($model, RepositoryInterface $repository)
     {
         return $model
-            ->selectRaw('providers.*')
+            ->selectRaw('{{ table_name }}.*')
             ->filterEasy(Request::all());
     }
 }
