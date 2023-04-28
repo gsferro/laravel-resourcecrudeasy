@@ -238,7 +238,7 @@ trait UseDomains
             $params   = $this->getParams($tableOf) + [
                 '/\{{ column_data }}/' => trim($columnData),
             ];
-            $filename = $tableOf->singular()->camel()->ucfirst() . "Export.php";
+            $filename = $tableOf->camel()->ucfirst() . "Export.php";
             $path     = $this->makeDirectory($pathBase . "/" . $filename);
 
             // busca o stub
@@ -285,7 +285,7 @@ trait UseDomains
 //                '/\{{ column_data }}/' => trim($columnData),
             ];
 
-            $filename = $tableOf->camel()->ucfirst() . $fileExtensionName . ".php";
+            $filename = $tableOf->singular()->camel()->ucfirst() . $fileExtensionName . ".php";
             $path     = $this->makeDirectory($pathBase . "/" . $filename);
 
             $this->writeFile("domains/$arch", $params, $path);
