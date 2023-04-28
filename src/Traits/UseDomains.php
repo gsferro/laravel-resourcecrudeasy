@@ -287,7 +287,15 @@ trait UseDomains
                 '/\{{ attributes }}/' => trim($attributes),
             ];
 
-            $filename = $tableOf->singular()->camel()->ucfirst() . $fileExtensionName . ".php";
+            $folder = match ($fileExtensionName) {
+                'Controller' => 'Controllers',
+                'Request'    => 'Requests',
+            };
+            $name = match ($fileExtensionName) {
+                'Controller' => $tableOf->singular()->camel()->ucfirst(),
+                'Request'    => $tableOf->camel()->ucfirst(),
+            };
+            $filename = $folder . "/" .$name . $fileExtensionName . ".php";
             $path     = $this->makeDirectory($pathBase . "/" . $filename);
 
             $this->writeFile("domains/$arch", $params, $path);
