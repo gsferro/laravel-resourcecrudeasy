@@ -2,7 +2,7 @@
 
 namespace App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Http\Resources;
 
-use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Models\Provider;
+use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Models\{{ table_name_singular_camel_ucfirst }};
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class {{ table_name_singular_camel_ucfirst }}Resource extends JsonResource
