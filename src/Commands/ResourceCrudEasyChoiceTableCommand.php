@@ -93,6 +93,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
 //                ]);
 
 //                if ($action == 'Gerar views react') {
+                    $this->setEntity($table);
 //                    $this->generateViewsReact($table);
                     $this->generateDomains($table);
 //                }
@@ -100,10 +101,26 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
                 $filesBar->advance();
             }
             $filesBar->finish();
+
             $this->info('');
         } catch (Exception $e) {
             dump('Ops...', $e->getMessage(), $e->getCode(), $e->getLine() );
         }
+    }
+
+    private function setEntity(string $table)
+    {
+        $schema        = dbSchemaEasy($table, $this->connection);
+        $columnListing = $schema->getColumnListing();
+
+        $this->entity = $table;
+        $this->entitys[ $table ] = [
+            'str'           => Str::of($table),
+            'table'         => $table,
+            'connection'    => $this->connection,
+            'schema'        => $schema,
+            'columnListing' => $columnListing,
+        ];
     }
 
     // TODO ir para pacote DatabaseSchemaEasy

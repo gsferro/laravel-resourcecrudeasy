@@ -2,11 +2,14 @@
 
 namespace Gsferro\ResourceCrudEasy\Traits;
 
+use Gsferro\ResourceCrudEasy\Traits\Commands\WithExistsTableCommand;
 use Illuminate\Support\Str;
 use Illuminate\Support\Stringable;
 
 trait UseDomains
 {
+    use WithExistsTableCommand;
+
     private function generateDomains(string $table)
     {
         $tableOf = Str::of($table);
@@ -44,6 +47,7 @@ trait UseDomains
         $this->generateDomainsHttps($pathTable, $tableOf);
         $this->generateDomainsRespositories($pathTable, $tableOf);
         $this->generateDomainsRoutes($pathTable, $tableOf);
+        $this->generateDomainsModels($pathTable, $tableOf);
 
         $this->info('');
     }
@@ -395,6 +399,44 @@ trait UseDomains
         }
         $filesBarRoute->finish();
     }
+
+    private function generateDomainsModels(string $pathTable, Stringable $tableOf)
+    {
+        /*
+        |---------------------------------------------------
+        | Cria a pasta base
+        |---------------------------------------------------
+        */
+        $pathBase = $this->makeDirectory($pathTable."/Models");
+
+        /*
+        |---------------------------------------------------
+        | Arquivos a serem criados
+        |---------------------------------------------------
+        */
+        $arches = [
+            'model',
+        ];
+
+        $this->info('');
+        $this->comment("> Models");
+        // gerar progress bar
+        $barModel = $this->output->createProgressBar(count($arches));
+        $barModel->start();
+
+        foreach ($arches as $arch) {
+            $params = $this->getParams($tableOf) + $this->modelTable($tableOf);
+
+            $filename = $tableOf->singular()->camel() . ".php";
+            $path     = $this->makeDirectory($pathBase . "/" . $filename);
+
+            $this->writeFile("models/$arch", $params, $path);
+
+            $barModel->advance();
+        }
+        $barModel->finish();
+    }
+
     /*
     |---------------------------------------------------
     | Reuso
