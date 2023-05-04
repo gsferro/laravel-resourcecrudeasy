@@ -5,6 +5,6 @@ export default {
   createEndpoint: base.baseUrl + '{{ table_name }}/',
   updateEndpoint: base.baseUrl + '{{ table_name }}/',
   deleteEndpoint: base.baseUrl + '{{ table_name }}/',
-  getProviderEndPoint: base.baseUrl + '{{ table_name }}/',
+  get{{ table_name_camel_ucfirst }}EndPoint: base.baseUrl + '{{ table_name }}/',
   exportEndpoint: base.baseUrl + '{{ table_name }}/export'
 }
