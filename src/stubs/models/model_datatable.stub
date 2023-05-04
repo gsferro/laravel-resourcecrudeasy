@@ -7,7 +7,7 @@ use Gsferro\ResourceCrudEasy\Models\BaseModel;
 use Gsferro\ResourceCrudEasy\Interfaces\DatatablesInterface;
 use YourAppRocks\EloquentUuid\Traits\HasUuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use GeneaLabs\LaravelModelCaching\Traits\Cachable;
+//use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasOne};
 
 class {{ class }} extends BaseModel implements DatatablesInterface
