@@ -2,18 +2,20 @@
 
 namespace App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Models;
 
-use Gsferro\ResourceCrudEasy\Models\BaseModel;
+use Gsferro\FilterEasy\Traits\FilterEasy;
+use Gsferro\PowerModel\Traits\PowerModel;
+use Illuminate\Database\Eloquent\Model;
 use YourAppRocks\EloquentUuid\Traits\HasUuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class {{ table_name_singular_camel_ucfirst }} extends BaseModel
+class {{ table_name_singular_camel_ucfirst }} extends Model
 {
     /*
     |---------------------------------------------------
     | Uses
     |---------------------------------------------------
     */
-    use HasUuid, SoftDeletes;
+    use HasUuid, SoftDeletes, FilterEasy, PowerModel;
 
     /*
     |---------------------------------------------------
