@@ -14,12 +14,12 @@ Route::group(['middleware' => ['cors', 'auth:api', 'tenant']], function () {
         Route::post('/{{ table_name }}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'store'])->name('{{ table_name }}.store');
     });
      Route::group(['middleware' => ['needsPermission:{{ table_name }}.update'], ], function () {
-        Route::match(['put', 'patch'], '{{ table_name }}/{uuid}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'update'])->name('{{ table_name }}.update');
+        Route::match(['put', 'patch'], '{{ table_name }}/{model}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'update'])->name('{{ table_name }}.update');
     });
     Route::group(['middleware' => ['needsPermission:{{ table_name }}.show'], ], function () {
-        Route::get( '{{ table_name }}/{uuid}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'show'])->name('{{ table_name }}.show');
+        Route::get( '{{ table_name }}/{model}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'show'])->name('{{ table_name }}.show');
     });
     Route::group(['middleware' => ['needsPermission:{{ table_name }}.destroy'], ], function () {
-        Route::delete( '{{ table_name }}/{uuid}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'destroy'])->name('{{ table_name }}.destroy');
+        Route::delete( '{{ table_name }}/{model}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'destroy'])->name('{{ table_name }}.destroy');
     });
 });
