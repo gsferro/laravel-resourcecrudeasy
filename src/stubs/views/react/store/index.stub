@@ -39,7 +39,7 @@ export const fetchData = createAsyncThunk('app{{ table_name_camel_ucfirst }}/fet
   return response.data
 })
 
-// ** Delete PROVIDERS
+// ** Delete
 export const delete{{ table_name_camel_ucfirst }} = createAsyncThunk(
   'app{{ table_name_camel_ucfirst }}/delete{{ table_name_camel_ucfirst }}',
   async (uuid: string | string, { getState, dispatch }: Redux) => {
@@ -50,7 +50,7 @@ export const delete{{ table_name_camel_ucfirst }} = createAsyncThunk(
     })
     .then(async () => {
       toast.success('{{ table_name_camel_ucfirst }} deletado com sucesso!')
-      dispatch(fetchData(getState().{{ table_name_camel }}.params))
+      dispatch(fetchData(getState().{{ table_singular }}.params))
     })
     .catch(() => {
       toast.error("Não foi possível deletar o {{ table_name_camel_ucfirst }}.")
