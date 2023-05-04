@@ -1,0 +1,19 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Artesaos\Defender\Facades\Defender;
+
+class {{ table_name_camel_ucfirst }}PermissionSeeder extends Seeder
+{
+    public function run(): void
+    {
+        Defender::createPermission('{{ table_name_camel }}.export',    '{{ modulo }} - {{ table_name_camel }} export');
+        Defender::createPermission('{{ table_name_camel }}.index',     '{{ modulo }} - {{ table_name_camel }} index');
+        Defender::createPermission('{{ table_name_camel }}.store',     '{{ modulo }} - {{ table_name_camel }} store');
+        Defender::createPermission('{{ table_name_camel }}.update',    '{{ modulo }} - {{ table_name_camel }} update');
+        Defender::createPermission('{{ table_name_camel }}.show',      '{{ modulo }} - {{ table_name_camel }} show');
+        Defender::createPermission('{{ table_name_camel }}.destroy',   '{{ modulo }} - {{ table_name_camel }} destroy');
+    }
+}

@@ -14,7 +14,7 @@ class Create{{ table_name_singular_camel_ucfirst }}Request extends FormRequest
 
     public function rules(): array
     {
-        return {{ table_name_singular_camel_ucfirst }}::$rules['create'] ?? [];
+        return {{ table_name_singular_camel_ucfirst }}::$rules['store'] ?? [];
     }
 
     public function attributes(): array

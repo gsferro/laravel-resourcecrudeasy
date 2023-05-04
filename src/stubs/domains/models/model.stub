@@ -70,4 +70,14 @@ class {{ table_name_singular_camel_ucfirst }} extends BaseModel
         {{ rules_update }}
         ],
     ];
+
+    /*
+    |---------------------------------------------------
+    | Route Name
+    |---------------------------------------------------
+    */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 }

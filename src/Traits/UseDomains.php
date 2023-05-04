@@ -16,7 +16,7 @@ trait UseDomains
         $this->comment("► ► ► Generate Domains Files");
         $this->info('');
 
-        $tableOf = Str::of($table);
+        $this->tableOf = Str::of($table);
         /*
         |---------------------------------------------------
         | Cria a pasta domains, caso não exista
@@ -36,7 +36,7 @@ trait UseDomains
         | Cria a pasta com o nome da Table
         |---------------------------------------------------
         */
-        $tableName = $tableOf->singular()->camel()->ucfirst();
+        $tableName = $this->tableOf->singular()->camel()->ucfirst();
         $pathTable = $this->makeDirectory($pathBase . "/" . $tableName);
 
         /*
@@ -44,19 +44,20 @@ trait UseDomains
         | Criar pastas
         |---------------------------------------------------
         */
-        $this->generateDomainsActions($pathTable, $tableOf);
-        $this->generateDomainsBags($pathTable, $tableOf);
-        $this->generateDomainsCriteria($pathTable, $tableOf);
-        $this->generateDomainsExport($pathTable, $tableOf);
-        $this->generateDomainsHttps($pathTable, $tableOf);
-        $this->generateDomainsRespositories($pathTable, $tableOf);
-        $this->generateDomainsRoutes($pathTable, $tableOf);
-        $this->generateDomainsModels($pathTable, $tableOf);
+        $this->generateDomainsActions($pathTable);
+        $this->generateDomainsBags($pathTable);
+        $this->generateDomainsCriteria($pathTable);
+        $this->generateDomainsExport($pathTable);
+        $this->generateDomainsHttps($pathTable);
+        $this->generateDomainsRespositories($pathTable);
+        $this->generateDomainsRoutes($pathTable);
+        $this->generateDomainsModels($pathTable);
+        $this->generateDefenderPermission();
 
         $this->info('');
     }
 
-    private function generateDomainsActions(string $pathTable, Stringable $tableOf)
+    private function generateDomainsActions(string $pathTable)
     {
         /*
         |---------------------------------------------------
@@ -92,11 +93,11 @@ trait UseDomains
         $filesBarActions->start();
 
         foreach ($arches as $arch) {
-            $params = $this->getParams($tableOf);
+            $params = $this->getParams();
 
             $tableNameUse = match ($arch) {
-                'export', 'get' => $tableOf->camel()->ucfirst(),
-                default => $tableOf->singular()->camel()->ucfirst()
+                'export', 'get' => $this->tableOf->camel()->ucfirst(),
+                default => $this->tableOf->singular()->camel()->ucfirst()
             };
             $filename = Str::ucfirst($arch) . $tableNameUse . "Action.php";
             $path     = $this->makeDirectory($pathBase . "/" . $filename);
@@ -115,7 +116,7 @@ trait UseDomains
 
     }
 
-    private function generateDomainsBags(string $pathTable, Stringable $tableOf)
+    private function generateDomainsBags(string $pathTable)
     {
         /*
         |---------------------------------------------------
@@ -147,8 +148,8 @@ trait UseDomains
         $filesBarBags->start();
 
         foreach ($arches as $arch) {
-            $params   = $this->getParams($tableOf);
-            $filename = $tableOf->singular()->camel()->ucfirst() . "Bag.php";
+            $params   = $this->getParams();
+            $filename = $this->tableOf->singular()->camel()->ucfirst() . "Bag.php";
             $path     = $this->makeDirectory($pathBase . "/" . $filename);
 
             // busca o stub
@@ -164,7 +165,7 @@ trait UseDomains
         $filesBarBags->finish();
     }
 
-    private function generateDomainsCriteria(string $pathTable, Stringable $tableOf)
+    private function generateDomainsCriteria(string $pathTable)
     {
         /*
         |---------------------------------------------------
@@ -196,8 +197,8 @@ trait UseDomains
         $filesBarCriteria->start();
 
         foreach ($arches as $arch) {
-            $params   = $this->getParams($tableOf);
-            $filename = $tableOf->camel()->ucfirst() . "ListCriteria.php";
+            $params   = $this->getParams();
+            $filename = $this->tableOf->camel()->ucfirst() . "ListCriteria.php";
             $path     = $this->makeDirectory($pathBase . "/" . $filename);
 
             // busca o stub
@@ -213,7 +214,7 @@ trait UseDomains
         $filesBarCriteria->finish();
     }
 
-    private function generateDomainsExport(string $pathTable, Stringable $tableOf)
+    private function generateDomainsExport(string $pathTable)
     {
         /*
         |---------------------------------------------------
@@ -244,13 +245,13 @@ trait UseDomains
         $filesBarExport = $this->output->createProgressBar(count($arches));
         $filesBarExport->start();
 
-        $columnData = $this->getExtraParamsDomains($tableOf)['columnData'];
+        $columnData = $this->getExtraParamsDomains()['columnData'];
 
         foreach ($arches as $arch) {
-            $params   = $this->getParams($tableOf) + [
+            $params   = $this->getParams() + [
                 '/\{{ column_data }}/' => trim($columnData),
             ];
-            $filename = $tableOf->camel()->ucfirst() . "Export.php";
+            $filename = $this->tableOf->camel()->ucfirst() . "Export.php";
             $path     = $this->makeDirectory($pathBase . "/" . $filename);
 
             // busca o stub
@@ -266,7 +267,7 @@ trait UseDomains
         $filesBarExport->finish();
     }
 
-    private function generateDomainsHttps(string $pathTable, Stringable $tableOf)
+    private function generateDomainsHttps(string $pathTable)
     {
         /*
         |---------------------------------------------------
@@ -293,12 +294,12 @@ trait UseDomains
         $filesBarHttp = $this->output->createProgressBar(count($arches));
         $filesBarHttp->start();
 
-        $extraParamsDomains = $this->getExtraParamsDomains($tableOf);
+        $extraParamsDomains = $this->getExtraParamsDomains();
         $attributesRequest  = $extraParamsDomains['attributesRequest'];
         $attributesResource = $extraParamsDomains['attributesResource'];
 
         foreach ($arches as $arch => $fileExtensionName) {
-            $params = $this->getParams($tableOf) + [
+            $params = $this->getParams() + [
                 '/\{{ attributes_request }}/' => trim($attributesRequest),
                 '/\{{ attributes_resource }}/' => trim($attributesResource),
             ];
@@ -309,7 +310,7 @@ trait UseDomains
                 'Resource'   => 'Resources',
             };
 
-            $name = $tableOf->singular()->camel()->ucfirst();
+            $name = $this->tableOf->singular()->camel()->ucfirst();
 
             if ($fileExtensionName == 'Request') {
                 $prefix = match ($arch) {
@@ -329,7 +330,7 @@ trait UseDomains
         $filesBarHttp->finish();
     }
 
-    private function generateDomainsRespositories(string $pathTable, Stringable $tableOf)
+    private function generateDomainsRespositories(string $pathTable)
     {
         /*
         |---------------------------------------------------
@@ -354,9 +355,9 @@ trait UseDomains
         $filesBarRepository->start();
 
         foreach ($arches as $arch => $fileExtensionName) {
-            $params = $this->getParams($tableOf);
+            $params = $this->getParams();
 
-            $name     = $tableOf->singular()->camel()->ucfirst();
+            $name     = $this->tableOf->singular()->camel()->ucfirst();
             $filename = $name . $fileExtensionName . ".php";
             $path     = $this->makeDirectory($pathBase . "/" . $filename);
 
@@ -367,7 +368,7 @@ trait UseDomains
         $filesBarRepository->finish();
     }
 
-    private function generateDomainsRoutes(string $pathTable, Stringable $tableOf)
+    private function generateDomainsRoutes(string $pathTable)
     {
         /*
         |---------------------------------------------------
@@ -392,9 +393,9 @@ trait UseDomains
         $filesBarRoute->start();
 
         foreach ($arches as $arch) {
-            $params = $this->getParams($tableOf);
+            $params = $this->getParams();
 
-            $filename = $tableOf->camel() . ".php";
+            $filename = $this->tableOf->camel() . ".php";
             $path     = $this->makeDirectory($pathBase . "/" . $filename);
 
             $this->writeFile("domains/$arch", $params, $path);
@@ -404,7 +405,7 @@ trait UseDomains
         $filesBarRoute->finish();
     }
 
-    private function generateDomainsModels(string $pathTable, Stringable $tableOf)
+    private function generateDomainsModels(string $pathTable)
     {
         /*
         |---------------------------------------------------
@@ -432,15 +433,15 @@ trait UseDomains
         $filesystem = $this->files;
 
         foreach ($arches as $arch) {
-            $params = $this->getParams($tableOf) + $this->modelTable($tableOf, false);
+            $params = $this->getParams() + $this->modelTable($this->tableOf, false);
 
-            $filename = $tableOf->singular()->camel()->ucfirst() . ".php";
+            $filename = $this->tableOf->singular()->camel()->ucfirst() . ".php";
             $path     = $this->makeDirectory($pathBase . "/" . $filename);
 
             // busca o stub
             $stub = $filesystem->get($this->getStubEntity("domains/$arch"));
             // aplica as alterações
-            $contents = $this->replace($params, $this->applyReplace($stub, $tableOf, $stub));
+            $contents = $this->replace($params, $this->applyReplace($stub, $this->tableOf, $stub));
             // cria o arquivo
             $filesystem->put("{$path}", "{$contents}");
 
@@ -451,29 +452,66 @@ trait UseDomains
         $barModel->finish();
     }
 
+    private function generateDefenderPermission()
+    {
+        /*
+        |---------------------------------------------------
+        | Cria a pasta base
+        |---------------------------------------------------
+        */
+        $pathBase = database_path('seeders/' . $this->tableOf . 'PermissionSeeder.php');;
+
+        /*
+        |---------------------------------------------------
+        | Arquivos a serem criados
+        |---------------------------------------------------
+        */
+        $arches = [
+            'permissions/seeder_defender',
+        ];
+
+        $this->info('');
+        $this->info("► Permission Seeder");
+        // gerar progress bar
+        $barSeeder = $this->output->createProgressBar(count($arches));
+        $barSeeder->start();
+
+        foreach ($arches as $arch) {
+            $params = $this->getParams();
+
+            $filename = $this->tableOf->singular()->camel()->ucfirst() . ".php";
+            $path     = $this->makeDirectory($pathBase . "/" . $filename);
+
+            $this->writeFile("$arch", $params, $path);
+
+            $barSeeder->advance();
+        }
+        $barSeeder->finish();
+    }
+
     /*
     |---------------------------------------------------
     | Reuso
     |---------------------------------------------------
     */
-    private function getParams(Stringable $tableOf): array
+    private function getParams(): array
     {
         return [
             // base
             '/\{{ modulo }}/'                            => $this->modulo,
-            '/\{{ table_name }}/'                        => $tableOf,
-            '/\{{ table_singular }}/'                    => $tableOf->singular(),
-            '/\{{ table_title }}/'                       => $tableOf->title()->replace('_', ' '),
-            '/\{{ table_name_camel }}/'                  => $tableOf->camel(),
-            '/\{{ table_name_camel_ucfirst }}/'          => $tableOf->camel()->ucfirst(),
-            '/\{{ table_name_singular_camel }}/'         => $tableOf->singular()->camel(),
-            '/\{{ table_name_singular_camel_ucfirst }}/' => $tableOf->singular()->camel()->ucfirst(),
+            '/\{{ table_name }}/'                        => $this->tableOf,
+            '/\{{ table_singular }}/'                    => $this->tableOf->singular(),
+            '/\{{ table_title }}/'                       => $this->tableOf->title()->replace('_', ' '),
+            '/\{{ table_name_camel }}/'                  => $this->tableOf->camel(),
+            '/\{{ table_name_camel_ucfirst }}/'          => $this->tableOf->camel()->ucfirst(),
+            '/\{{ table_name_singular_camel }}/'         => $this->tableOf->singular()->camel(),
+            '/\{{ table_name_singular_camel_ucfirst }}/' => $this->tableOf->singular()->camel()->ucfirst(),
         ];
     }
 
-    private function getExtraParamsDomains(Stringable $tableOf): array
+    private function getExtraParamsDomains(): array
     {
-        $schema        = dbSchemaEasy($tableOf, $this->connection);
+        $schema        = dbSchemaEasy($this->tableOf, $this->connection);
         $columnListing = $schema->getColumnListing();
 
         $getColumnType = [];
@@ -509,7 +547,7 @@ trait UseDomains
                 '/\{{ column_camel_ucfirst }}/'      => $columnOf->camel()->ucfirst(),
                 '/\{{ column_title }}/'              => $title,
                 '/\{{ column_is_required }}/'        => $isRequired ? 'rules={{ required: true }}' : '',
-                '/\{{ table_name_singular_camel }}/' => $tableOf->singular()->camel(),
+                '/\{{ table_name_singular_camel }}/' => $this->tableOf->singular()->camel(),
             ];
 
             // export

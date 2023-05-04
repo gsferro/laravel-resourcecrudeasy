@@ -4,6 +4,7 @@ namespace Gsferro\ResourceCrudEasy\Commands;
 
 use Exception;
 use Gsferro\DatabaseSchemaEasy\DatabaseSchemaEasy;
+use Illuminate\Support\Stringable;
 use Gsferro\ResourceCrudEasy\Traits\{UseDomains, UseReacts};
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -14,6 +15,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
 
     private string              $pathBase;
     private string              $modulo;
+    private Stringable          $tableOf;
     private ?string             $connection = null;
     private ?DatabaseSchemaEasy $schema     = null;
 
