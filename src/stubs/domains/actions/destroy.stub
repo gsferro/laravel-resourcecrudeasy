@@ -9,7 +9,7 @@ class Destroy{{ table_name_singular_camel_ucfirst }}Action
 {
     public function __construct(private {{ table_name_singular_camel_ucfirst }}Repository ${{ table_name_singular_camel }}Repository) {}
 
-    public function execute({{ table_name_singular_camel_ucfirst }} ${{ table_name_singular_camel }}): void
+    public function execute({{ table_name_singular_camel_ucfirst }} ${{ table_name_singular_camel }}): int
     {
         return $this->{{ table_name_singular_camel }}Repository->delete(${{ table_name_singular_camel }}->id);
     }
