@@ -4,22 +4,22 @@ use App\Domains\{{ modulo }}\{{ table_name_singular_camel_ucfirst }}\Http\Contro
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['cors', 'auth:api', 'tenant']], function () {
-    Route::group(['middleware' => ['permission:{{ table_name }}.export']], function () {
+    Route::group(['middleware' => ['needsPermission:{{ table_name }}.export']], function () {
         Route::get('/{{ table_name }}/export', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'export'])->name('{{ table_name }}.export');
     });
-     Route::group(['middleware' => ['permission:{{ table_name }}.index']], function () {
+     Route::group(['middleware' => ['needsPermission:{{ table_name }}.index']], function () {
         Route::get('/{{ table_name }}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'index'])->name('{{ table_name }}.index');
     });
-    Route::group(['middleware' => ['permission:{{ table_name }}.store'], ], function () {
+    Route::group(['middleware' => ['needsPermission:{{ table_name }}.store'], ], function () {
         Route::post('/{{ table_name }}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'store'])->name('{{ table_name }}.store');
     });
-     Route::group(['middleware' => ['permission:{{ table_name }}.update'], ], function () {
+     Route::group(['middleware' => ['needsPermission:{{ table_name }}.update'], ], function () {
         Route::match(['put', 'patch'], '{{ table_name }}/{uuid}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'update'])->name('{{ table_name }}.update');
     });
-    Route::group(['middleware' => ['permission:{{ table_name }}.show'], ], function () {
+    Route::group(['middleware' => ['needsPermission:{{ table_name }}.show'], ], function () {
         Route::get( '{{ table_name }}/{uuid}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'show'])->name('{{ table_name }}.show');
     });
-    Route::group(['middleware' => ['permission:{{ table_name }}.destroy'], ], function () {
+    Route::group(['middleware' => ['needsPermission:{{ table_name }}.destroy'], ], function () {
         Route::delete( '{{ table_name }}/{uuid}', [{{ table_name_singular_camel_ucfirst }}Controller::class, 'destroy'])->name('{{ table_name }}.destroy');
     });
 });
