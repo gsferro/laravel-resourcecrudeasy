@@ -106,6 +106,10 @@ trait UseReacts
             }
 
             $isRequired = $schema->getDoctrineColumn($column)[ 'notnull' ];
+            $isString   = match($schema->getColumnType($column)){
+                'int', 'integer', 'decimal', 'float' => false,
+                default => true
+            };
 
             /*
             |---------------------------------------------------
@@ -120,6 +124,7 @@ trait UseReacts
                 '/\{{ column_camel_ucfirst }}/' => $columnOf->camel()->ucfirst(),
                 '/\{{ column_title }}/'         => $title,
                 '/\{{ column_is_required }}/'   => $isRequired ? 'rules={{ required: true }}' : '',
+                '/\{{ column_type_state }}/'    => $isString ? 'string' : 'number',
             ];
 
             // index

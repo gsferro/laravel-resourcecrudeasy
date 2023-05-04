@@ -1,1 +1,1 @@
-const [{{ column_camel }}, set{{ column_camel_ucfirst }}] = useState<string>('')
+const [{{ column_camel }}, set{{ column_camel_ucfirst }}] = useState<{{ column_type_state }}>('')
