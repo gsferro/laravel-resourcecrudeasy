@@ -176,6 +176,9 @@ trait UseReacts
         $filesBarPages = $this->output->createProgressBar(count($arches));
         $filesBarPages->start();
 
+        $getColumnTypeWithoutUuid = $getColumnType;
+        unset($getColumnTypeWithoutUuid[ 'uuid' ]);
+
         foreach ($arches as $arch => $stubPage) {
 
             // change values
@@ -211,7 +214,10 @@ trait UseReacts
                 '/\{{ columns_clear_filter }}/' => trim($indexClearFilter),
 
                 // create/index
+                // quebra de linha proposital para replace
                 '/\{{ columns_json }}/'                => Str::of(json_encode($getColumnType))->replace('"', '')->replace(',', '
+    ')->replace('{', '')->replace('}', ''),
+                '/\{{ columns_json_without_uuid }}/'   => Str::of(json_encode($getColumnTypeWithoutUuid))->replace('"', '')->replace(',', '
     ')->replace('{', '')->replace('}', ''),
                 '/\{{ columns_default_values_json }}/' => json_encode($columnsDefaultValues),
                 '/\{{ columns_required }}/'            => trim($columnsRequired),
