@@ -42,7 +42,7 @@ import TableHeader from 'src/views/pages/TableHeader'
 import axios from 'axios'
 import {{ table_name_camel }}Config from 'src/configs/{{ modulo }}/{{ table_name }}'
 import authConfig from 'src/configs/auth'
-import { Select, FormControl, InputLabel, TextField, Box, Button } from '@mui/material'
+import { FormControl, TextField, Box, Button } from '@mui/material'
 import DialogWait from 'src/components/DialogWait'
 import toast from 'react-hot-toast'
 
