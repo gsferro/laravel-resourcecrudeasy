@@ -115,8 +115,9 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
                     $this->info('');
                     $this->generateDomains($table);
                     $this->info('');
-//                }
+                //                }
 
+                $this->info("Finish Table: {$table}");
                 $filesBar->advance();
             }
             $filesBar->finish();

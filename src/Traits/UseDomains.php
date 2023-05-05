@@ -14,7 +14,6 @@ trait UseDomains
     {
         $this->info('');
         $this->comment("► ► ► Generate Domains Files");
-        $this->info('');
 
         $this->tableOf = Str::of($table);
         /*
@@ -54,6 +53,7 @@ trait UseDomains
         $this->generateDomainsModels($pathTable);
         $this->generateDefenderPermission();
 
+        $this->info('');
         $this->info('');
     }
 
