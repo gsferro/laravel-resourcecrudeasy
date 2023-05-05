@@ -103,7 +103,7 @@ class ResourceCrudEasyChoiceTableCommand extends ResourceCrudEasyGenerateCommand
 
             foreach ($tables as $table) {
                 $this->info('');
-                $this->info("Table: {$table}");
+                $this->info("Init Table: {$table}");
 //                $this->info('');
 //                $action = $this->choice('Qual ação deve executar', [
 //                    'Gerar views react'
