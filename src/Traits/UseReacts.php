@@ -96,7 +96,8 @@ trait UseReacts
         $columnsRequired        = '';
         $setValue               = '';
 
-        $columnsDefaultValues = [];
+        $columnsDefaultValues     = [];
+        $getColumnTypeWithoutUuid = [];
         $filesystem           = $this->files;
         foreach ($getColumnType as $column => $type) {
             $columnOf = Str::of($column);
@@ -104,6 +105,13 @@ trait UseReacts
             if ($column == 'uuid') {
                 continue;
             }
+
+            /*
+            |---------------------------------------------------
+            | store/index
+            |---------------------------------------------------
+            */
+            $getColumnTypeWithoutUuid[$column] = 'string';
 
             $isRequired = $schema->getDoctrineColumn($column)[ 'notnull' ];
             $isString   = match($schema->getColumnType($column)){
@@ -181,9 +189,6 @@ trait UseReacts
         $filesBarPages = $this->output->createProgressBar(count($arches));
         $filesBarPages->start();
 
-        $getColumnTypeWithoutUuid = $getColumnType;
-        unset($getColumnTypeWithoutUuid[ 'uuid' ]);
-
         foreach ($arches as $arch => $stubPage) {
 
             // change values
@@ -222,7 +227,7 @@ trait UseReacts
                 // quebra de linha proposital para replace
                 '/\{{ columns_json }}/'                => Str::of(json_encode($getColumnType))->replace('"', '')->replace(',', '
     ')->replace('{', '')->replace('}', ''),
-                '/\{{ columns_json_without_uuid }}/'   => Str::of(json_encode($getColumnTypeWithoutUuid))->replace('"', '')->replace(',', '
+                '/\{{ columns_json_without_uuid_only_strings }}/'   => Str::of(json_encode($getColumnTypeWithoutUuid))->replace('"', '')->replace(',', '
     ')->replace('{', '')->replace('}', ''),
                 '/\{{ columns_default_values_json }}/' => json_encode($columnsDefaultValues),
                 '/\{{ columns_required }}/'            => trim($columnsRequired),

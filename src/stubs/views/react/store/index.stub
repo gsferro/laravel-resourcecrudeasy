@@ -16,7 +16,7 @@ import toast from 'react-hot-toast'
 interface DataParams {
   page: number
   pageSize: number
-  {{ columns_json_without_uuid }}
+  {{ columns_json_without_uuid_only_strings }}
   orderBy: string | any
   sortedBy: string | any
 }
