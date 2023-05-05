@@ -479,7 +479,7 @@ trait UseDomains
         foreach ($arches as $arch) {
             $params = $this->getParams();
 
-            $filename = $this->tableOf->singular()->camel()->ucfirst() . "PermissionSeeder.php";
+            $filename = $this->tableOf->camel()->ucfirst() . "PermissionSeeder.php";
             $path     = $this->makeDirectory($pathBase . "/" . $filename);
 
             $this->writeFile("$arch", $params, $path);
