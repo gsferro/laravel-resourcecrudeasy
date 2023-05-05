@@ -459,7 +459,7 @@ trait UseDomains
         | Cria a pasta base
         |---------------------------------------------------
         */
-        $pathBase = database_path('seeders/' . $this->tableOf . 'PermissionSeeder.php');;
+        $pathBase = database_path('seeders');
 
         /*
         |---------------------------------------------------
@@ -479,7 +479,7 @@ trait UseDomains
         foreach ($arches as $arch) {
             $params = $this->getParams();
 
-            $filename = $this->tableOf->singular()->camel()->ucfirst() . ".php";
+            $filename = $this->tableOf->singular()->camel()->ucfirst() . "PermissionSeeder.php";
             $path     = $this->makeDirectory($pathBase . "/" . $filename);
 
             $this->writeFile("$arch", $params, $path);
