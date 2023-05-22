@@ -12,6 +12,7 @@ trait ResouceCrudViews
     protected ?string $viewCreate = null;
     protected ?string $viewEdit   = null;
     protected ?string $viewForm   = null;
+    protected string  $viewShow   = 'components.vendor.resource-crud-easy.show';
 
     /**
      * Verifica se foi setado um caminho para a view index ou retorna via conveção

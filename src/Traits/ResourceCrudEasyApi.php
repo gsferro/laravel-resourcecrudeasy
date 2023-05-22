@@ -111,7 +111,7 @@ trait ResourceCrudEasyApi
      */
     public function show(string|int $uuid)
     {
-        /*
+        /* TODO analisar
          * model->viewShow() : array
          *
          * Para exibir na view generica modal.show
@@ -131,10 +131,12 @@ trait ResourceCrudEasyApi
          * ]
          * */
 
-        $this->addData('fields', $this->model->viewShow());
+        //        $this->addData('fields', $this->model->viewShow());
+        //        $this->addData("relations", $this->model->viewShowRelations($this->modelFind($uuid)));
         $this->addData('model', $this->modelFind($uuid));
-        $this->addData("relations", $this->model->viewShowRelations($this->modelFind($uuid)));
-        return $this->view('modais.show');
+        $this->addData('form', $this->getViewForm());
+        return $this->view($this->viewShow);
+        //        return $this->view('modais.show');
     }
 
     /**
