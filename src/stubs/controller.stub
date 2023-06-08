@@ -41,8 +41,8 @@ class {{ class }}Controller extends Controller
         |
         */
         if ($this->hasBreadcrumb()) {
-            $this->addTitulo('{{ class_title }}');
-            $this->addBreadcrumb('{{ class_title }}', route('{{ class_route_slug }}.index'));
+            $this->addTitulo(__('{{ class_title }}'));
+            $this->addBreadcrumb(__('{{ class_title }}'), route('{{ class_route_slug }}.index'));
         }
     }
 }
