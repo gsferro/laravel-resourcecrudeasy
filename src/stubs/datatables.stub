@@ -15,14 +15,14 @@ trait {{ class }}Datatable
        |---------------------------------------------------
        |
        | Exemplo:
-       |   "Nome",
-       |   "Nível",
-       |   "Ações",
+       |   __('columns-table.nome'), # "Nome"
+       |   __('columns-table.nivel'), # "Nível"
+       |   __('resource-crud.actions'), #"Opções"
        |
        */
        return [
            {{ datatable_grid }}
-           'Actions',
+           __('resource-crud.actions'),
        ];
     }
 
