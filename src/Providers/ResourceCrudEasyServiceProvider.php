@@ -137,6 +137,15 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../tests' => base_path('tests'),
         ], 'tests');
+
+        /*
+        |---------------------------------------------------
+        | Seeders
+        |---------------------------------------------------
+        */
+        $this->publishes([
+            __DIR__ . '/../seeders' => database_path('seeders'),
+        ], 'seeder');
     }
 
     private function command(): void
