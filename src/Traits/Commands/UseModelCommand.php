@@ -38,7 +38,7 @@ trait UseModelCommand
         }
         
         $path = 'app\Datatables\\' . $entity . 'Datatable.php';
-        $this->generate($entity, $path, 'datatables', 'Model');
+        $this->generate($entity, $path, 'datatables', 'Datatable');
     }
 
     private function generateFactory(string $entity): void
