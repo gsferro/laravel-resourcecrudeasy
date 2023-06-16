@@ -277,6 +277,7 @@ class ResourceCrudEasyModelCommand extends ResourceCrudEasyGenerateCommand
                 'factory' => $this->factoryTable($entity),
                 'seeder' => $this->seederTable($entity),
                 'migrate_seeder', 'migrate' => $this->migrateTable($entity),
+                default => []
             };
         }
 
