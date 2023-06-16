@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\{{ class }};
+use App\Models\{User, {{ class }}};
 
 beforeEach(function()
 {
@@ -16,6 +16,10 @@ beforeEach(function()
 
     // set controller
     $this->controller = app()->make('App\Http\Controllers\{{ class }}Controller');
+
+    // auth with UserAdminSeeder
+    $user = User::role('super-admin')->first();
+    auth()->loginUsingId($user->id);
 });
 
 test('Index return view configured', function()
@@ -163,4 +167,13 @@ test('Update save in database', function() {
 
     $this->assertDatabaseCount($this->instance->getTable(), 1);
     $this->assertDatabaseHas($this->instance->getTable(), $update);
+});
+
+test('Not access route {{ class_route_slug }} without roles', function () {
+    User::factory(1)->create();
+    $user  = User::doesntHave('roles')->first();
+    auth()->loginUsingId($user->id);
+    $resp = $this->get(route('{{ class_route_slug }}.index'));
+    // status 403
+    $resp->assertForbidden();
 });
