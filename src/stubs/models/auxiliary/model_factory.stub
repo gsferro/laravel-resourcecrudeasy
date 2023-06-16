@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Gsferro\ResourceCrudEasy\Models\AuxModel;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Database\Factories\{{ class }}Factory;
 use Illuminate\Database\Eloquent\Relations\{ HasMany, HasOne};
 
