@@ -232,6 +232,7 @@ trait WithExistsTableCommand
         $migrateFillables = "";
         $migrateRelation  = "";
         $base             = '$table->';
+        $useLength        = true;
         foreach ($entitys['columnListing'] as $column) {
             if ($schema->isPrimaryKey($column)) {
                 continue;
@@ -252,8 +253,13 @@ trait WithExistsTableCommand
             // type column
             $columnType = $schema->getColumnType($column);
             switch ($columnType){
+                case 'date':
+                case 'text':
+                    $useLength = false;
+                break;
                 case 'datetime':
                     $columnType = "timestamp";
+                    $useLength = false;
                 break;
                 case 'smallint':
                     $columnType = "smallInteger";
@@ -275,12 +281,12 @@ trait WithExistsTableCommand
             | Infos of column
             |---------------------------------------------------
             |
-            | lenght
+            | length
             | default
             | comment
             |
             */
-            $length  = !is_null($infosColumn[ 'length' ])  ? ", '{$infosColumn['length']}'"           : '';
+            $length  = !is_null($infosColumn[ 'length' ]) && $useLength  ? ", '{$infosColumn['length']}'" : '';
             $default = !is_null($infosColumn[ 'default' ]) ? "->default('{$infosColumn['default']}')" : '';
             $comment = !is_null($infosColumn[ 'comment' ]) ? "->comment('{$infosColumn['comment']}')" : '';
 
