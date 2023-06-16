@@ -1,0 +1,29 @@
+{
+    "List Data" : "Listagem",
+    "New Register" : "Novo Registro",
+    "Action execute with success!" : "Operação realizada com sucesso!",
+    "My profile" : "Meus dados",
+    "Logout" : "Sair",
+
+    "Edit" : "Editar",
+    "Cancel" : "Cancelar",
+    "Register" : "Registro",
+    "Show" : "Exibir",
+    "Clear" : "Limpar",
+    "Confirm" : "Confirmar",
+
+    "Password" : "Senha",
+    "Email" : "Email",
+    "Login" : "Login",
+    "This is a secure area of the application. Please confirm your password before continuing." : "Esta é uma área segura do aplicativo. Por favor, confirme sua senha antes de continuar.",
+    "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one." : "Esqueceu sua senha? Sem problemas. Basta nos informar seu endereço de e-mail e enviaremos um e-mail com um link de redefinição de senha que permitirá que você escolha um novo.",
+    "Email Password Reset Link" : "Link de redefinição de senha de e-mail",
+    "Forgot Your Password?" : "Esqueceu sua senha?",
+
+    "You are logged in" : "Você esta logado em",
+    "Filters" : "Filtros",
+    "Filter" : "Filtro",
+
+    "Whoops! Something went wrong." : "Whoops! Algo deu errado.",
+    "Filter App" : "Filtro Aplicado"
+}
