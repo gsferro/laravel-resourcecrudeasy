@@ -9,7 +9,7 @@
     @if (Route::has('{{ class_route_slug }}.show'))
         {{-- todo open model | side right --}}
         {{-- TODO Components link --}}
-        <a href="{{ route('{{ class_route_slug }}.show', [$model->uuid]) }}" title="{{ __('Show') }} {{ __('Register') }}">
+        <a class="btn btn-outline-primary rounded-pill" href="{{ route('{{ class_route_slug }}.show', [$model->uuid]) }}" title="{{ __('Show') }} {{ __('Register') }}">
             <i class="fa fa-eye fa-fw"></i>
             {{ __('Show') }}
         </a>

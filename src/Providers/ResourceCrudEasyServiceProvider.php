@@ -125,8 +125,14 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
             __DIR__ . '/../public/datatables' => public_path('vendor/resource-crud-easy/datatables'),
         ], 'plugins');
 
+        /*
+        |---------------------------------------------------
+        | Views
+        |---------------------------------------------------
+        */
         $this->publishes([
-            __DIR__ . '/../views/components' => resource_path('views/components/vendor/resource-crud-easy/datatables'),
+            __DIR__ . '/../views/components' => resource_path('views/components/vendor/resource-crud-easy'),
+            __DIR__ . '/../views/layouts'    => resource_path('views/layouts'),
         ], 'views');
 
         /*
