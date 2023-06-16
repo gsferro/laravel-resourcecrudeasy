@@ -192,19 +192,20 @@ trait UseControllerCommand
         $path         = 'routes/web.php';
         $base          = base_path($path);
         $routeContents = file_get_contents($base);
+        $controller = 'App\Http\Controllers\\'.$entity.'Controller;';
 
-        if (str_contains($routeContents, $this->entitys[$entity]['str']->snake()->slug()->plural())) {
+        if (str_contains($routeContents, $controller)) {
             return ;
         }
 
-        $stub = config('resource-crud-easy.use_permissions', true) ? 'permissions/' : '';
-        $stub .= $this->entitys[ $entity ][ 'useControllerApi' ] ? 'api' : 'web';
+        $stub     = config('resource-crud-easy.use_permissions', true) ? 'permissions/' : '';
+        $stub     .= $this->entitys[ $entity ][ 'useControllerApi' ] ? 'api' : 'web';
         $contents = $this->buildClassEntity($entity, $stub);
 
         // increment use controller
         // TODO ta quebrando uma linha a mais, descobrir o pq
         $routeContents = $this->replace([
-            '/^<\?php\n/' => '<?php'. PHP_EOL.PHP_EOL.'use App\Http\Controllers\\'.$entity.'Controller;'
+            '/^<\?php\n/' => '<?php'. PHP_EOL.PHP_EOL.'use ' . $controller
         ], $routeContents);
 
         // write group route
