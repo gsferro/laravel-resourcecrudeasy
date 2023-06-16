@@ -171,7 +171,7 @@ test('Update save in database', function() {
 
 test('Not access route {{ class_route_slug }} without roles', function () {
     User::factory(1)->create();
-    $user  = User::doesntHave('roles')->first();
+    $user = User::doesntHave('roles')->first();
     auth()->loginUsingId($user->id);
     $resp = $this->get(route('{{ class_route_slug }}.index'));
     // status 403
