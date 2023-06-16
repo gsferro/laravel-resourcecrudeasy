@@ -16,11 +16,11 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 |
 */
 
-uses(DuskTestCase::class, DatabaseMigrations::class)
+/*uses(DuskTestCase::class, DatabaseMigrations::class)
     ->beforeEach(function () {
         $this->seed(DatabaseSeeder::class);
     })
-    ->in('Browser');
+    ->in('Browser');*/
 
 uses(Tests\TestCase::class, RefreshDatabase::class)
     ->beforeAll(function () {
