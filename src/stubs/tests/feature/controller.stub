@@ -76,6 +76,7 @@ test('If model use uuid not find with pk', function()
     if (is_null($this->collumUuid)) {
         $this->markTestSkipped('Model not using package uuid');
     }
+
     {{ use_factory_exists }}
     {{ use_seeder_exists }}
     // get random
@@ -100,14 +101,20 @@ test('If exist configured Breadcrumb, return var $titulo', function()
     $this->get(route('{{ class_route_slug }}.index'))->assertViewHas('titulo');
 });
 
-test('Store save in database', function() {
-    $dados = $this->instance::factory()->make()->toArray();
-    if (empty($dados)) {
+test('Store save in database', function()
+{
+    // exists factory
+    if(!method_exists($this->instance, 'factory')) {
         $this->markTestSkipped('Factory not implemented');
     }
 
+    // create
+    $dados = $this->instance::factory()->make()->toArray();
+    // route update
     $route = route('{{ class_route_slug }}.store');
     $this->post($route, $dados)->assertCreated();
+
+    // tests
     $this->assertDatabaseCount($this->instance->getTable(), 1);
     $this->assertDatabaseHas($this->instance->getTable(), $dados);
 });
@@ -117,6 +124,7 @@ test('Store fail from validate', function()
     if (empty($this->instance::$rules[ 'store' ])) {
         $this->markTestSkipped('Rule from store not implemented in Model.');
     }
+
     // no caso de ser spa ou ssr
     $code = $this->controller->isSPA ? 422 : 302;
     $resp = $this->post(route('{{ class_route_slug }}.store'), [])->assertStatus($code);
@@ -148,28 +156,30 @@ test('Store fail from validate', function()
     }
 });
 
-test('Update save in database', function() {
-    $dados = $this->instance::factory()->create();
-    if (empty($dados)) {
+test('Update save in database', function()
+{
+    // exists factory
+    if(!method_exists($this->instance, 'factory')) {
         $this->markTestSkipped('Factory not implemented');
     }
+
+    // create
+    $dados = $this->instance::factory()->create();
     // new
     $update = $this->instance::factory()->make()->toArray();
-    if (empty($update)) {
-        $this->markTestSkipped('Factory not implemented for update');
-    }
-
     // route update
-    $route  = route('{{ class_route_slug }}.update', [$dados->uuid]);
+    $route = route('{{ class_route_slug }}.update', [$dados->uuid]);
     // code by is spa
     $code = $this->controller->isSPA ? 200 : 302;
     $this->put($route, $update)->assertStatus($code);
 
+    // tests
     $this->assertDatabaseCount($this->instance->getTable(), 1);
     $this->assertDatabaseHas($this->instance->getTable(), $update);
 });
 
-test('Not access route {{ class_route_slug }} without roles', function () {
+test('Not access route {{ class_route_slug }} without roles', function ()
+{
     User::factory(1)->create();
     $user = User::doesntHave('roles')->first();
     auth()->loginUsingId($user->id);
