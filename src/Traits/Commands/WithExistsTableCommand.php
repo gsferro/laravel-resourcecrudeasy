@@ -110,7 +110,7 @@ trait WithExistsTableCommand
                 continue;
             }
 
-            $str = Str::of($column)->title()->replace('_', ' ');
+            $str = Str::of($column)->headline();
             $this->interpolate($grid, "'{$str}',");
             $this->interpolate($columns, "['name' => '$column'],");
         }

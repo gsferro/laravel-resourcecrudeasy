@@ -130,7 +130,7 @@ trait UseControllerCommand
 
     private function getStubFieldString(string $column, bool $first = false, string $var = '$model'): string
     {
-        $str     = Str::of($column)->title()->replace('_', ' ');
+        $str     = Str::of($column)->headline();
         $params  = [
             '/\{{ column }}/'         => $column,
             '/\{{ column_title }}/'   => $str,

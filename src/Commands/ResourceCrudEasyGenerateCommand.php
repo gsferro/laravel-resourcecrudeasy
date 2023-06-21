@@ -61,7 +61,7 @@ abstract class ResourceCrudEasyGenerateCommand extends GeneratorCommand
             '/\{{ class }}/'        => $str,
             '/\{{ class_camel }}/'  => $str->camel(),
             '/\{{ class_folder }}/' => $str->snake(),
-            '/\{{ class_title }}/'  => $str->snake()->title()->replace('_', ' '),
+            '/\{{ class_title }}/'  => $str->headline(),
             '/\{{ model }}/'        => $str,
 
             // use uuid

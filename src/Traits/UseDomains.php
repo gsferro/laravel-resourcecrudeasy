@@ -501,7 +501,7 @@ trait UseDomains
             '/\{{ modulo }}/'                            => $this->modulo,
             '/\{{ table_name }}/'                        => $this->tableOf,
             '/\{{ table_singular }}/'                    => $this->tableOf->singular(),
-            '/\{{ table_title }}/'                       => $this->tableOf->title()->replace('_', ' '),
+            '/\{{ table_title }}/'                       => $this->tableOf->headline(),
             '/\{{ table_name_camel }}/'                  => $this->tableOf->camel(),
             '/\{{ table_name_camel_ucfirst }}/'          => $this->tableOf->camel()->ucfirst(),
             '/\{{ table_name_singular_camel }}/'         => $this->tableOf->singular()->camel(),
@@ -539,7 +539,7 @@ trait UseDomains
             | params reuso
             |---------------------------------------------------
             */
-            $title = $columnOf->title()->replace('_', ' ');
+            $title = $columnOf->headline();
             $paramsBase    = [
                 '/\{{ column }}/'                    => $column,
                 '/\{{ column_type }}/'               => $type,

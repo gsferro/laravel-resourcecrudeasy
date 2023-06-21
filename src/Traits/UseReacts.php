@@ -124,7 +124,7 @@ trait UseReacts
             | index.tsx
             |---------------------------------------------------
             */
-            $title = $columnOf->title()->replace('_', ' ');
+            $title = $columnOf->headline();
             $paramsBase    = [
                 '/\{{ column }}/'               => $column,
                 '/\{{ column_type }}/'          => $type,
@@ -212,7 +212,7 @@ trait UseReacts
                 '/\{{ modulo }}/'                   => $this->modulo,
                 '/\{{ table_name }}/'               => $table,
                 '/\{{ table_singular }}/'           => $tableOf->singular(),
-                '/\{{ table_title }}/'              => $tableOf->title()->replace('_', ' '),
+                '/\{{ table_title }}/'              => $tableOf->headline(),
                 '/\{{ table_name_camel }}/'         => $tableOf->camel(),
                 '/\{{ table_name_camel_ucfirst }}/' => $tableOf->camel()->ucfirst(),
                 '/\{{ block_column }}/'             => $columns,
