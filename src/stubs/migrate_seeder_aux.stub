@@ -13,8 +13,9 @@ return new class extends Migration {
     {
         if (!Schema::hasTable($this->tableName)) {
             Schema::create($this->tableName, function (Blueprint $table) {
-                $table->increments('id');
-                $table->string('name');
+               $table->increments('id');
+               // TODO get name column of config
+               $table->string('name')->unique();
             });
 
             // run seeder in create table if not runner your testing

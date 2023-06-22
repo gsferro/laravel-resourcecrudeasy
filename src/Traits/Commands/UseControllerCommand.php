@@ -77,7 +77,7 @@ trait UseControllerCommand
         }
 
         $schema = $entitys[ 'schema' ];
-        $fields = "";
+        $fields = '';
         foreach ($columnListing as $column) {
             // não exibe
             if ($schema->isPrimaryKey($column) || $column == 'uuid') {
@@ -85,10 +85,18 @@ trait UseControllerCommand
             }
 
             // TODO aplicar input por cada type
-            // $columnType = $schema->getColumnType($column);
+            $columnType = $schema->getColumnType($column);
 
-            $this->interpolate($fields, $this->getStubFieldString($column, empty($fields)));
+            $isFirst = empty($fields);
+            // begin bind
+            if ($isFirst) {
+                $fields = '@bind($model)';
+            }
+
+            $this->interpolate($fields, $this->getStubFieldString($column, $isFirst, $columnType));
         }
+        // end bind
+        $fields .= '@endbind';
 
         $this->files->put("$pathBase\\form.blade.php", $fields);
     }
@@ -102,7 +110,7 @@ trait UseControllerCommand
         }
 
         $schema = $entitys[ 'schema' ];
-        $fields = "";
+        $fields = '';
         foreach ($columnListing as $column) {
             // não exibe
             if ($schema->isPrimaryKey($column) || $column == 'uuid') {
@@ -114,8 +122,17 @@ trait UseControllerCommand
                 continue;
             }
 
-            $this->interpolate($fields, $this->getStubFieldString($column, empty($fields), '$form'));
+            $isFirst = empty($fields);
+            // begin bind
+            if ($isFirst) {
+                $fields = '@bind($form)';
+            }
+
+            $this->interpolate($fields, $this->getStubFieldString($column, $isFirst, $columnType));
         }
+        // end bind
+        $fields .= !empty($fields) ? '@endbind' : '';
+
 
         $path     = 'resources/views/' . $entitys[ 'str' ]->snake() . '/filter.blade.php';
         $base     = base_path($path);
@@ -128,15 +145,28 @@ trait UseControllerCommand
         $this->files->put($path, $contents);
     }
 
-    private function getStubFieldString(string $column, bool $first = false, string $var = '$model'): string
+    private function getStubFieldString(string $column, bool $first = false, ?string $type = null): string
     {
         $str     = Str::of($column)->headline();
         $params  = [
             '/\{{ column }}/'         => $column,
             '/\{{ column_title }}/'   => $str,
             '/\{{ mt-4 }}/'           => $first ? '' : 'mt-4',
-            '/\{{ field_form_var }}/' => $var,
+            '/\{{ input }}/'          => !is_null($type) && $type == 'text' ? 'textarea' : 'input',
+            '/\{{ type }}/'           => '',
         ];
+
+        if (!is_null($type) && !in_array($type, ['string', 'text'])) {
+            $typeInput = match ($type) {
+                'date'     => 'date',
+                'time'     => 'time',
+                'datetime' => 'datetime',
+                'smallint', 'bigint', 'integer' => 'number',
+                default => null
+            };
+
+            $params['/\{{ type }}/'] = !is_null($typeInput) ? "type='{$typeInput}'" : '';
+        }
 
         $usePermission = config('resource-crud-easy.use_permissions', true) ? 'permissions/' : '';
         $stub = $this->files->get($this->getStubEntity("{$usePermission}views/field_form_string"));
