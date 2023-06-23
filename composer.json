@@ -26,11 +26,11 @@
         "barryvdh/laravel-debugbar": "^3.2",
         "pestphp/pest": "^1.22",
         "pestphp/pest-plugin-laravel": "^1.4",
-        "phpunit/phpunit": "^9.5.10",
+        "phpunit/phpunit": "^9.5.10|^10.1",
         "protonemedia/laravel-form-components": "^3.5.1"
     },
     "required-dev": {
-        "laravel/dusk": "^6.15"
+        "laravel/dusk": "^6.15|^7.0"
     },
     "autoload": {
         "psr-4": {
