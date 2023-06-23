@@ -31,6 +31,7 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
         # Components
         Blade::component('components.vendor.resource-crud-easy.datatables.datatables-process', 'datatables-process');
         Blade::component('components.vendor.resource-crud-easy.datatables.side-right-filters', 'side-right-filters');
+        Blade::component('components.vendor.resource-crud-easy.filter', 'form-filter');
 
         # Directives
         Blade::directive("FontAwesomeV4", function () {

@@ -1,29 +1,3 @@
-{{-- TODO Components card --}}
-<div class="card mb-4">
-    <div class="card-header">
-        {{ __('Filters') }}
-    </div>
-    <form id="form-filter" class="" autocomplete="off" method="post" action="#">
-        <div class="card-body">
-            <div class="row g-3">
-                {{-- fields filter --}}
-            </div>
-        </div>
-        <div class="card-footer">
-            {{-- TODO Components button --}}
-            <button class="btn btn-ghost-primary rounded-pill" type="submit">
-                <i class="fa fa-filter fa-fw"></i>
-                {{ __('Filter') }}
-            </button>
-            <button class="btn btn-light rounded-pill" type="button"
-                onclick="
-                    $(this).closest('form').find('input[type!=\'hidden\'], select').val('').trigger('change') &&
-                    $(this).closest('form').find('input[type=\'checkbox\'], input[type=\'radio\']').prop('checked',false).trigger('change')
-                    $(this).closest('form').submit()
-                ">
-                <i class="fa fa-eraser fa-fw" aria-hidden="true"></i>
-                {{ __('Clear') }}
-            </button>
-        </div>
-    </form>
-</div>
+<x-form-filter :header="__('Filters')">
+    {{-- fields filter --}}
+</x-form-filter>
