@@ -1,23 +1,18 @@
-{{-- TODO Components card --}}
-<div class="card mb-4">
-    @if (!empty($header))
-        <div class="card-header">
-            {{ $header }}
+<form id="form-filter" autocomplete="off" method="post" action="#">
+    <fieldset class="border rounded-3 p-3">
+        @if (!empty($header))
+            <legend class="float-none w-auto px-3">{{ $header }}</legend>
+        @endif
+        <div class="mb-4">
+            {{ $slot ?? '' }}
         </div>
-    @endif
-    <form id="form-filter" autocomplete="off" method="post" action="#">
-        <div class="card-body">
-            <div class="column g-3">
-                {{ $slot ?? '' }}
-            </div>
-        </div>
-        <div class="card-footer">
+        <div>
             <x-form-submit>
                 <i class="fa fa-filter fa-fw"></i>
                 {{ __('Filter') }}
             </x-form-submit>
             <button class="btn btn-default" type="button"
-                    onclick="
+                onclick="
                     $(this).closest('form').find('input[type!=\'hidden\'], select').val('').trigger('change') &&
                     $(this).closest('form').find('input[type=\'checkbox\'], input[type=\'radio\']').prop('checked',false).trigger('change')
                     $(this).closest('form').submit()
@@ -26,5 +21,5 @@
                 {{ __('Clear') }}
             </button>
         </div>
-    </form>
-</div>
+    </fieldset>
+</form>
