@@ -24,8 +24,8 @@
         "freshbitsweb/laratables": "^2.5|^3.0",
         "barryvdh/laravel-ide-helper": "^2.13",
         "barryvdh/laravel-debugbar": "^3.2",
-        "pestphp/pest": "^1.22",
-        "pestphp/pest-plugin-laravel": "^1.4",
+        "pestphp/pest": "^1.22|^2.8.1",
+        "pestphp/pest-plugin-laravel": "^1.4|^2.0",
         "phpunit/phpunit": "^9.5.10|^10.1",
         "protonemedia/laravel-form-components": "^3.5.1"
     },
