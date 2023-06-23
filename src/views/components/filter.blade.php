@@ -5,7 +5,7 @@
             {{ $header }}
         </div>
     @endif
-    <x-form id="form-filter" autocomplete="off" method="post" action="#">
+    <form id="form-filter" autocomplete="off" method="post" action="#">
         <div class="card-body">
             <div class="column g-3">
                 {{ $slot ?? '' }}
@@ -26,5 +26,5 @@
                 {{ __('Clear') }}
             </button>
         </div>
-    </x-form>
+    </form>
 </div>
