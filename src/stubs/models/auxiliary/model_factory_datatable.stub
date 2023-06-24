@@ -17,8 +17,7 @@ class {{ class }} extends AuxModel implements DatatablesInterface
     | Uses
     |---------------------------------------------------
     */
-    use {{ class }}Datatable;
-    use HasFactory;
+    use {{ class }}Datatable, HasFactory;
 
     /*
     |---------------------------------------------------

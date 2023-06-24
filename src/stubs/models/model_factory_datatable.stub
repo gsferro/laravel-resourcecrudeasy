@@ -7,6 +7,7 @@ use Gsferro\ResourceCrudEasy\Models\BaseModel;
 use Gsferro\ResourceCrudEasy\Interfaces\DatatablesInterface;
 use YourAppRocks\EloquentUuid\Traits\HasUuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Gsferro\Select2Easy\Http\Traits\Select2Easy;
 //use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -21,8 +22,7 @@ class {{ class }} extends BaseModel implements DatatablesInterface
     |---------------------------------------------------
     */
     {{ has_uuid }}
-    use {{ class }}Datatable;
-    use HasFactory;
+    use HasFactory, {{ class }}Datatable, Select2Easy;
     // use SoftDeletes;
     // use Cachable;
 
@@ -105,5 +105,15 @@ class {{ class }} extends BaseModel implements DatatablesInterface
     protected static function newFactory(): Factory
     {
         return {{ class }}Factory::new();
+    }
+
+    /*
+    |---------------------------------------------------
+    | Select2Easy
+    |---------------------------------------------------
+    */
+    public static function sl2Name($term, $page)
+    {
+        return self::select2easy($term, $page, ['nome'], 'nome');
     }
 }

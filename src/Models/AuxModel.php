@@ -2,13 +2,13 @@
 
 namespace Gsferro\ResourceCrudEasy\Models;
 
-//use GeneaLabs\LaravelModelCaching\Traits\Cachable;
+use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Gsferro\Select2Easy\Http\Traits\Select2Easy;
 use Illuminate\Database\Eloquent\Builder;
 
 abstract class AuxModel extends BaseModel
 {
-    use Select2Easy; //Cachable,
+    use Select2Easy, Cachable;
 
     /*
     |---------------------------------------------------

@@ -17,7 +17,7 @@ class {{ class }} extends BaseModel
     */
     {{ has_uuid }}
     // use SoftDeletes;
-    // use Cachable;
+    use Cachable;
 
     /*
     |---------------------------------------------------

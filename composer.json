@@ -13,6 +13,7 @@
     "require": {
         "php": "^8.0",
         "laravel/framework": "^8.0|^9.0|^10.0",
+        "genealabs/laravel-model-caching": "^0.11.7",
         "owen-it/laravel-auditing": "^12.0|^13.5.1",
         "gsferro/database-schema-easy": "^1",
         "gsferro/filtereasy": "^1.1",

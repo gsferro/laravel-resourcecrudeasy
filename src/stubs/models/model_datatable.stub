@@ -7,6 +7,7 @@ use Gsferro\ResourceCrudEasy\Models\BaseModel;
 use Gsferro\ResourceCrudEasy\Interfaces\DatatablesInterface;
 use YourAppRocks\EloquentUuid\Traits\HasUuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Gsferro\Select2Easy\Http\Traits\Select2Easy;
 //use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasOne};
 
@@ -17,7 +18,9 @@ class {{ class }} extends BaseModel implements DatatablesInterface
     | Uses
     |---------------------------------------------------
     */
-    use {{ class }}Datatable;
+    use {{ class }}Datatable, Select2Easy;
+    // use SoftDeletes;
+    // use Cachable;
 
     /*
     |---------------------------------------------------
@@ -89,4 +92,14 @@ class {{ class }} extends BaseModel implements DatatablesInterface
     {{ relations }}
     # HasMany
     # HasOnes
+
+    /*
+    |---------------------------------------------------
+    | Select2Easy
+    |---------------------------------------------------
+    */
+    public static function sl2Name($term, $page)
+    {
+        return self::select2easy($term, $page, ['nome'], 'nome');
+    }
 }
