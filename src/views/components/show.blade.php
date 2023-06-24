@@ -10,11 +10,7 @@
             @include($form)
         </div>
         <div class="card-footer">
-            {{-- TODO Components links --}}
-            <a href="{{ url()->previous(true) }}" class="btn btn-light rounded-pill">
-                <i class="fa fa-close fa-fw"></i>
-                {{ __('Cancel') }}
-            </a>
+            <x-link-cancel />
         </div>
     </div>
     <style>

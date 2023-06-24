@@ -14,6 +14,7 @@ return [
     'list' => 'Listing',
     'new'  => 'New register',
     'edit' => 'Edit',
+    'see'  => 'Show',
 
     /*
     |---------------------------------------------------

@@ -14,6 +14,7 @@ return [
     'list' => 'Listagem',
     'new'  => 'Novo registro',
     'edit' => 'Editar',
+    'see'  => 'Exibir',
 
     /*
     |---------------------------------------------------

@@ -2,6 +2,7 @@
 
 namespace Gsferro\ResourceCrudEasy\Traits;
 
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 use Throwable;
 
 trait ResourceCrudEasyApi
@@ -109,34 +111,15 @@ trait ResourceCrudEasyApi
      * @param $uuid
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(string|int $uuid)
+    public function show(string|int $uuid): Factory|View
     {
-        /* TODO analisar
-         * model->viewShow() : array
-         *
-         * Para exibir na view generica modal.show
-         *
-         * (key => (string) value )
-         * field => label
-         *
-         * (key => (array) value ) - relacionamento
-         * relacionamento => [
-         *   field_relacionamento => label
-         * ]
-         *
-         * (key => (array)) - modificação do campo
-         * _callback => [
-         *      "label"=> "Label",
-         *      "method" => "showNomeDaCallback", // declarar metodo
-         * ]
-         * */
+        if ($this->hasBreadcrumb()) {
+            $this->addBreadcrumb(__('resource-crud.see'));
+        }
 
-        //        $this->addData('fields', $this->model->viewShow());
-        //        $this->addData("relations", $this->model->viewShowRelations($this->modelFind($uuid)));
         $this->addData('model', $this->modelFind($uuid));
         $this->addData('form', $this->getViewForm());
         return $this->view($this->viewShow);
-        //        return $this->view('modais.show');
     }
 
     /**
