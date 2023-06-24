@@ -1,4 +1,3 @@
-
-    <div class="{{ mt-4 }}">
+    <div class="{{ mt-2 }}">
         <x-form-{{ input }} name='{{ column }}' :label="__('{{ column_title }}')" {{ type }}/>
     </div>

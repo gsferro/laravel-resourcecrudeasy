@@ -151,7 +151,7 @@ trait UseControllerCommand
         $params  = [
             '/\{{ column }}/'         => $column,
             '/\{{ column_title }}/'   => $str,
-            '/\{{ mt-4 }}/'           => $first ? '' : 'mt-4',
+            '/\{{ mt-2 }}/'           => $first ? '' : 'mt-2',
             '/\{{ input }}/'          => !is_null($type) && $type == 'text' ? 'textarea' : 'input',
             '/\{{ type }}/'           => '',
         ];
