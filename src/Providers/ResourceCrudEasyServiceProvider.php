@@ -49,9 +49,9 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
         |---------------------------------------------------
         */
         Blade::directive("ResourceCrudEasyDatatablesPlugin", function () {
+            // <link   href=" . asset('vendor/resource-crud-easy/datatables/extra/bootstrap-glyphicons.css') . " rel='stylesheet' type='text/css'/>
             return "
                 <link   href=" . asset('vendor/resource-crud-easy/datatables/extra/pagination.css') . " rel='stylesheet' type='text/css'/>
-                <link   href=" . asset('vendor/resource-crud-easy/datatables/extra/bootstrap-glyphicons.css') . " rel='stylesheet' type='text/css'/>
                 <link   href=" . asset('vendor/resource-crud-easy/datatables/dataTables.bootstrap.css') . " rel='stylesheet' type='text/css'/>
                 <link   href=" . asset('vendor/resource-crud-easy/datatables/responsive/dataTables.responsive.min.css') . " rel='stylesheet' type='text/css'/>
                 <link   href=" . asset('vendor/resource-crud-easy/datatables/extra/datatables-processing.css') . " rel='stylesheet' type='text/css'/>
