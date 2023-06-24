@@ -6,23 +6,14 @@
         <div class="card-header">
             {{ __('{{ class }} Create') }}
         </div>
-        <form method="POST" action="{{ route('{{ class_route_slug }}.store') }}">
-            @csrf
+        <x-form method="POST" :action="route('{{ class_route_slug }}.store')">
             <div class="card-body">
                 @include('{{ class_folder }}.form')
             </div>
             <div class="card-footer">
-                {{-- TODO Components button --}}
-                <button class="btn btn-ghost-primary rounded-pill" type="submit">
-                    <i class="fa fa-save fa-fw"></i>
-                    {{ __('Register') }}
-                </button>
-                {{-- TODO Components links --}}
-                <a href="{{ url()->previous(true) }}" class="btn btn-light rounded-pill">
-                    <i class="fa fa-close fa-fw"></i>
-                    {{ __('Cancel') }}
-                </a>
+                <x-btn-register />
+                <x-link-cancel />
             </div>
-        </form>
+        </x-form>
     </div>
 @endsection

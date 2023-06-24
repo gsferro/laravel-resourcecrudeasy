@@ -6,24 +6,14 @@
         <div class="card-header">
             {{ __('{{ class }} Edit') }}
         </div>
-        <form method="POST" action="{{ route('{{ class_route_slug }}.update', [$model->uuid]) }}">
-            @method('PUT')
-            @csrf
+        <x-form method="PUT" :action="route('{{ class_route_slug }}.update', [$model->uuid])">
             <div class="card-body">
                 @include('{{ class_folder }}.form')
             </div>
             <div class="card-footer">
-                {{-- TODO Components button --}}
-                <button class="btn btn-ghost-primary rounded-pill" type="submit">
-                    <i class="fa fa-save fa-fw"></i>
-                    {{ __('Edit') }}
-                </button>
-                {{-- TODO Components links --}}
-                <a href="{{ url()->previous(true) }}" class="btn btn-light rounded-pill">
-                    <i class="fa fa-close fa-fw"></i>
-                    {{ __('Cancel') }}
-                </a>
+                <x-btn-edit />
+                <x-link-cancel />
             </div>
-        </form>
+        </x-form>
     </div>
 @endsection

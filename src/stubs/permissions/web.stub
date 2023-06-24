@@ -14,11 +14,9 @@ Route::group([], function () {
     Route::group(['middleware' => ['permission:{{ class_route_slug }}.update']], function () {
         Route::match(['put', 'patch'], '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'update'])->name('{{ class_route_slug }}.update');
     });
-    /*
     Route::group(['middleware' => ['permission:{{ class_route_slug }}.show']], function () {
         Route::get( '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'show'])->name('{{ class_route_slug }}.show');
     });
-    */
     /*
     Route::group(['middleware' => ['permission:{{ class_route_slug }}.destroy']], function () {
         Route::delete( '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'destroy'])->name('{{ class_route_slug }}.destroy');

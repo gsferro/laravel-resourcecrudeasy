@@ -6,30 +6,14 @@
         <div class="card-header">
             {{ __('{{ class }} Edit') }}
         </div>
-        @if(Route::has('{{ class_route_slug }}.update') && auth()->user()->hasPermissionTo('{{ class_route_slug }}.update'))
-            <form method="POST" action="{{ route('{{ class_route_slug }}.update', [$model->uuid]) }}">
-                @method('PUT')
-                @csrf
-                <div class="card-body">
-                    @include('{{ class_folder }}.form')
-                </div>
-                <div class="card-footer">
-                    {{-- TODO Components button --}}
-                    <button class="btn btn-ghost-primary rounded-pill" type="submit">
-                        <i class="fa fa-save fa-fw"></i>
-                        {{ __('Edit') }}
-                    </button>
-                    {{-- TODO Components links --}}
-                    <a href="{{ url()->previous(true) }}" class="btn btn-light rounded-pill">
-                        <i class="fa fa-close fa-fw"></i>
-                        {{ __('Cancel') }}
-                    </a>
-                </div>
-            </form>
-        @else
+        <x-form method="PUT" :action="route('{{ class_route_slug }}.update', [$model->uuid])">
             <div class="card-body">
                 @include('{{ class_folder }}.form')
             </div>
-        @endif
+            <div class="card-footer">
+                <x-btn-edit />
+                <x-link-cancel />
+            </div>
+        </x-form>
     </div>
 @endsection
