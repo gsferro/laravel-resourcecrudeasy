@@ -1,25 +1,18 @@
-Route::group([], function () {
-    Route::group([], function () {
-        Route::get('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'index'])->name('{{ class_route_slug }}.index');
-    });
-    Route::group([], function () {
-        Route::get('/{{ class_route_slug_plural }}/create', [{{ class }}Controller::class, 'create'])->name('{{ class_route_slug }}.create');
-    });
-    Route::group([], function () {
-        Route::POST('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'store'])->name('{{ class_route_slug }}.store');
-    });
-    Route::group([], function () {
-        Route::get('{{ class_route_slug_plural }}/{uuid}/edit', [{{ class }}Controller::class, 'edit'])->name('{{ class_route_slug }}.edit');
-    });
-    Route::group([], function () {
-        Route::match(['put', 'patch'], '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'update'])->name('{{ class_route_slug }}.update');
-    });
-    Route::group([], function () {
-        Route::get( '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'show'])->name('{{ class_route_slug }}.show');
-    });
+Route::name('{{ class_route_slug }}.')->group(function () {
+    Route::get('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'index'])
+        ->name('index');
+    Route::get('/{{ class_route_slug_plural }}/create', [{{ class }}Controller::class, 'create'])
+        ->name('create');
+    Route::post('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'store'])
+        ->name('store');
+    Route::get('{{ class_route_slug_plural }}/{uuid}/edit', [{{ class }}Controller::class, 'edit'])
+        ->name('edit');
+    Route::match(['put', 'patch'], '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'update'])
+        ->name('update');
+    Route::get( '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'show'])
+        ->name('show');
     /*
-    Route::group([], function () {
-        Route::delete( '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'destroy'])->name('{{ class_route_slug }}.destroy');
-    });
+        Route::delete( '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'destroy'])
+            ->name('destroy');
     */
 });

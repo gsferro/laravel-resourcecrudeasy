@@ -1,21 +1,21 @@
-Route::group([], function () {
-     Route::group(['middleware' => ['permission:{{ class_route_slug }}.index']], function () {
-        Route::get('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'index'])->name('{{ class_route_slug }}.index');
-    });
-    Route::group(['middleware' => ['permission:{{ class_route_slug }}.store'], ], function () {
-        Route::post('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'store'])->name('{{ class_route_slug }}.store');
-    });
-     Route::group(['middleware' => ['permission:{{ class_route_slug }}.update'], ], function () {
-        Route::match(['put', 'patch'], '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'update'])->name('{{ class_route_slug }}.update');
-    });
+Route::name('{{ class_route_slug }}.')->group(function () {
+    Route::get('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'index'])
+        ->middleware(['permission:{{ class_route_slug }}.index'])
+        ->name('index');
+    Route::post('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'store'])
+        ->middleware(['permission:{{ class_route_slug }}.store'])
+        ->name('store');
+    Route::match(['put', 'patch'], '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'update'])
+        ->middleware(['permission:{{ class_route_slug }}.update'])
+        ->name('update');
     /*
-    Route::group(['middleware' => ['permission:{{ class_route_slug }}.show'], ], function () {
-        Route::get( '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'show'])->name('{{ class_route_slug }}.show');
-    });
+        Route::get( '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'show'])
+            ->middleware(['permission:{{ class_route_slug }}.show'])
+            ->name('show');
     */
     /*
-    Route::group(['middleware' => ['permission:{{ class_route_slug }}.destroy'], ], function () {
-        Route::delete( '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'destroy'])->name('{{ class_route_slug }}.destroy');
-    });
+        Route::delete( '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'destroy'])
+            ->middleware(['permission:{{ class_route_slug }}.destroy'])
+            ->name('destroy');
     */
 });

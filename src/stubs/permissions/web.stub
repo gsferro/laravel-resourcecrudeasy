@@ -1,25 +1,25 @@
-Route::group([], function () {
-    Route::group(['middleware' => ['permission:{{ class_route_slug }}.index']], function () {
-        Route::get('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'index'])->name('{{ class_route_slug }}.index');
-    });
-    Route::group(['middleware' => ['permission:{{ class_route_slug }}.create']], function () {
-        Route::get('/{{ class_route_slug_plural }}/create', [{{ class }}Controller::class, 'create'])->name('{{ class_route_slug }}.create');
-    });
-    Route::group(['middleware' => ['permission:{{ class_route_slug }}.store']], function () {
-        Route::POST('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'store'])->name('{{ class_route_slug }}.store');
-    });
-    Route::group(['middleware' => ['permission:{{ class_route_slug }}.edit']], function () {
-        Route::get('{{ class_route_slug_plural }}/{uuid}/edit', [{{ class }}Controller::class, 'edit'])->name('{{ class_route_slug }}.edit');
-    });
-    Route::group(['middleware' => ['permission:{{ class_route_slug }}.update']], function () {
-        Route::match(['put', 'patch'], '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'update'])->name('{{ class_route_slug }}.update');
-    });
-    Route::group(['middleware' => ['permission:{{ class_route_slug }}.show']], function () {
-        Route::get( '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'show'])->name('{{ class_route_slug }}.show');
-    });
+Route::name('{{ class_route_slug }}.')->group(function () {
+    Route::get('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'index'])
+        ->middleware(['permission:{{ class_route_slug }}.index'])
+        ->name('index');
+    Route::get('/{{ class_route_slug_plural }}/create', [{{ class }}Controller::class, 'create'])
+        ->middleware(['permission:{{ class_route_slug }}.create'])
+        ->name('create');
+    Route::post('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'store'])
+        ->middleware(['permission:{{ class_route_slug }}.store'])
+        ->name('store');
+    Route::get('{{ class_route_slug_plural }}/{uuid}/edit', [{{ class }}Controller::class, 'edit'])
+        ->middleware(['permission:{{ class_route_slug }}.edit'])
+        ->name('edit');
+    Route::match(['put', 'patch'], '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'update'])
+        ->middleware(['permission:{{ class_route_slug }}.update'])
+        ->name('update');
+    Route::get( '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'show'])
+        ->middleware(['permission:{{ class_route_slug }}.show'])
+        ->name('show');
     /*
-    Route::group(['middleware' => ['permission:{{ class_route_slug }}.destroy']], function () {
-        Route::delete( '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'destroy'])->name('{{ class_route_slug }}.destroy');
-    });
+        Route::delete( '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'destroy'])
+            ->middleware(['permission:{{ class_route_slug }}.destroy'])
+            ->name('destroy');
     */
 });

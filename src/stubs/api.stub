@@ -1,21 +1,16 @@
-Route::group([], function () {
-    Route::group([], function () {
-        Route::get('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'index'])->name('{{ class_route_slug }}.index');
-    });
-    Route::group([], function () {
-        Route::POST('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'store'])->name('{{ class_route_slug }}.store');
-    });
-    Route::group([], function () {
-        Route::match(['put', 'patch'], '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'update'])->name('{{ class_route_slug }}.update');
-    });
+Route::name('{{ class_route_slug }}.')->group(function () {
+    Route::get('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'index'])
+        ->name('index');
+    Route::post('/{{ class_route_slug_plural }}', [{{ class }}Controller::class, 'store'])
+        ->name('store');
+    Route::match(['put', 'patch'], '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'update'])
+        ->name('update');
     /*
-    Route::group([], function () {
-        Route::get( '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'show'])->name('{{ class_route_slug }}.show');
-    });
+        Route::get( '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'show'])
+            ->name('show');
     */
     /*
-    Route::group([], function () {
-        Route::delete( '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'destroy'])->name('{{ class_route_slug }}.destroy');
-    });
+        Route::delete( '{{ class_route_slug_plural }}/{uuid}', [{{ class }}Controller::class, 'destroy'])
+            ->name('destroy');
     */
 });
