@@ -140,6 +140,27 @@ Este comando irá gerar:
 - Testes unitários e de feature
 - Rotas
 
+### Gerar Testes Automatizados
+
+```bash
+php artisan gsferro:resource-test [opções]
+```
+
+Opções disponíveis:
+- `--model=`: Nome do modelo para gerar testes
+- `--controller=`: Nome do controlador para gerar testes
+- `--all`: Gera testes para todos os modelos e controladores
+- `--force`: Força a sobrescrita de testes existentes
+
+Este comando analisa a estrutura de código existente e gera testes abrangentes para modelos e controladores, incluindo:
+- Testes de relacionamentos
+- Testes de escopos
+- Testes de validação
+- Testes de API
+- Testes de banco de dados
+
+Para mais detalhes, consulte a [documentação de geração de testes](src/docs/test-generation.md).
+
 ### Gerar Componentes React para Tabelas Existentes
 
 ```bash

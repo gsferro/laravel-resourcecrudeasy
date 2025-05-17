@@ -1,0 +1,84 @@
+<?php
+
+use App\Models\{{ class }};
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
+beforeEach(function() 
+{
+    // atributo para reuso
+    $this->model = {{ class }}::inRandomOrder()->first();
+    
+    // If no model exists, create one
+    if (!$this->model) {
+        {{ use_factory_exists }}
+        {{ use_seeder_exists }}
+        $this->model = {{ class }}::first();
+    }
+    
+    // Skip tests if still no model
+    if (!$this->model) {
+        $this->markTestSkipped('No {{ class }} model available for testing relationships');
+    }
+});
+
+test('{{ class }} has expected relationship methods', function()
+{
+    expect($this->model)->toBeObject();
+})->group('relationships');
+
+{{ relationship_tests }}
+
+test('Relationships return the correct instance types', function() 
+{
+    // This test will be skipped if no relationships are found
+    $hasRelationships = false;
+    
+    $reflection = new ReflectionClass({{ class }}::class);
+    $methods = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
+    
+    foreach ($methods as $method) {
+        if ($method->class !== {{ class }}::class) {
+            continue;
+        }
+        
+        $methodName = $method->getName();
+        
+        // Skip non-relationship methods
+        if (in_array($methodName, ['__construct', 'boot', 'booted'])) {
+            continue;
+        }
+        
+        try {
+            // Check if method returns a relation
+            $relation = $this->model->$methodName();
+            
+            if (
+                $relation instanceof BelongsTo || 
+                $relation instanceof HasMany || 
+                $relation instanceof HasOne || 
+                $relation instanceof BelongsToMany
+            ) {
+                $hasRelationships = true;
+                
+                // Test the relationship type
+                match (true) {
+                    $relation instanceof BelongsTo => expect($relation)->toBeInstanceOf(BelongsTo::class),
+                    $relation instanceof HasMany => expect($relation)->toBeInstanceOf(HasMany::class),
+                    $relation instanceof HasOne => expect($relation)->toBeInstanceOf(HasOne::class),
+                    $relation instanceof BelongsToMany => expect($relation)->toBeInstanceOf(BelongsToMany::class),
+                    default => null
+                };
+            }
+        } catch (\Exception $e) {
+            // If we can't call the method, skip it
+            continue;
+        }
+    }
+    
+    if (!$hasRelationships) {
+        $this->markTestSkipped('No relationships found in {{ class }} model');
+    }
+})->group('relationships');

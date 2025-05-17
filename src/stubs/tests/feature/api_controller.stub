@@ -1,0 +1,206 @@
+<?php
+
+use App\Models\{User, {{ class }}};
+use Illuminate\Testing\Fluent\AssertableJson;
+
+beforeEach(function()
+{
+    // Model Using Uuid
+    $this->instance      = new {{ class }};
+    $this->collumPrimary = $this->instance->getKeyName();
+    $this->collumUuid    = (method_exists($this->instance, 'getUuidColumnName') != null)
+        ? $this->instance->getUuidColumnName()
+        : null;
+
+    // for modelFind
+    $this->find = $this->collumUuid ?? $this->collumPrimary;
+
+    // set controller
+    $this->controller = app()->make('App\Http\Controllers\{{ class }}Controller');
+
+    // auth with UserAdminSeeder
+    $user = User::role('super-admin')->first();
+    auth()->loginUsingId($user->id);
+});
+
+test('API index returns JSON with pagination', function()
+{
+    $response = $this->getJson(route('{{ class_route_slug }}.index'));
+    
+    $response->assertStatus(200)
+             ->assertJsonStructure([
+                'current_page',
+                'data',
+                'first_page_url',
+                'from',
+                'last_page',
+                'last_page_url',
+                'links',
+                'next_page_url',
+                'path',
+                'per_page',
+                'prev_page_url',
+                'to',
+                'total'
+             ]);
+});
+
+test('API show returns correct JSON structure', function()
+{
+    {{ use_factory_exists }}
+    {{ use_seeder_exists }}
+    
+    // Get a model instance
+    $model = $this->instance::inRandomOrder()->first();
+    
+    if (!$model) {
+        $this->markTestSkipped('No {{ class }} model available for testing');
+    }
+    
+    $response = $this->getJson(route('{{ class_route_slug }}.show', [$model->{$this->find}]));
+    
+    $response->assertStatus(200)
+             ->assertJson(function (AssertableJson $json) {
+                 $json->has('data')
+                      ->etc();
+             });
+});
+
+test('API store creates a new record', function()
+{
+    // Skip if factory doesn't exist
+    if (!method_exists($this->instance, 'factory')) {
+        $this->markTestSkipped('Factory not available to generate test data');
+    }
+    
+    // Generate data for a new record
+    $data = $this->instance::factory()->make()->toArray();
+    
+    $response = $this->postJson(route('{{ class_route_slug }}.store'), $data);
+    
+    $response->assertStatus(201)
+             ->assertJson(function (AssertableJson $json) {
+                 $json->has('data')
+                      ->has('success')
+                      ->where('success', true)
+                      ->etc();
+             });
+    
+    // Verify the record was created in the database
+    $this->assertDatabaseHas($this->instance->getTable(), $data);
+});
+
+test('API store validates input data', function()
+{
+    $response = $this->postJson(route('{{ class_route_slug }}.store'), []);
+    
+    $response->assertStatus(422)
+             ->assertJson(function (AssertableJson $json) {
+                 $json->has('error')
+                      ->has('success')
+                      ->where('success', false)
+                      ->has('code')
+                      ->where('code', 422)
+                      ->etc();
+             });
+});
+
+test('API update modifies an existing record', function()
+{
+    // Skip if factory doesn't exist
+    if (!method_exists($this->instance, 'factory')) {
+        $this->markTestSkipped('Factory not available to generate test data');
+    }
+    
+    // Create a record to update
+    $model = $this->instance::factory()->create();
+    
+    // Generate new data
+    $data = $this->instance::factory()->make()->toArray();
+    
+    $response = $this->putJson(route('{{ class_route_slug }}.update', [$model->{$this->find}]), $data);
+    
+    $response->assertStatus(200)
+             ->assertJson(function (AssertableJson $json) {
+                 $json->has('data')
+                      ->has('success')
+                      ->where('success', true)
+                      ->etc();
+             });
+    
+    // Verify the record was updated in the database
+    $this->assertDatabaseHas($this->instance->getTable(), $data);
+});
+
+test('API update validates input data', function()
+{
+    {{ use_factory_exists }}
+    {{ use_seeder_exists }}
+    
+    // Get a model instance
+    $model = $this->instance::inRandomOrder()->first();
+    
+    if (!$model) {
+        $this->markTestSkipped('No {{ class }} model available for testing');
+    }
+    
+    $response = $this->putJson(route('{{ class_route_slug }}.update', [$model->{$this->find}]), []);
+    
+    $response->assertStatus(422)
+             ->assertJson(function (AssertableJson $json) {
+                 $json->has('error')
+                      ->has('success')
+                      ->where('success', false)
+                      ->has('code')
+                      ->where('code', 422)
+                      ->etc();
+             });
+});
+
+test('API destroy removes a record', function()
+{
+    // Skip if destroy method is not implemented
+    if (!method_exists($this->controller, 'destroy')) {
+        $this->markTestSkipped('Destroy method not implemented in controller');
+    }
+    
+    // Skip if factory doesn't exist
+    if (!method_exists($this->instance, 'factory')) {
+        $this->markTestSkipped('Factory not available to generate test data');
+    }
+    
+    // Create a record to delete
+    $model = $this->instance::factory()->create();
+    
+    $response = $this->deleteJson(route('{{ class_route_slug }}.destroy', [$model->{$this->find}]));
+    
+    $response->assertStatus(200)
+             ->assertJson(function (AssertableJson $json) {
+                 $json->has('success')
+                      ->where('success', true)
+                      ->etc();
+             });
+    
+    // Verify the record was deleted from the database
+    $this->assertDatabaseMissing($this->instance->getTable(), [
+        $this->collumPrimary => $model->{$this->collumPrimary}
+    ]);
+});
+
+test('API returns 404 for non-existent record', function()
+{
+    // Try to get a non-existent record
+    $response = $this->getJson(route('{{ class_route_slug }}.show', ['id' => 999999]));
+    
+    $response->assertStatus(404);
+});
+
+test('API requires authentication', function()
+{
+    // Logout the user
+    auth()->logout();
+    
+    $response = $this->getJson(route('{{ class_route_slug }}.index'));
+    
+    $response->assertStatus(401);
+});

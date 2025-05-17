@@ -2,7 +2,7 @@
 
 namespace Gsferro\ResourceCrudEasy\Providers;
 
-use Gsferro\ResourceCrudEasy\Commands\{ResourceCrudEasyModelCommand, ResourceCrudEasyChoiceTableCommand};
+use Gsferro\ResourceCrudEasy\Commands\{ResourceCrudEasyModelCommand, ResourceCrudEasyChoiceTableCommand, ResourceCrudEasyTestCommand};
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Filesystem\Filesystem;
@@ -170,6 +170,7 @@ class ResourceCrudEasyServiceProvider extends ServiceProvider
 //                ResourceCrudEasyCommand::class,
                 ResourceCrudEasyModelCommand::class,
                 ResourceCrudEasyChoiceTableCommand::class,
+                ResourceCrudEasyTestCommand::class,
             ]);
         }
     }
